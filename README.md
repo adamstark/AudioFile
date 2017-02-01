@@ -14,7 +14,7 @@ Current supported formats:
 Author
 ------
 
-Gist is written and maintained by Adam Stark.
+AudioFile is written and maintained by Adam Stark.
 
 [http://www.adamstark.co.uk](http://www.adamstark.co.uk)
 
