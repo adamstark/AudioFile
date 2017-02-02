@@ -23,6 +23,7 @@ def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, format)
 	header += "int numSamplesPerChannel = " + str (numSamples) + ";\n"
 	header += "int bitDepth = " + str(bitRate) + ";\n"
 	header += "int sampleRate = " + str(sampleRate) + ";\n"
+	header += "int numChannels = " + str(numChannels) + ";\n"
 	header += "\n"
 	if numChannels == 1:
 		header += "std::vector<double> testBuffer = "
@@ -37,7 +38,10 @@ def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, format)
 
 		for i in range (numSamples):
 
-			header += str (audioSignal.T[k][i])
+			if numChannels == 1:
+				header += str (audioSignal[i])
+			elif numChannels == 2:
+				header += str (audioSignal.T[k][i])
 			if i < (numSamples - 1): 
 				header += ", "
 
