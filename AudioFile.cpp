@@ -221,7 +221,12 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
         {
             int sampleIndex = samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;
             
-            if (bitDepth == 16)
+            if (bitDepth == 8)
+            {
+                T sample = singleByteToSample (fileData[sampleIndex]);
+                audioSampleBuffer[channel].push_back (sample);
+            }
+            else if (bitDepth == 16)
             {
                 int16_t sampleAsInt = twoBytesToInt (fileData, sampleIndex);
                 T sample = sixteenBitIntToSample (sampleAsInt);
@@ -229,7 +234,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
             }
             else if (bitDepth == 24)
             {
-                // to do
+                assert (false);
             }
             else
             {
@@ -308,6 +313,14 @@ template <class T>
 T AudioFile<T>::sixteenBitIntToSample (int16_t sample)
 {
     return (T)sample / (T)32768.;
+}
+
+//=============================================================
+template <class T>
+T AudioFile<T>::singleByteToSample (unsigned char byte)
+{
+    int32_t sampleAsInt = (int32_t) byte;
+    return (T)(sampleAsInt - 128) / (T)128.;
 }
 
 //===========================================================

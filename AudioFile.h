@@ -93,6 +93,7 @@ private:
     int16_t twoBytesToInt (std::vector<unsigned char>& source, int startIndex);
     int getIndexOfString (std::vector<unsigned char>& source, std::string s);
     T sixteenBitIntToSample (int16_t sample);
+    T singleByteToSample (unsigned char byte);
     
     //=============================================================
     AudioFileType audioFileType;
