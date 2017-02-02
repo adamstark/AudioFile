@@ -28,7 +28,7 @@
 #include <assert.h>
 
 
-
+//=============================================================
 template <class T>
 class AudioFile
 {
@@ -46,21 +46,29 @@ public:
     };
     
     //=============================================================
+    /** Constructor */
     AudioFile();
     
     //=============================================================
+    /** @Returns the sample rate */
     int getSampleRate() const;
     
+    /** @Returns the number of audio channels in the buffer */
     int getNumChannels() const;
 
+    /** @Returns true if the audio file is mono */
     bool isMono();
     
+    /** @Returns true if the audio file is stereo */
     bool isStereo();
     
+    /** @Returns the bit depth of each sample */
     int getBitDepth() const;
     
+    /** @Returns the number of samples per channel */
     int getNumSamplesPerChannel() const;
     
+    /** @Returns the length in seconds of the audio file based on the number of samples and sample rate */
     double getLengthInSeconds();
     
     //=============================================================
@@ -69,7 +77,7 @@ public:
     const AudioBuffer& getAudioBuffer() const;
     
     //=============================================================
-    void load (std::string filePath);
+    bool load (std::string filePath);
     
 private:
     
@@ -78,7 +86,6 @@ private:
     
     //=============================================================
     void clearAudioBuffer();
-    
     
     //=============================================================
     AudioFileType determineAudioFileType (std::vector<unsigned char>& fileData);
@@ -89,9 +96,7 @@ private:
     
     //=============================================================
     AudioFileType audioFileType;
-    
     std::vector<std::vector<T>> audioSampleBuffer;
-    
     int sampleRate;
     int numChannels;
     int bitDepth;

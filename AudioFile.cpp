@@ -101,16 +101,25 @@ const std::vector<T>& AudioFile<T>::getAudioChannel (int channel) const
 
 //=============================================================
 template <class T>
-const AudioBuffer& AudioFile<T>::getAudioBuffer() const
+const typename AudioFile<T>::AudioBuffer& AudioFile<T>::getAudioBuffer() const
 {
     return audioSampleBuffer;
 }
 
 //=============================================================
 template <class T>
-void AudioFile<T>::load (std::string filePath)
+bool AudioFile<T>::load (std::string filePath)
 {
     std::ifstream file (filePath, std::ios::binary);
+    
+    // check the file exists
+    if (! file.good())
+    {
+        std::cout << "ERROR: File doesn't exist or otherwise can't load file" << std::endl;
+        std::cout << filePath << std::endl;
+        return false;
+    }
+    
     file.unsetf (std::ios::skipws);
     std::istream_iterator<unsigned char> begin (file), end;
     std::vector<unsigned char> fileData (begin, end);
@@ -120,13 +129,12 @@ void AudioFile<T>::load (std::string filePath)
     
     if (audioFileType == AudioFileType::Wav)
     {
-        std::cout << "Audio File Type: " << "Wave" << std::endl;
-        
-        decodeWaveFile (fileData);
+        return decodeWaveFile (fileData);
     }
     else
     {
         std::cout << "Audio File Type: " << "Error" << std::endl;
+        return false;
     }
 }
 
@@ -137,7 +145,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
     // -----------------------------------------------------------
     // HEADER CHUNK
     std::string headerChunkID (fileData.begin(), fileData.begin() + 4);
-    int32_t fileSizeInBytes = fourBytesToInt (fileData, 4) + 8;
+    //int32_t fileSizeInBytes = fourBytesToInt (fileData, 4) + 8;
     std::string format (fileData.begin() + 8, fileData.begin() + 12);
     
     // -----------------------------------------------------------
@@ -157,7 +165,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
     // FORMAT CHUNK
     int f = indexOfFormatChunk;
     std::string formatChunkID (fileData.begin() + f, fileData.begin() + f + 4);
-    int32_t subChunk1Size = fourBytesToInt (fileData, f + 4);
+    //int32_t subChunk1Size = fourBytesToInt (fileData, f + 4);
     int16_t audioFormat = twoBytesToInt (fileData, f + 8);
     numChannels = (int) twoBytesToInt (fileData, f + 10);
     sampleRate = (int) fourBytesToInt (fileData, f + 12);
@@ -201,30 +209,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
     std::string dataChunkID (fileData.begin() + d, fileData.begin() + d + 4);
     int32_t dataChunkSize = fourBytesToInt (fileData, d + 4);
     
-    std::cout << "---------" << std::endl;
-    std::cout << headerChunkID << std::endl;
-    std::cout << "FILE SIZE: " << fileSizeInBytes << std::endl;
-    std::cout << fileData.size() << std::endl;
-    std::cout << format << std::endl;
-    
-    std::cout << "---------" << std::endl;
-    std::cout << formatChunkID << std::endl;
-    std::cout << "SUBCHUNK 1 SIZE: " << subChunk1Size << std::endl;
-    std::cout << "AudioFormat: " << audioFormat << std::endl;
-    std::cout << "Num Channels: " << numChannels << std::endl;
-    std::cout << "Sample Rate: " << sampleRate << std::endl;
-    std::cout << "Num Bytes Per Second: " << numBytesPerSecond << std::endl;
-    std::cout << "Num Bytes Per Block: " << numBytesPerBlock << std::endl;
-    std::cout << "Bit Depth: " << bitDepth << std::endl;
-    
-    std::cout << "---------" << std::endl;
-    std::cout << "DATA CHUNK ID: " << dataChunkID << std::endl;
-    std::cout << "DATA CHUNK SIZE: " << dataChunkSize << std::endl;
     int numSamples = dataChunkSize / (numChannels * bitDepth / 8);
-    std::cout << numSamples << std::endl;
-    std::cout << numSamples * 4 << std::endl;
-    std::cout << fileData.size() - indexOfDataChunk + 8 << std::endl;
-    
     int samplesStartIndex = indexOfDataChunk + 8;
     
     clearAudioBuffer();
@@ -242,6 +227,10 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
                 T sample = sixteenBitIntToSample (sampleAsInt);
                 audioSampleBuffer[channel].push_back (sample);
             }
+            else if (bitDepth == 24)
+            {
+                // to do
+            }
             else
             {
                 assert (false);
@@ -249,7 +238,6 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
             
         }
     }
-    std::cout << numSamples << std::endl;
     
     return true;
 }
