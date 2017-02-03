@@ -24,9 +24,6 @@
 #include <fstream>
 #include <iterator>
 
-// http://soundfile.sapp.org/doc/WaveFormat/
-// https://blogs.msdn.microsoft.com/dawate/2009/06/23/intro-to-audio-programming-part-2-demystifying-the-wav-format/
-
 //=============================================================
 template <class T>
 AudioFile<T>::AudioFile()
@@ -52,14 +49,14 @@ int AudioFile<T>::getNumChannels() const
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::isMono()
+bool AudioFile<T>::isMono() const
 {
     return getNumChannels() == 1;
 }
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::isStereo()
+bool AudioFile<T>::isStereo() const
 {
     return getNumChannels() == 2;
 }
@@ -86,6 +83,19 @@ template <class T>
 double AudioFile<T>::getLengthInSeconds()
 {
     return (double)getNumSamplesPerChannel() / (double)sampleRate;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::printSummary()
+{
+    std::cout << "|============================|" << std::endl;
+    std::cout << "Num Channels: " << numChannels << std::endl;
+    std::cout << "Num Samples Per Channel: " << getNumSamplesPerChannel() << std::endl;
+    std::cout << "Sample Rate: " << sampleRate << std::endl;
+    std::cout << "Bit Depth: " << bitDepth << std::endl;
+    std::cout << "Length in Seconds: " << getLengthInSeconds() << std::endl;
+    std::cout << "|============================|" << std::endl;
 }
 
 //=============================================================
@@ -240,11 +250,43 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
             {
                 assert (false);
             }
-            
         }
     }
-    
+
     return true;
+}
+
+//=============================================================
+template <class T>
+bool AudioFile<T>::save (std::string filePath)
+{
+    return writeToWaveFile (filePath);
+    
+    return false;
+}
+
+//=============================================================
+template <class T>
+bool AudioFile<T>::writeToWaveFile (std::string filePath)
+{
+    std::vector<unsigned char> fileData;
+    
+    // -----------------------------------------------------------
+    // HEADER CHUNK
+    addStringToFileData (fileData, "RIFF");
+    
+    // finish this
+    assert (false);
+    
+    return false;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::addStringToFileData (std::vector<unsigned char>& fileData, std::string s)
+{
+    for (int i = 0; i < s.length();i++)
+        fileData.push_back ((unsigned char) s[i]);
 }
 
 //=============================================================

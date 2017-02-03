@@ -50,6 +50,16 @@ public:
     AudioFile();
     
     //=============================================================
+    bool load (std::string filePath);
+    
+    bool save (std::string filePath);
+    
+    //=============================================================
+    const std::vector<T>& getAudioChannel (int channel) const;
+    
+    const AudioBuffer& getAudioBuffer() const;
+    
+    //=============================================================
     /** @Returns the sample rate */
     int getSampleRate() const;
     
@@ -57,10 +67,10 @@ public:
     int getNumChannels() const;
 
     /** @Returns true if the audio file is mono */
-    bool isMono();
+    bool isMono() const;
     
     /** @Returns true if the audio file is stereo */
-    bool isStereo();
+    bool isStereo() const;
     
     /** @Returns the bit depth of each sample */
     int getBitDepth() const;
@@ -71,18 +81,16 @@ public:
     /** @Returns the length in seconds of the audio file based on the number of samples and sample rate */
     double getLengthInSeconds();
     
-    //=============================================================
-    const std::vector<T>& getAudioChannel (int channel) const;
-    
-    const AudioBuffer& getAudioBuffer() const;
-    
-    //=============================================================
-    bool load (std::string filePath);
+    /** Prints a summary of the audio file to the console */
+    void printSummary();
     
 private:
     
     //=============================================================
     bool decodeWaveFile (std::vector<unsigned char>& fileData);
+    
+    //=============================================================
+    bool writeToWaveFile (std::string filePath);
     
     //=============================================================
     void clearAudioBuffer();
@@ -94,6 +102,9 @@ private:
     int getIndexOfString (std::vector<unsigned char>& source, std::string s);
     T sixteenBitIntToSample (int16_t sample);
     T singleByteToSample (unsigned char byte);
+    
+    //=============================================================
+    void addStringToFileData (std::vector<unsigned char>& fileData, std::string s);
     
     //=============================================================
     AudioFileType audioFileType;
