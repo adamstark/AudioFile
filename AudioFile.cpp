@@ -175,7 +175,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
     // FORMAT CHUNK
     int f = indexOfFormatChunk;
     std::string formatChunkID (fileData.begin() + f, fileData.begin() + f + 4);
-    //int32_t subChunk1Size = fourBytesToInt (fileData, f + 4);
+    //int32_t formatChunkSize = fourBytesToInt (fileData, f + 4);
     int16_t audioFormat = twoBytesToInt (fileData, f + 8);
     numChannels = (int) twoBytesToInt (fileData, f + 10);
     sampleRate = (int) fourBytesToInt (fileData, f + 12);
@@ -271,12 +271,91 @@ bool AudioFile<T>::writeToWaveFile (std::string filePath)
 {
     std::vector<unsigned char> fileData;
     
+    int32_t dataChunkSize = getNumSamplesPerChannel() * (numChannels * bitDepth / 8);
+    
     // -----------------------------------------------------------
     // HEADER CHUNK
     addStringToFileData (fileData, "RIFF");
     
-    // finish this
-    assert (false);
+    // The file size in bytes is the header chunk size (4, not counting RIFF and WAVE) + the format
+    // chunk size (24) + the metadata part of the data chunk plus the actual data chunk size
+    int32_t fileSizeInBytes = 4 + 24 + 8 + dataChunkSize;
+    addInt32ToFileData (fileData, fileSizeInBytes);
+    
+    addStringToFileData (fileData, "WAVE");
+    
+    // -----------------------------------------------------------
+    // FORMAT CHUNK
+    addStringToFileData (fileData, "fmt ");
+    addInt32ToFileData (fileData, 16); // format chunk size (16 for PCM)
+    addInt16ToFileData (fileData, 1); // audio format = 1
+    addInt16ToFileData (fileData, (int16_t)numChannels); // num channels
+    addInt32ToFileData (fileData, (int32_t)sampleRate); // sample rate
+    
+    int32_t numBytesPerSecond = (int32_t) ((numChannels * sampleRate * bitDepth) / 8);
+    addInt32ToFileData (fileData, numBytesPerSecond);
+    
+    int16_t numBytesPerBlock = numChannels * (bitDepth / 8);
+    addInt16ToFileData (fileData, numBytesPerBlock);
+    
+    addInt16ToFileData (fileData, (int16_t)bitDepth);
+    
+    // -----------------------------------------------------------
+    // DATA CHUNK
+    addStringToFileData (fileData, "data");
+    addInt32ToFileData (fileData, dataChunkSize);
+    
+    for (int i = 0; i < getNumSamplesPerChannel(); i++)
+    {
+        for (int channel = 0; channel < getNumChannels(); channel++)
+        {
+            if (bitDepth == 8)
+            {
+                // to do
+                assert (false);
+            }
+            else if (bitDepth == 16)
+            {
+                int16_t sampleAsInt = convertSampleToInt16 (audioSampleBuffer[channel][i]);
+                addInt16ToFileData (fileData, sampleAsInt);
+            }
+            else if (bitDepth == 24)
+            {
+                // to do
+                assert (false);
+            }
+        }
+    }
+    
+    // check that the various sizes we put in the metadata are correct
+    if (fileSizeInBytes != (fileData.size() - 8) || dataChunkSize != (getNumSamplesPerChannel() * numChannels * (bitDepth / 8)))
+    {
+        std::cout << "ERROR: couldn't save file to " << filePath << std::endl;
+        return false;
+    }
+    
+    // try to write the file
+    return writeDataToFile (fileData, filePath);
+}
+
+//=============================================================
+template <class T>
+bool AudioFile<T>::writeDataToFile (std::vector<unsigned char>& fileData, std::string filePath)
+{
+    std::ofstream outputFile (filePath, std::ios::binary);
+    
+    if (outputFile.is_open())
+    {
+        for (int i = 0; i < fileData.size(); i++)
+        {
+            char value = (char) fileData[i];
+            outputFile.write (&value, sizeof (char));
+        }
+        
+        outputFile.close();
+        
+        return true;
+    }
     
     return false;
 }
@@ -287,6 +366,42 @@ void AudioFile<T>::addStringToFileData (std::vector<unsigned char>& fileData, st
 {
     for (int i = 0; i < s.length();i++)
         fileData.push_back ((unsigned char) s[i]);
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::addInt32ToFileData (std::vector<unsigned char>& fileData, int32_t i)
+{
+    unsigned char bytes[4];
+    
+    bytes[3] = (i >> 24) & 0xFF;
+    bytes[2] = (i >> 16) & 0xFF;
+    bytes[1] = (i >> 8) & 0xFF;
+    bytes[0] = i & 0xFF;
+    
+    for (int i = 0; i < 4; i++)
+        fileData.push_back (bytes[i]);
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::addInt16ToFileData (std::vector<unsigned char>& fileData, int16_t i)
+{
+    unsigned char bytes[2];
+    
+    bytes[1] = (i >> 8) & 0xFF;
+    bytes[0] = i & 0xFF;
+    
+    fileData.push_back (bytes[0]);
+    fileData.push_back (bytes[1]);
+}
+
+//=============================================================
+template <class T>
+int16_t AudioFile<T>::convertSampleToInt16 (T sample)
+{
+    int16_t sampleAsInt = sample * (T)32768.;
+    return sampleAsInt;
 }
 
 //=============================================================

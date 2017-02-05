@@ -102,9 +102,15 @@ private:
     int getIndexOfString (std::vector<unsigned char>& source, std::string s);
     T sixteenBitIntToSample (int16_t sample);
     T singleByteToSample (unsigned char byte);
+    int16_t convertSampleToInt16 (T sample);
     
     //=============================================================
     void addStringToFileData (std::vector<unsigned char>& fileData, std::string s);
+    void addInt32ToFileData (std::vector<unsigned char>& fileData, int32_t i);
+    void addInt16ToFileData (std::vector<unsigned char>& fileData, int16_t i);
+    
+    //=============================================================
+    bool writeDataToFile (std::vector<unsigned char>& fileData, std::string filePath);
     
     //=============================================================
     AudioFileType audioFileType;
