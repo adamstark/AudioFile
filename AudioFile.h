@@ -27,7 +27,6 @@
 #include <vector>
 #include <assert.h>
 
-
 //=============================================================
 template <class T>
 class AudioFile
@@ -42,7 +41,7 @@ public:
         Error,
         Unknown,
         NotLoaded,
-        Wav
+        Wave
     };
     
     //=============================================================
@@ -84,13 +83,19 @@ public:
     /** Prints a summary of the audio file to the console */
     void printSummary();
     
+    //=============================================================
+    
+    void setBitDepth (int numBitsPerSample);
+    
+    void setSampleRate (int newSampleRate);
+    
 private:
     
     //=============================================================
     bool decodeWaveFile (std::vector<unsigned char>& fileData);
     
     //=============================================================
-    bool writeToWaveFile (std::string filePath);
+    bool saveToWaveFile (std::string filePath);
     
     //=============================================================
     void clearAudioBuffer();
@@ -102,7 +107,6 @@ private:
     int getIndexOfString (std::vector<unsigned char>& source, std::string s);
     T sixteenBitIntToSample (int16_t sample);
     T singleByteToSample (unsigned char byte);
-    int16_t convertSampleToInt16 (T sample);
     
     //=============================================================
     void addStringToFileData (std::vector<unsigned char>& fileData, std::string s);

@@ -100,6 +100,20 @@ void AudioFile<T>::printSummary()
 
 //=============================================================
 template <class T>
+void AudioFile<T>::setBitDepth (int numBitsPerSample)
+{
+    bitDepth = numBitsPerSample;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::setSampleRate (int newSampleRate)
+{
+    sampleRate = newSampleRate;
+}
+
+//=============================================================
+template <class T>
 const std::vector<T>& AudioFile<T>::getAudioChannel (int channel) const
 {
     // If you've hit this, it seems you are requesting an audio channel
@@ -137,7 +151,7 @@ bool AudioFile<T>::load (std::string filePath)
     // get audio file type
     audioFileType = determineAudioFileType (fileData);
     
-    if (audioFileType == AudioFileType::Wav)
+    if (audioFileType == AudioFileType::Wave)
     {
         return decodeWaveFile (fileData);
     }
@@ -244,7 +258,14 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
             }
             else if (bitDepth == 24)
             {
-                assert (false);
+                int32_t sampleAsInt = 0;
+                sampleAsInt = (fileData[sampleIndex + 2] << 16) | (fileData[sampleIndex + 1] << 8) | fileData[sampleIndex];
+                
+                if (sampleAsInt & 0x800000) //  if the 24th bit is set, this is a negative number in 24-bit world
+                    sampleAsInt = sampleAsInt | ~0xFFFFFF; // so make sure sign is extended to the 32 bit float
+
+                T sample = (T)sampleAsInt / (T)8388608.;
+                audioSampleBuffer[channel].push_back (sample);
             }
             else
             {
@@ -260,14 +281,14 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
 template <class T>
 bool AudioFile<T>::save (std::string filePath)
 {
-    return writeToWaveFile (filePath);
+    return saveToWaveFile (filePath);
     
     return false;
 }
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::writeToWaveFile (std::string filePath)
+bool AudioFile<T>::saveToWaveFile (std::string filePath)
 {
     std::vector<unsigned char> fileData;
     
@@ -311,18 +332,27 @@ bool AudioFile<T>::writeToWaveFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                // to do
-                assert (false);
+                int32_t sampleAsInt = ((audioSampleBuffer[channel][i] * (T)128.) + 128.);
+                unsigned char byte = (unsigned char)sampleAsInt;
+                fileData.push_back (byte);
             }
             else if (bitDepth == 16)
             {
-                int16_t sampleAsInt = convertSampleToInt16 (audioSampleBuffer[channel][i]);
+                int16_t sampleAsInt = (int16_t) (audioSampleBuffer[channel][i] * (T)32768.);
                 addInt16ToFileData (fileData, sampleAsInt);
             }
             else if (bitDepth == 24)
             {
-                // to do
-                assert (false);
+                int32_t sampleAsIntAgain = (int32_t) (audioSampleBuffer[channel][i] * (T)8388608.);
+                
+                unsigned char bytes[3];
+                bytes[2] = (unsigned char) (sampleAsIntAgain >> 16) & 0xFF;
+                bytes[1] = (unsigned char) (sampleAsIntAgain >>  8) & 0xFF;
+                bytes[0] = (unsigned char) sampleAsIntAgain & 0xFF;
+                
+                fileData.push_back (bytes[0]);
+                fileData.push_back (bytes[1]);
+                fileData.push_back (bytes[2]);
             }
         }
     }
@@ -398,14 +428,6 @@ void AudioFile<T>::addInt16ToFileData (std::vector<unsigned char>& fileData, int
 
 //=============================================================
 template <class T>
-int16_t AudioFile<T>::convertSampleToInt16 (T sample)
-{
-    int16_t sampleAsInt = sample * (T)32768.;
-    return sampleAsInt;
-}
-
-//=============================================================
-template <class T>
 void AudioFile<T>::clearAudioBuffer()
 {
     for (int i = 0; i < audioSampleBuffer.size();i++)
@@ -423,7 +445,7 @@ typename AudioFile<T>::AudioFileType AudioFile<T>::determineAudioFileType (std::
     std::string header (fileData.begin(), fileData.begin() + 4);
     
     if (header == "RIFF")
-        return AudioFileType::Wav;
+        return AudioFileType::Wave;
     else
         return AudioFileType::Unknown;
 }
