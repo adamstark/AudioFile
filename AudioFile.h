@@ -47,8 +47,14 @@ public:
     AudioFile();
         
     //=============================================================
+    /** Loads an audio file from a given file path.
+     * @Returns true if the file was successfully loaded
+     */
     bool load (std::string filePath);
     
+    /** Saves an audio file to a given file path.
+     * @Returns true if the file was successfully saved
+     */
     bool save (std::string filePath);
         
     //=============================================================
