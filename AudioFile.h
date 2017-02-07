@@ -37,7 +37,6 @@ public:
     enum class AudioFileType
     {
         Error,
-        Unknown,
         NotLoaded,
         Wave
     };
@@ -94,7 +93,7 @@ public:
     /** A vector of vectors holding the audio samples for the AudioFile. You can 
      * access the samples by channel and then by sample index, i.e:
      *
-     * samples[channel][sampleIndex]
+     *      samples[channel][sampleIndex]
      */
     std::vector<std::vector<T> > samples;
     

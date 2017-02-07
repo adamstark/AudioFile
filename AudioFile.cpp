@@ -31,6 +31,7 @@ AudioFile<T>::AudioFile()
     bitDepth = 16;
     sampleRate = 44100;
     numChannels = 1;
+    audioFileType = AudioFileType::NotLoaded;
 }
 
 //=============================================================
@@ -429,7 +430,7 @@ typename AudioFile<T>::AudioFileType AudioFile<T>::determineAudioFileType (std::
     if (header == "RIFF")
         return AudioFileType::Wave;
     else
-        return AudioFileType::Unknown;
+        return AudioFileType::Error;
 }
 
 //=============================================================
