@@ -33,8 +33,6 @@ class AudioFile
 {
 public:
     
-    typedef std::vector<std::vector<T>> AudioBuffer;
-    
     //=============================================================
     enum class AudioFileType
     {
@@ -47,17 +45,12 @@ public:
     //=============================================================
     /** Constructor */
     AudioFile();
-    
+        
     //=============================================================
     bool load (std::string filePath);
     
     bool save (std::string filePath);
-    
-    //=============================================================
-    const std::vector<T>& getAudioChannel (int channel) const;
-    
-    const AudioBuffer& getAudioBuffer() const;
-    
+        
     //=============================================================
     /** @Returns the sample rate */
     int getSampleRate() const;
@@ -85,9 +78,19 @@ public:
     
     //=============================================================
     
+    /** Sets the bit depth for the audio file. If you use the save() function, this bit depth rate will be used */
     void setBitDepth (int numBitsPerSample);
     
+    /** Sets the sample rate for the audio file. If you use the save() function, this sample rate will be used */
     void setSampleRate (int newSampleRate);
+    
+    //=============================================================
+    /** A vector of vectors holding the audio samples for the AudioFile. You can 
+     * access the samples by channel and then by sample index, i.e:
+     *
+     * samples[channel][sampleIndex]
+     */
+    std::vector<std::vector<T> > samples;
     
 private:
     
@@ -118,7 +121,7 @@ private:
     
     //=============================================================
     AudioFileType audioFileType;
-    std::vector<std::vector<T>> audioSampleBuffer;
+    
     int sampleRate;
     int numChannels;
     int bitDepth;

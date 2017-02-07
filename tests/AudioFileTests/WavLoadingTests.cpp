@@ -44,13 +44,11 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_8bit_44100)
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_8bit_44100::sampleRate);
     BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_8bit_44100::testBuffer.size());
     
-    const std::vector<std::vector<double>>& audioBuffer = audioFile.getAudioBuffer();
-    
     for (int i = 0; i < wav_stereo_8bit_44100::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
-            BOOST_CHECK_CLOSE (audioBuffer[k][i], wav_stereo_8bit_44100::testBuffer[k][i], 0.00001);
+            BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_stereo_8bit_44100::testBuffer[k][i], 0.00001);
         }
     }
 }
@@ -67,13 +65,11 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_16bit_44100)
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
     BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_16bit_44100::testBuffer.size());
     
-    const std::vector<std::vector<double>>& audioBuffer = audioFile.getAudioBuffer();
-    
     for (int i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
-            BOOST_CHECK_CLOSE (audioBuffer[k][i], wav_stereo_16bit_44100::testBuffer[k][i], 0.00001);
+            BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_stereo_16bit_44100::testBuffer[k][i], 0.00001);
         }
     }
 }
@@ -90,13 +86,11 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_24bit_44100)
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_24bit_44100::sampleRate);
     BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_24bit_44100::testBuffer.size());
     
-    const std::vector<std::vector<double>>& audioBuffer = audioFile.getAudioBuffer();
-    
     for (int i = 0; i < wav_stereo_24bit_44100::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
-            BOOST_CHECK_CLOSE (audioBuffer[k][i], wav_stereo_24bit_44100::testBuffer[k][i], 0.00001);
+            BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_stereo_24bit_44100::testBuffer[k][i], 0.00001);
         }
     }
 }
@@ -119,13 +113,11 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_16bit_44100)
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_mono_16bit_44100::sampleRate);
     BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_mono_16bit_44100::numChannels);
     
-    const std::vector<std::vector<double>>& audioBuffer = audioFile.getAudioBuffer();
-    
     for (int i = 0; i < wav_mono_16bit_44100::testBuffer.size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
-            BOOST_CHECK_CLOSE (audioBuffer[k][i], wav_mono_16bit_44100::testBuffer[i], 0.00001);
+            BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_mono_16bit_44100::testBuffer[i], 0.00001);
         }
     }
 }
@@ -148,13 +140,11 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_8bit_48000)
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_8bit_48000::sampleRate);
     BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_8bit_48000::testBuffer.size());
     
-    const std::vector<std::vector<double>>& audioBuffer = audioFile.getAudioBuffer();
-    
     for (int i = 0; i < wav_stereo_8bit_48000::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
-            BOOST_CHECK_CLOSE (audioBuffer[k][i], wav_stereo_8bit_48000::testBuffer[k][i], 0.001);
+            BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_stereo_8bit_48000::testBuffer[k][i], 0.001);
         }
     }
 }
@@ -171,13 +161,11 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_16bit_48000)
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_16bit_48000::sampleRate);
     BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_16bit_48000::testBuffer.size());
     
-    const std::vector<std::vector<double>>& audioBuffer = audioFile.getAudioBuffer();
-    
     for (int i = 0; i < wav_stereo_16bit_48000::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
-            BOOST_CHECK_CLOSE (audioBuffer[k][i], wav_stereo_16bit_48000::testBuffer[k][i], 0.001);
+            BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_stereo_16bit_48000::testBuffer[k][i], 0.001);
         }
     }
 }
@@ -194,13 +182,11 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_24bit_48000)
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_24bit_48000::sampleRate);
     BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_24bit_48000::testBuffer.size());
     
-    const std::vector<std::vector<double>>& audioBuffer = audioFile.getAudioBuffer();
-    
     for (int i = 0; i < wav_stereo_24bit_48000::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
-            BOOST_CHECK_CLOSE (audioBuffer[k][i], wav_stereo_24bit_48000::testBuffer[k][i], 0.00001);
+            BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_stereo_24bit_48000::testBuffer[k][i], 0.00001);
         }
     }
 }
@@ -223,13 +209,11 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_16bit_48000)
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_mono_16bit_48000::sampleRate);
     BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_mono_16bit_48000::numChannels);
     
-    const std::vector<std::vector<double>>& audioBuffer = audioFile.getAudioBuffer();
-    
     for (int i = 0; i < wav_mono_16bit_48000::testBuffer.size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
-            BOOST_CHECK_CLOSE (audioBuffer[k][i], wav_mono_16bit_48000::testBuffer[i], 0.00001);
+            BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_mono_16bit_48000::testBuffer[i], 0.00001);
         }
     }
 }

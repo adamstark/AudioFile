@@ -72,8 +72,8 @@ int AudioFile<T>::getBitDepth() const
 template <class T>
 int AudioFile<T>::getNumSamplesPerChannel() const
 {
-    if (audioSampleBuffer.size() > 0)
-        return (int) audioSampleBuffer[0].size();
+    if (samples.size() > 0)
+        return (int) samples[0].size();
     else
         return 0;
 }
@@ -110,24 +110,6 @@ template <class T>
 void AudioFile<T>::setSampleRate (int newSampleRate)
 {
     sampleRate = newSampleRate;
-}
-
-//=============================================================
-template <class T>
-const std::vector<T>& AudioFile<T>::getAudioChannel (int channel) const
-{
-    // If you've hit this, it seems you are requesting an audio channel
-    // that does not exist... Perhaps check using getNumChannels()
-    assert (channel >= 0 && channel < getNumChannels());
-    
-    return audioSampleBuffer[channel];
-}
-
-//=============================================================
-template <class T>
-const typename AudioFile<T>::AudioBuffer& AudioFile<T>::getAudioBuffer() const
-{
-    return audioSampleBuffer;
 }
 
 //=============================================================
@@ -237,7 +219,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
     int samplesStartIndex = indexOfDataChunk + 8;
     
     clearAudioBuffer();
-    audioSampleBuffer.resize (numChannels);
+    samples.resize (numChannels);
     
     for (int i = 0; i < numSamples; i++)
     {
@@ -248,13 +230,13 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
             if (bitDepth == 8)
             {
                 T sample = singleByteToSample (fileData[sampleIndex]);
-                audioSampleBuffer[channel].push_back (sample);
+                samples[channel].push_back (sample);
             }
             else if (bitDepth == 16)
             {
                 int16_t sampleAsInt = twoBytesToInt (fileData, sampleIndex);
                 T sample = sixteenBitIntToSample (sampleAsInt);
-                audioSampleBuffer[channel].push_back (sample);
+                samples[channel].push_back (sample);
             }
             else if (bitDepth == 24)
             {
@@ -265,7 +247,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<unsigned char>& fileData)
                     sampleAsInt = sampleAsInt | ~0xFFFFFF; // so make sure sign is extended to the 32 bit float
 
                 T sample = (T)sampleAsInt / (T)8388608.;
-                audioSampleBuffer[channel].push_back (sample);
+                samples[channel].push_back (sample);
             }
             else
             {
@@ -332,18 +314,18 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                int32_t sampleAsInt = ((audioSampleBuffer[channel][i] * (T)128.) + 128.);
+                int32_t sampleAsInt = ((samples[channel][i] * (T)128.) + 128.);
                 unsigned char byte = (unsigned char)sampleAsInt;
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
             {
-                int16_t sampleAsInt = (int16_t) (audioSampleBuffer[channel][i] * (T)32768.);
+                int16_t sampleAsInt = (int16_t) (samples[channel][i] * (T)32768.);
                 addInt16ToFileData (fileData, sampleAsInt);
             }
             else if (bitDepth == 24)
             {
-                int32_t sampleAsIntAgain = (int32_t) (audioSampleBuffer[channel][i] * (T)8388608.);
+                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)8388608.);
                 
                 unsigned char bytes[3];
                 bytes[2] = (unsigned char) (sampleAsIntAgain >> 16) & 0xFF;
@@ -430,12 +412,12 @@ void AudioFile<T>::addInt16ToFileData (std::vector<unsigned char>& fileData, int
 template <class T>
 void AudioFile<T>::clearAudioBuffer()
 {
-    for (int i = 0; i < audioSampleBuffer.size();i++)
+    for (int i = 0; i < samples.size();i++)
     {
-        audioSampleBuffer[i].clear();
+        samples[i].clear();
     }
     
-    audioSampleBuffer.clear();
+    samples.clear();
 }
 
 //=============================================================
