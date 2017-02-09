@@ -28,19 +28,19 @@
 #include <assert.h>
 
 //=============================================================
-enum class AudioFileType
-{
-    Error,
-    NotLoaded,
-    Wave,
-    Aiff
-};
-
-//=============================================================
 template <class T>
 class AudioFile
 {
 public:
+    
+    //=============================================================
+    enum class AudioFileType
+    {
+        Error,
+        NotLoaded,
+        Wave,
+        Aiff
+    };
     
     //=============================================================
     /** Constructor */
@@ -55,7 +55,7 @@ public:
     /** Saves an audio file to a given file path.
      * @Returns true if the file was successfully saved
      */
-    bool save (std::string filePath, AudioFileType format = AudioFileType::Wave);
+    bool save (std::string filePath);
         
     //=============================================================
     /** @Returns the sample rate */
@@ -114,7 +114,6 @@ private:
     
     //=============================================================
     bool saveToWaveFile (std::string filePath);
-    bool saveToAiffFile (std::string filePath);
     
     //=============================================================
     void clearAudioBuffer();
@@ -126,12 +125,11 @@ private:
     T sixteenBitIntToSample (int16_t sample);
     int getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
     bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
-    void addSampleRateToAiffData (std::vector<uint8_t>& fileData, int sampleRate);
     
     //=============================================================
     void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
-    void addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i, Endianness endianness = Endianness::LittleEndian);
-    void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i, Endianness endianness = Endianness::LittleEndian);
+    void addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i);
+    void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i);
     
     //=============================================================
     bool writeDataToFile (std::vector<uint8_t>& fileData, std::string filePath);
