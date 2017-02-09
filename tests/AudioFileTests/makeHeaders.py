@@ -6,10 +6,10 @@ wavFiles = []
 
 #==================================================================
 def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, fileFormat):
-	print fileFormat
+
 	fileName = fileName.split (".")[0]
 	variableName = fileName
-
+	print fileName, bitRate
 	numSamples = audioSignal.shape[0]
 
 	header = ""
@@ -56,8 +56,7 @@ def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, fileFor
 
 	header += "\n\n"
 	header += "}; // end namespace"
-	if fileFormat == "aif":
-		print "yeah"
+
 	text_file = open ("test-headers/" + variableName + ".h", "w")
 	text_file.write (header)
 	text_file.close()
@@ -82,15 +81,16 @@ for fileName in os.listdir("test-audio"):
       	else:
       		assert (False)
 
-      	print fileName
+      	#print fileName, enc
 
-      	if enc == "pcmu8":
+      	if enc == "pcmu8" or enc == "pcms8":
       		makeHeader (fileName, audioSignal, numChannels, 8, fs, fileFormat)
       	elif enc == "pcm16":
       		makeHeader (fileName, audioSignal, numChannels, 16, fs, fileFormat)
       	elif enc == "pcm24":
       		makeHeader (fileName, audioSignal, numChannels, 24, fs, fileFormat)
       	else:
+      		print "Unknown bit depth:", enc
       		assert (False)
 	
 

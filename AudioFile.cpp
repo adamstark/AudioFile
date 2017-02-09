@@ -351,9 +351,9 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     
     int numBytesPerSample = bitDepth / 8;
     int numBytesPerFrame = numBytesPerSample * numChannels;
-    int totalNumAudioSampleBytes = numSamplesPerChannel * numBytesPerSample;
+    int totalNumAudioSampleBytes = numSamplesPerChannel * numBytesPerFrame;
     int samplesStartIndex = s + 16 + (int)offset;
-    
+        
     // sanity check the data
     if ((soundDataChunkSize - 8) != totalNumAudioSampleBytes || totalNumAudioSampleBytes > (fileData.size() - samplesStartIndex))
     {
@@ -372,7 +372,8 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
             
             if (bitDepth == 8)
             {
-                T sample = singleByteToSample (fileData[sampleIndex]);
+                int8_t sampleAsSigned8Bit = (int8_t)fileData[sampleIndex];
+                T sample = (T)sampleAsSigned8Bit / (T)128.;
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 16)

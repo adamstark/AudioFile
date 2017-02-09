@@ -108,6 +108,7 @@ private:
     };
     
     //=============================================================
+    AudioFileType determineAudioFileType (std::vector<uint8_t>& fileData);
     bool decodeWaveFile (std::vector<uint8_t>& fileData);
     bool decodeAiffFile (std::vector<uint8_t>& fileData);
     
@@ -118,7 +119,6 @@ private:
     void clearAudioBuffer();
     
     //=============================================================
-    AudioFileType determineAudioFileType (std::vector<uint8_t>& fileData);
     int32_t fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int getIndexOfString (std::vector<uint8_t>& source, std::string s);
@@ -137,7 +137,6 @@ private:
     
     //=============================================================
     AudioFileType audioFileType;
-    
     int sampleRate;
     int bitDepth;
 };
