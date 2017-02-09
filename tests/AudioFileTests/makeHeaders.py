@@ -1,12 +1,12 @@
-from scikits.audiolab import wavread
+from scikits.audiolab import wavread, aiffread
 import sys
 import os
 
 wavFiles = []
 
 #==================================================================
-def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, format):
-
+def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, fileFormat):
+	print fileFormat
 	fileName = fileName.split (".")[0]
 	variableName = fileName
 
@@ -56,31 +56,42 @@ def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, format)
 
 	header += "\n\n"
 	header += "}; // end namespace"
-
+	if fileFormat == "aif":
+		print "yeah"
 	text_file = open ("test-headers/" + variableName + ".h", "w")
 	text_file.write (header)
 	text_file.close()
 
 # get all wav files
 for fileName in os.listdir("test-audio"):
-    if fileName.endswith(".wav"):
+    if fileName.endswith(".wav") or fileName.endswith(".aif"):
       	
-		audioSignal,  fs,  enc  =  wavread ("test-audio/" + fileName)
-		if len (audioSignal.shape) == 1:
-			numChannels = 1
-		elif len (audioSignal.shape) == 2:
-			numChannels = 2
-		else:
-			assert (False)
+      	if fileName.endswith(".wav"):
+      		audioSignal,  fs,  enc  =  wavread ("test-audio/" + fileName)
+      		fileFormat = "wav"
+      	elif fileName.endswith(".aif"):
+      		audioSignal,  fs,  enc  =  aiffread ("test-audio/" + fileName)
+      		fileFormat = "aif"
+      	else:
+      		assert (False) 
 
-		if enc == "pcmu8":
-			makeHeader (fileName, audioSignal, numChannels, 8, fs, "wav")
-		elif enc == "pcm16":
-			makeHeader (fileName, audioSignal, numChannels, 16, fs, "wav")
-		elif enc == "pcm24":
-			makeHeader (fileName, audioSignal, numChannels, 24, fs, "wav")
-		else:
-			assert (False)
+      	if len (audioSignal.shape) == 1:
+      		numChannels = 1
+      	elif len (audioSignal.shape) == 2:
+      		numChannels = 2
+      	else:
+      		assert (False)
+
+      	print fileName
+
+      	if enc == "pcmu8":
+      		makeHeader (fileName, audioSignal, numChannels, 8, fs, fileFormat)
+      	elif enc == "pcm16":
+      		makeHeader (fileName, audioSignal, numChannels, 16, fs, fileFormat)
+      	elif enc == "pcm24":
+      		makeHeader (fileName, audioSignal, numChannels, 24, fs, fileFormat)
+      	else:
+      		assert (False)
 	
 
 

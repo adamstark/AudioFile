@@ -38,7 +38,8 @@ public:
     {
         Error,
         NotLoaded,
-        Wave
+        Wave,
+        Aiff
     };
     
     //=============================================================
@@ -100,7 +101,15 @@ public:
 private:
     
     //=============================================================
-    bool decodeWaveFile (std::vector<unsigned char>& fileData);
+    enum class Endianness
+    {
+        LittleEndian,
+        BigEndian
+    };
+    
+    //=============================================================
+    bool decodeWaveFile (std::vector<uint8_t>& fileData);
+    bool decodeAiffFile (std::vector<uint8_t>& fileData);
     
     //=============================================================
     bool saveToWaveFile (std::string filePath);
@@ -109,29 +118,28 @@ private:
     void clearAudioBuffer();
     
     //=============================================================
-    AudioFileType determineAudioFileType (std::vector<unsigned char>& fileData);
-    int32_t fourBytesToInt (std::vector<unsigned char>& source, int startIndex);
-    int16_t twoBytesToInt (std::vector<unsigned char>& source, int startIndex);
-    int getIndexOfString (std::vector<unsigned char>& source, std::string s);
+    AudioFileType determineAudioFileType (std::vector<uint8_t>& fileData);
+    int32_t fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
+    int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
+    int getIndexOfString (std::vector<uint8_t>& source, std::string s);
     T sixteenBitIntToSample (int16_t sample);
-    T singleByteToSample (unsigned char byte);
+    T singleByteToSample (uint8_t byte);
+    int getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
+    bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
     
     //=============================================================
-    void addStringToFileData (std::vector<unsigned char>& fileData, std::string s);
-    void addInt32ToFileData (std::vector<unsigned char>& fileData, int32_t i);
-    void addInt16ToFileData (std::vector<unsigned char>& fileData, int16_t i);
+    void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
+    void addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i);
+    void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i);
     
     //=============================================================
-    bool writeDataToFile (std::vector<unsigned char>& fileData, std::string filePath);
+    bool writeDataToFile (std::vector<uint8_t>& fileData, std::string filePath);
     
     //=============================================================
     AudioFileType audioFileType;
     
     int sampleRate;
-    int numChannels;
     int bitDepth;
 };
-
-
 
 #endif /* AudioFile_h */
