@@ -168,6 +168,8 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_16bit_48000)
             BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_stereo_16bit_48000::testBuffer[k][i], 0.001);
         }
     }
+    
+    audioFile.save ("hiihi.aif", AudioFileType::Aiff);
 }
 
 //=============================================================
