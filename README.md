@@ -10,6 +10,7 @@ A simple C++ library for reading and writing audio files.
 Current supported formats:
 
 * WAV
+* AIFF
 
 Author
 ------
