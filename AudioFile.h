@@ -28,7 +28,11 @@
 #include <assert.h>
 
 //=============================================================
-enum class AudioFileType
+/** The different types of audio file, plus some other types to 
+ * indicate a failure to load a file, or that one hasn't been
+ * loaded yet
+ */
+enum class AudioFileFormat
 {
     Error,
     NotLoaded,
@@ -55,7 +59,7 @@ public:
     /** Saves an audio file to a given file path.
      * @Returns true if the file was successfully saved
      */
-    bool save (std::string filePath, AudioFileType format = AudioFileType::Wave);
+    bool save (std::string filePath, AudioFileFormat format = AudioFileFormat::Wave);
         
     //=============================================================
     /** @Returns the sample rate */
@@ -108,7 +112,7 @@ private:
     };
     
     //=============================================================
-    AudioFileType determineAudioFileType (std::vector<uint8_t>& fileData);
+    AudioFileFormat determineAudioFileFormat (std::vector<uint8_t>& fileData);
     bool decodeWaveFile (std::vector<uint8_t>& fileData);
     bool decodeAiffFile (std::vector<uint8_t>& fileData);
     
@@ -137,7 +141,7 @@ private:
     bool writeDataToFile (std::vector<uint8_t>& fileData, std::string filePath);
     
     //=============================================================
-    AudioFileType audioFileType;
+    AudioFileFormat audioFileFormat;
     int sampleRate;
     int bitDepth;
 };

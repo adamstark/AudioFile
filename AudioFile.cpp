@@ -54,7 +54,7 @@ AudioFile<T>::AudioFile()
     sampleRate = 44100;
     samples.resize (1);
     samples[0].resize (0);
-    audioFileType = AudioFileType::NotLoaded;
+    audioFileFormat = AudioFileFormat::NotLoaded;
 }
 
 //=============================================================
@@ -154,14 +154,14 @@ bool AudioFile<T>::load (std::string filePath)
     std::istream_iterator<uint8_t> begin (file), end;
     std::vector<uint8_t> fileData (begin, end);
     
-    // get audio file type
-    audioFileType = determineAudioFileType (fileData);
+    // get audio file format
+    audioFileFormat = determineAudioFileFormat (fileData);
     
-    if (audioFileType == AudioFileType::Wave)
+    if (audioFileFormat == AudioFileFormat::Wave)
     {
         return decodeWaveFile (fileData);
     }
-    else if (audioFileType == AudioFileType::Aiff)
+    else if (audioFileFormat == AudioFileFormat::Aiff)
     {
         return decodeAiffFile (fileData);
     }
@@ -567,13 +567,13 @@ void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, int 
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::save (std::string filePath, AudioFileType format)
+bool AudioFile<T>::save (std::string filePath, AudioFileFormat format)
 {
-    if (format == AudioFileType::Wave)
+    if (format == AudioFileFormat::Wave)
     {
         return saveToWaveFile (filePath);
     }
-    else if (format == AudioFileType::Aiff)
+    else if (format == AudioFileFormat::Aiff)
     {
         return saveToAiffFile (filePath);
     }
@@ -841,16 +841,16 @@ void AudioFile<T>::clearAudioBuffer()
 
 //=============================================================
 template <class T>
-AudioFileType AudioFile<T>::determineAudioFileType (std::vector<uint8_t>& fileData)
+AudioFileFormat AudioFile<T>::determineAudioFileFormat (std::vector<uint8_t>& fileData)
 {
     std::string header (fileData.begin(), fileData.begin() + 4);
     
     if (header == "RIFF")
-        return AudioFileType::Wave;
+        return AudioFileFormat::Wave;
     else if (header == "FORM")
-        return AudioFileType::Aiff;
+        return AudioFileFormat::Aiff;
     else
-        return AudioFileType::Error;
+        return AudioFileFormat::Error;
 }
 
 //=============================================================
