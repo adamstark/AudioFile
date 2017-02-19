@@ -22,7 +22,55 @@ AudioFile is written and maintained by Adam Stark.
 Usage
 -----
 
-TO DO
+#### Create an AudioFile object:
+
+	AudioFile<double> audioFile;
+	
+#### Load an audio file:
+
+	audioFile.load ("/path/to/my/audiofile.wav");
+	
+#### Get some information about the loaded audio:
+
+	int sampleRate = audioFile.getSampleRate()
+	int bitDepth = audioFile.getBitDepth();
+	
+	int numSamples = audioFile.getNumSamplesPerChannel();
+	double lengthInSeconds = audioFile.getLengthInSeconds();
+	
+	int numChannels = audioFile.getNumChannels();
+	bool isMono = audioFile.isMono();
+	bool isStereo = audioFile.isStereo();
+	
+#### Access the samples directly:
+
+	int channel = 0;
+	int numSamples = audioFile.getNumSamplesPerChannel();
+
+	for (int i = 0; i < numSamples; i++)
+	{
+		audioFile.samples[channel][i]
+	}
+	
+#### Save the audio file to disk
+	
+	// Wave file (implicit)
+	audioFile.save ("path/to/desired/audioFile.wav");
+	
+	// Wave file (explicit)
+	audioFile.save ("path/to/desired/audioFile.wav", AudioFileFormat::Wave);
+	
+	// Aiff file
+	audioFile.save ("path/to/desired/audioFile.aif", AudioFileFormat::Aiff);
+
+	
+
+
+A Bit More Detail
+-----------------
+
+...
+
 
 License
 -------

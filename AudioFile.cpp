@@ -22,7 +22,6 @@
 
 #include "AudioFile.h"
 #include <fstream>
-#include <iterator>
 #include <unordered_map>
 
 //=============================================================
