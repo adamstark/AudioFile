@@ -575,7 +575,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
             }
             else
             {
-                assert (false);
+                assert (false && "Trying to write a file with unsupported bit depth");
             }
         }
     }
@@ -659,7 +659,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
             }
             else
             {
-                assert (false);
+                assert (false && "Trying to write a file with unsupported bit depth");
             }
         }
     }
