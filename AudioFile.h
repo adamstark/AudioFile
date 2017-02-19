@@ -46,6 +46,8 @@ class AudioFile
 {
 public:
     
+    typedef std::vector<std::vector<T> > AudioBuffer;
+    
     //=============================================================
     /** Constructor */
     AudioFile();
@@ -88,10 +90,19 @@ public:
     
     //=============================================================
     
+    bool setAudioBuffer (AudioBuffer& newBuffer);
+    
+    /** Sets the audio buffer to a given number of channels and number of samples per channel. This will try to preserve
+     * the existing audio, adding zeros to any new channels or new samples in a given channel.
+     */
     void setAudioBufferSize (int numChannels, int numSamples);
     
+    /** Sets the number of samples per channel in the audio buffer. This will try to preserve
+     * the existing audio, adding zeros to new samples in a given channel if the number of samples is increased.
+     */
     void setNumSamplesPerChannel (int numSamples);
     
+    /** Sets the number of channels. New channels will have the correct number of samples and be initialised to zero */
     void setNumChannels (int numChannels);
     
     /** Sets the bit depth for the audio file. If you use the save() function, this bit depth rate will be used */
@@ -106,7 +117,7 @@ public:
      *
      *      samples[channel][sampleIndex]
      */
-    std::vector<std::vector<T> > samples;
+    AudioBuffer samples;
     
 private:
     

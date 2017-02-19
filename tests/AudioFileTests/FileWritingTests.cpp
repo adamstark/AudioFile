@@ -52,7 +52,7 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
 BOOST_AUTO_TEST_SUITE (WritingTests)
 
 //=============================================================
-BOOST_AUTO_TEST_CASE (WritingTest1)
+BOOST_AUTO_TEST_CASE (WritingTest_WriteSineToneToManyFormats)
 {
     std::vector<int> sampleRates = {22050, 44100, 48000, 96000};
     std::vector<int> bitDepths = {8, 16, 24};
@@ -73,6 +73,20 @@ BOOST_AUTO_TEST_CASE (WritingTest1)
         }
     }
 }
+
+//=============================================================
+BOOST_AUTO_TEST_CASE (WritingTest_WriteFromCopiedSampleBuffer)
+{
+    AudioFile<float> audioFile1, audioFile2;
+    
+    bool loadedOK = audioFile1.load ("test-audio/wav_stereo_16bit_44100.wav");
+    BOOST_CHECK (loadedOK);
+    
+    audioFile2.setAudioBuffer (audioFile1.samples);
+    audioFile2.save("audio-write-tests/copied_audio_file.aif", AudioFileFormat::Aiff);
+}
+                      
+
 BOOST_AUTO_TEST_SUITE_END()
 
 #endif

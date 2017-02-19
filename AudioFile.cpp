@@ -126,6 +126,38 @@ void AudioFile<T>::printSummary() const
 
 //=============================================================
 template <class T>
+bool AudioFile<T>::setAudioBuffer (AudioBuffer& newBuffer)
+{
+    int numChannels = (int)newBuffer.size();
+    
+    if (numChannels <= 0)
+    {
+        assert (false && "The buffer your are trying to use has no channels");
+        return false;
+    }
+    
+    int numSamples = (int)newBuffer[0].size();
+    
+    // set the number of channels
+    samples.resize (newBuffer.size());
+    
+    for (int k = 0; k < getNumChannels(); k++)
+    {
+        assert (newBuffer[k].size() == numSamples);
+        
+        samples[k].resize (numSamples);
+        
+        for (int i = 0; i < numSamples; i++)
+        {
+            samples[k][i] = newBuffer[k][i];
+        }
+    }
+    
+    return true;
+}
+
+//=============================================================
+template <class T>
 void AudioFile<T>::setAudioBufferSize (int numChannels, int numSamples)
 {
     samples.resize (numChannels);
@@ -576,6 +608,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
             else
             {
                 assert (false && "Trying to write a file with unsupported bit depth");
+                return false;
             }
         }
     }
@@ -660,6 +693,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
             else
             {
                 assert (false && "Trying to write a file with unsupported bit depth");
+                return false;
             }
         }
     }
