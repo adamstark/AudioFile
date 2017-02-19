@@ -81,12 +81,18 @@ public:
     int getNumSamplesPerChannel() const;
     
     /** @Returns the length in seconds of the audio file based on the number of samples and sample rate */
-    double getLengthInSeconds();
+    double getLengthInSeconds() const;
     
     /** Prints a summary of the audio file to the console */
-    void printSummary();
+    void printSummary() const;
     
     //=============================================================
+    
+    void setAudioBufferSize (int numChannels, int numSamples);
+    
+    void setNumSamplesPerChannel (int numSamples);
+    
+    void setNumChannels (int numChannels);
     
     /** Sets the bit depth for the audio file. If you use the save() function, this bit depth rate will be used */
     void setBitDepth (int numBitsPerSample);

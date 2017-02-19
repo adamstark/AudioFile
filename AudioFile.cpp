@@ -106,14 +106,14 @@ int AudioFile<T>::getNumSamplesPerChannel() const
 
 //=============================================================
 template <class T>
-double AudioFile<T>::getLengthInSeconds()
+double AudioFile<T>::getLengthInSeconds() const
 {
     return (double)getNumSamplesPerChannel() / (double)sampleRate;
 }
 
 //=============================================================
 template <class T>
-void AudioFile<T>::printSummary()
+void AudioFile<T>::printSummary() const
 {
     std::cout << "|============================|" << std::endl;
     std::cout << "Num Channels: " << getNumChannels() << std::endl;
@@ -122,6 +122,51 @@ void AudioFile<T>::printSummary()
     std::cout << "Bit Depth: " << bitDepth << std::endl;
     std::cout << "Length in Seconds: " << getLengthInSeconds() << std::endl;
     std::cout << "|============================|" << std::endl;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::setAudioBufferSize (int numChannels, int numSamples)
+{
+    samples.resize (numChannels);
+    setNumSamplesPerChannel (numSamples);
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::setNumSamplesPerChannel (int numSamples)
+{
+    int originalSize = getNumSamplesPerChannel();
+    
+    for (int i = 0; i < getNumChannels();i++)
+    {
+        samples[i].resize (numSamples);
+        
+        // set any new samples to zero
+        if (numSamples > originalSize)
+            std::fill (samples[i].begin() + originalSize, samples[i].end(), (T)0.);
+    }
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::setNumChannels (int numChannels)
+{
+    int originalNumChannels = getNumChannels();
+    int originalNumSamplesPerChannel = getNumSamplesPerChannel();
+    
+    samples.resize (numChannels);
+    
+    // make sure any new channels are set to the right size
+    // and filled with zeros
+    if (numChannels > originalNumChannels)
+    {
+        for (int i = originalNumChannels; i < numChannels; i++)
+        {
+            samples[i].resize (originalNumSamplesPerChannel);
+            std::fill (samples[i].begin(), samples[i].end(), (T)0.);
+        }
+    }
 }
 
 //=============================================================
