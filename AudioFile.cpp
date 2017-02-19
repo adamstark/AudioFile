@@ -23,28 +23,31 @@
 #include "AudioFile.h"
 #include <fstream>
 #include <iterator>
+#include <unordered_map>
 
 //=============================================================
-// Pre-defined 10-byte representations of common sample rates
-std::vector<uint8_t> aiff_8000 = {64, 11, 250, 0, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_11025 = {64, 12, 172, 68, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_16000 = {64, 12, 250, 0, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_22050 = {64, 13, 172, 68, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_32000 = {64, 13, 250, 0, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_37800 = {64, 14, 147, 168, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_44056 = {64, 14, 172, 24, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_44100 = {64, 14, 172, 68, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_47250 = {64, 14, 184, 146, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_48000 = {64, 14, 187, 128, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_50000 = {64, 14, 195, 80, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_50400 = {64, 14, 196, 224, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_88200 = {64, 15, 172, 68, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_96000 = {64, 15, 187, 128, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_176400 = {64, 16, 172, 68, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_192000 = {64, 16, 187, 128, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_352800 = {64, 17, 172, 68, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_2822400 = {64, 20, 172, 68, 0, 0, 0, 0, 0, 0};
-std::vector<uint8_t> aiff_5644800 = {64, 21, 172, 68, 0, 0, 0, 0, 0, 0};
+// Pre-defined 10-byte representations of common sample ratesq
+std::unordered_map <int, std::vector<uint8_t>> aiffSampleRateTable = {
+    {8000, {64, 11, 250, 0, 0, 0, 0, 0, 0, 0}},
+    {11025, {64, 12, 172, 68, 0, 0, 0, 0, 0, 0}},
+    {16000, {64, 12, 250, 0, 0, 0, 0, 0, 0, 0}},
+    {22050, {64, 13, 172, 68, 0, 0, 0, 0, 0, 0}},
+    {32000, {64, 13, 250, 0, 0, 0, 0, 0, 0, 0}},
+    {37800, {64, 14, 147, 168, 0, 0, 0, 0, 0, 0}},
+    {44056, {64, 14, 172, 24, 0, 0, 0, 0, 0, 0}},
+    {44100, {64, 14, 172, 68, 0, 0, 0, 0, 0, 0}},
+    {47250, {64, 14, 184, 146, 0, 0, 0, 0, 0, 0}},
+    {48000, {64, 14, 187, 128, 0, 0, 0, 0, 0, 0}},
+    {50000, {64, 14, 195, 80, 0, 0, 0, 0, 0, 0}},
+    {50400, {64, 14, 196, 224, 0, 0, 0, 0, 0, 0}},
+    {88200, {64, 15, 172, 68, 0, 0, 0, 0, 0, 0}},
+    {96000, {64, 15, 187, 128, 0, 0, 0, 0, 0, 0}},
+    {176400, {64, 16, 172, 68, 0, 0, 0, 0, 0, 0}},
+    {192000, {64, 16, 187, 128, 0, 0, 0, 0, 0, 0}},
+    {352800, {64, 17, 172, 68, 0, 0, 0, 0, 0, 0}},
+    {2822400, {64, 20, 172, 68, 0, 0, 0, 0, 0, 0}},
+    {5644800, {64, 21, 172, 68, 0, 0, 0, 0, 0, 0}}
+};
 
 //=============================================================
 template <class T>
@@ -409,44 +412,11 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
 template <class T>
 int AudioFile<T>::getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex)
 {
-    if (tenByteMatch (fileData, sampleRateStartIndex, aiff_8000, 0))
-        return 8000;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_11025, 0))
-        return 11025;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_16000, 0))
-        return 16000;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_22050, 0))
-        return 22050;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_32000, 0))
-        return 32000;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_37800, 0))
-        return 37800;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_44056, 0))
-        return 44056;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_44100, 0))
-        return 44100;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_47250, 0))
-        return 47250;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_48000, 0))
-        return 48000;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_50000, 0))
-        return 50000;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_50400, 0))
-        return 50400;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_88200, 0))
-        return 88200;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_96000, 0))
-        return 96000;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_176400, 0))
-        return 176400;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_192000, 0))
-        return 192000;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_352800, 0))
-        return 352800;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_2822400, 0))
-        return 2822400;
-    else if (tenByteMatch (fileData, sampleRateStartIndex, aiff_5644800, 0))
-        return 5644800;
+    for (auto it : aiffSampleRateTable)
+    {
+        if (tenByteMatch (fileData, sampleRateStartIndex, it.second, 0))
+            return it.first;
+    }
     
     return -1;
 }
@@ -468,100 +438,10 @@ bool AudioFile<T>::tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std:
 template <class T>
 void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, int sampleRate)
 {
-    if (sampleRate == 8000)
+    if (aiffSampleRateTable.count (sampleRate) > 0)
     {
         for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_8000[i]);
-    }
-    else if (sampleRate == 11025)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_11025[i]);
-    }
-    else if (sampleRate == 16000)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_16000[i]);
-    }
-    else if (sampleRate == 22050)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_22050[i]);
-    }
-    else if (sampleRate == 32000)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_32000[i]);
-    }
-    else if (sampleRate == 37800)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_37800[i]);
-    }
-    else if (sampleRate == 44056)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_44056[i]);
-    }
-    else if (sampleRate == 44100)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_44100[i]);
-    }
-    else if (sampleRate == 47250)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_47250[i]);
-    }
-    else if (sampleRate == 48000)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_48000[i]);
-    }
-    else if (sampleRate == 50000)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_50000[i]);
-    }
-    else if (sampleRate == 50400)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_50400[i]);
-    }
-    else if (sampleRate == 88200)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_88200[i]);
-    }
-    else if (sampleRate == 96000)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_96000[i]);
-    }
-    else if (sampleRate == 176400)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_176400[i]);
-    }
-    else if (sampleRate == 192000)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_192000[i]);
-    }
-    else if (sampleRate == 352800)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_352800[i]);
-    }
-    else if (sampleRate == 2822400)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_2822400[i]);
-    }
-    else if (sampleRate == 5644800)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiff_5644800[i]);
+            fileData.push_back (aiffSampleRateTable[sampleRate][i]);
     }
 }
 
