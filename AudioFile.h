@@ -90,6 +90,9 @@ public:
     
     //=============================================================
     
+    /** Set the audio buffer for this AudioFile by copying samples from another buffer.
+     * @Returns true if the buffer was copied successfully.
+     */
     bool setAudioBuffer (AudioBuffer& newBuffer);
     
     /** Sets the audio buffer to a given number of channels and number of samples per channel. This will try to preserve
