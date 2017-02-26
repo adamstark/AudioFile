@@ -22,17 +22,17 @@ AudioFile is written and maintained by Adam Stark.
 Usage
 -----
 
-#### Create an AudioFile object:
+### Create an AudioFile object:
 
 	AudioFile<double> audioFile;
-	
-#### Load an audio file:
+		
+### Load an audio file:
 
 	audioFile.load ("/path/to/my/audiofile.wav");
 	
-#### Get some information about the loaded audio:
+### Get some information about the loaded audio:
 
-	int sampleRate = audioFile.getSampleRate()
+	int sampleRate = audioFile.getSampleRate();
 	int bitDepth = audioFile.getBitDepth();
 	
 	int numSamples = audioFile.getNumSamplesPerChannel();
@@ -42,17 +42,56 @@ Usage
 	bool isMono = audioFile.isMono();
 	bool isStereo = audioFile.isStereo();
 	
-#### Access the samples directly:
+	// or, just use this quick shortcut to print a summary to the console
+	audioFile.printSummary();
+	
+### Access the samples directly:
 
 	int channel = 0;
 	int numSamples = audioFile.getNumSamplesPerChannel();
 
 	for (int i = 0; i < numSamples; i++)
 	{
-		audioFile.samples[channel][i]
+		double currentSample = audioFile.samples[channel][i];
 	}
+
+### Replace the AudioFile audio buffer with another
+
+	// 1. Create an AudioBuffer 
+	// (BTW, AudioBuffer is just a vector of vectors)
 	
-#### Save the audio file to disk
+	AudioFile<double>::AudioBuffer buffer;
+	
+	// 2. Set to (e.g.) two channels
+	buffer.resize (2);
+	
+	// 3. Set number of samples per channel
+	buffer[0].resize (100000);
+	buffer[1].resize (100000);
+	
+	// 4. do something here to fill the buffer with samples
+	
+	// 5. Put into the AudioFile object
+	bool ok = audioFile.setAudioBuffer (buffer);
+	
+	
+### Resize the audio buffer	
+
+	// Set both the number of channels and number of samples per channel
+	audioFile.setAudioBufferSize (numChannels, numSamples);
+	
+	// Set the number of samples per channel
+	audioFile.setNumSamplesPerChannel (numSamples);
+	
+	// Set the number of channels
+	audioFile.setNumChannels (int numChannels);
+	
+### Set bit depth and sample rate
+	
+	audioFile.setBitDepth (24);
+	audioFile.setSampleRate (44100);
+	
+### Save the audio file to disk
 	
 	// Wave file (implicit)
 	audioFile.save ("path/to/desired/audioFile.wav");
@@ -63,14 +102,19 @@ Usage
 	// Aiff file
 	audioFile.save ("path/to/desired/audioFile.aif", AudioFileFormat::Aiff);
 
-	
 
-
-A Bit More Detail
+A Note On Types
 -----------------
 
-...
+AudioFile is a template class and so it can be instantiated using floating point precision:
 
+	AudioFile<float> audioFile;
+
+...or double precision:
+
+	AudioFile<double> audioFile;
+	
+This simply reflects the data type you would like to use to store the underlying audio samples. You can still read or write 8, 16 or 24-bit audio files, regardless of the type that you use (unless your system uses a precision for floats less than your desired bit depth).
 
 License
 -------
