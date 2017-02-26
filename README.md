@@ -24,6 +24,8 @@ Usage
 
 ### Create an AudioFile object:
 
+	#include "AudioFile.h"
+
 	AudioFile<double> audioFile;
 		
 ### Load an audio file:
