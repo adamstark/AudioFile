@@ -23,6 +23,7 @@
 #include "AudioFile.h"
 #include <fstream>
 #include <unordered_map>
+#include <iterator>
 
 //=============================================================
 // Pre-defined 10-byte representations of common sample rates

@@ -26,6 +26,8 @@
 #include <iostream>
 #include <vector>
 #include <assert.h>
+#include <string>
+
 
 //=============================================================
 /** The different types of audio file, plus some other types to 
