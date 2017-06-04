@@ -25,8 +25,8 @@
 #include <unordered_map>
 
 //=============================================================
-// Pre-defined 10-byte representations of common sample ratesq
-std::unordered_map <int, std::vector<uint8_t>> aiffSampleRateTable = {
+// Pre-defined 10-byte representations of common sample rates
+std::unordered_map <uint32_t, std::vector<uint8_t>> aiffSampleRateTable = {
     {8000, {64, 11, 250, 0, 0, 0, 0, 0, 0, 0}},
     {11025, {64, 12, 172, 68, 0, 0, 0, 0, 0, 0}},
     {16000, {64, 12, 250, 0, 0, 0, 0, 0, 0, 0}},
@@ -61,7 +61,7 @@ AudioFile<T>::AudioFile()
 
 //=============================================================
 template <class T>
-int AudioFile<T>::getSampleRate() const
+uint32_t AudioFile<T>::getSampleRate() const
 {
     return sampleRate;
 }
@@ -210,7 +210,7 @@ void AudioFile<T>::setBitDepth (int numBitsPerSample)
 
 //=============================================================
 template <class T>
-void AudioFile<T>::setSampleRate (int newSampleRate)
+void AudioFile<T>::setSampleRate (uint32_t newSampleRate)
 {
     sampleRate = newSampleRate;
 }
@@ -281,7 +281,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     //int32_t formatChunkSize = fourBytesToInt (fileData, f + 4);
     int16_t audioFormat = twoBytesToInt (fileData, f + 8);
     int16_t numChannels = twoBytesToInt (fileData, f + 10);
-    sampleRate = (int) fourBytesToInt (fileData, f + 12);
+    sampleRate = (uint32_t) fourBytesToInt (fileData, f + 12);
     int32_t numBytesPerSecond = fourBytesToInt (fileData, f + 16);
     int16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
     bitDepth = (int) twoBytesToInt (fileData, f + 22);
@@ -486,7 +486,7 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
 
 //=============================================================
 template <class T>
-int AudioFile<T>::getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex)
+uint32_t AudioFile<T>::getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex)
 {
     for (auto it : aiffSampleRateTable)
     {
@@ -512,7 +512,7 @@ bool AudioFile<T>::tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std:
 
 //=============================================================
 template <class T>
-void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, int sampleRate)
+void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate)
 {
     if (aiffSampleRateTable.count (sampleRate) > 0)
     {
