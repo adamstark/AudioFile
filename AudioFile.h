@@ -26,6 +26,8 @@
 #include <iostream>
 #include <vector>
 #include <assert.h>
+#include <string>
+
 
 //=============================================================
 /** The different types of audio file, plus some other types to 
@@ -66,7 +68,7 @@ public:
         
     //=============================================================
     /** @Returns the sample rate */
-    int getSampleRate() const;
+    uint32_t getSampleRate() const;
     
     /** @Returns the number of audio channels in the buffer */
     int getNumChannels() const;
@@ -113,7 +115,7 @@ public:
     void setBitDepth (int numBitsPerSample);
     
     /** Sets the sample rate for the audio file. If you use the save() function, this sample rate will be used */
-    void setSampleRate (int newSampleRate);
+    void setSampleRate (uint32_t newSampleRate);
     
     //=============================================================
     /** A vector of vectors holding the audio samples for the AudioFile. You can 
@@ -149,9 +151,9 @@ private:
     int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int getIndexOfString (std::vector<uint8_t>& source, std::string s);
     T sixteenBitIntToSample (int16_t sample);
-    int getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
+    uint32_t getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
     bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
-    void addSampleRateToAiffData (std::vector<uint8_t>& fileData, int sampleRate);
+    void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
     
     //=============================================================
     void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
@@ -163,7 +165,7 @@ private:
     
     //=============================================================
     AudioFileFormat audioFileFormat;
-    int sampleRate;
+    uint32_t sampleRate;
     int bitDepth;
 };
 
