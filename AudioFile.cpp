@@ -24,6 +24,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <iterator>
+#include <sstream>
 
 //=============================================================
 // Pre-defined 10-byte representations of common sample rates
@@ -230,9 +231,11 @@ bool AudioFile<T>::load (std::string filePath)
         return false;
     }
     
-    file.unsetf (std::ios::skipws);
-    std::istream_iterator<uint8_t> begin (file), end;
-    std::vector<uint8_t> fileData (begin, end);
+    auto ss = std::ostringstream{};
+    ss << file.rdbuf();
+    auto s = ss.str();
+    std::vector<uint8_t> fileData;
+    std::move( s.begin(), s.end(), std::back_inserter(fileData));
     
     // get audio file format
     audioFileFormat = determineAudioFileFormat (fileData);
