@@ -584,18 +584,22 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                int32_t sampleAsInt = ((samples[channel][i] * (T)128.) + 128.);
-                uint8_t byte = (uint8_t)sampleAsInt;
+                int32_t sampleAsInt = (samples[channel][i] * (T)128.);
+                sampleAsInt = std::min<int32_t>(sampleAsInt, 127);
+
+                uint8_t byte = (uint8_t)(sampleAsInt + 128);
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
             {
-                int16_t sampleAsInt = (int16_t) (samples[channel][i] * (T)32768.);
+                int32_t sampleAsInt = (int32_t) (samples[channel][i] * (T)32768.);
+                sampleAsInt = std::min<int32_t>(sampleAsInt, 32767);
                 addInt16ToFileData (fileData, sampleAsInt);
             }
             else if (bitDepth == 24)
             {
                 int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)8388608.);
+                sampleAsIntAgain = std::min<int32_t>(sampleAsIntAgain, 8388607);
                 
                 uint8_t bytes[3];
                 bytes[2] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
