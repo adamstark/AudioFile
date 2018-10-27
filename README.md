@@ -71,7 +71,24 @@ Usage
 	buffer[0].resize (100000);
 	buffer[1].resize (100000);
 	
-	// 4. do something here to fill the buffer with samples
+	// 4. do something here to fill the buffer with samples, e.g.
+	
+	#include <math.h> // somewhere earler (for M_PI and sinf())
+	
+	// then...
+	
+	int numChannels = 2;
+	int numSamplesPerChannel = 100000;
+	float sampleRate = 44100.f;
+	float frequency = 440.f;
+
+	for (int i = 0; i < numSamplesPerChannel; i++)
+	{
+        float sample = sinf (2. * M_PI * ((float) i / sampleRate) * frequency) ;
+        
+        for (int channel = 0; channel < numChannels; channel++)
+             buffer[channel][i] = sample * 0.5;
+	}
 	
 	// 5. Put into the AudioFile object
 	bool ok = audioFile.setAudioBuffer (buffer);
