@@ -337,9 +337,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
             
             if (bitDepth == 8)
             {
-                int32_t sampleAsInt = (int32_t) fileData[sampleIndex];
-                T sample = (T)(sampleAsInt - 128) / (T)128.;
-                
+                T sample = singleByteToSample (fileData[sampleIndex]);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 16)
@@ -584,13 +582,12 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                int32_t sampleAsInt = ((samples[channel][i] * (T)128.) + 128.);
-                uint8_t byte = (uint8_t)sampleAsInt;
+                uint8_t byte = sampleToSingleByte (samples[channel][i]);
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
             {
-                int16_t sampleAsInt = (int16_t) (samples[channel][i] * (T)32768.);
+                int16_t sampleAsInt = sampleToSixteenBitInt (samples[channel][i]);
                 addInt16ToFileData (fileData, sampleAsInt);
             }
             else if (bitDepth == 24)
@@ -669,13 +666,12 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                int32_t sampleAsInt = (int32_t)(samples[channel][i] * (T)128.);
-                uint8_t byte = (uint8_t)sampleAsInt;
+                uint8_t byte = sampleToSingleByte (samples[channel][i]);
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
             {
-                int16_t sampleAsInt = (int16_t) (samples[channel][i] * (T)32768.);
+                int16_t sampleAsInt = sampleToSixteenBitInt (samples[channel][i]);
                 addInt16ToFileData (fileData, sampleAsInt, Endianness::BigEndian);
             }
             else if (bitDepth == 24)
@@ -865,7 +861,40 @@ int AudioFile<T>::getIndexOfString (std::vector<uint8_t>& source, std::string st
 template <class T>
 T AudioFile<T>::sixteenBitIntToSample (int16_t sample)
 {
-    return (T)sample / (T)32768.;
+    return static_cast<T> (sample) / static_cast<T> (32768.);
+}
+
+//=============================================================
+template <class T>
+int16_t AudioFile<T>::sampleToSixteenBitInt (T sample)
+{
+    sample = clamp (sample, -1., 1.);
+    return static_cast<int16_t> (sample * 32767.);
+}
+
+//=============================================================
+template <class T>
+uint8_t AudioFile<T>::sampleToSingleByte (T sample)
+{
+    sample = clamp (sample, -1., 1.);
+    sample = (sample + 1.) / 2.;
+    return static_cast<uint8_t> (sample * 255.);
+}
+
+//=============================================================
+template <class T>
+T AudioFile<T>::singleByteToSample (uint8_t sample)
+{
+    return static_cast<T> (sample - 128) / static_cast<T> (128.);
+}
+
+//=============================================================
+template <class T>
+T AudioFile<T>::clamp (T value, T minValue, T maxValue)
+{
+    value = std::min (value, maxValue);
+    value = std::max (value, minValue);
+    return value;
 }
 
 //===========================================================

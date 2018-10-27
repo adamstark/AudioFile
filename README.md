@@ -1,7 +1,7 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.0.2-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.0.3-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-GPL-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
@@ -71,7 +71,24 @@ Usage
 	buffer[0].resize (100000);
 	buffer[1].resize (100000);
 	
-	// 4. do something here to fill the buffer with samples
+	// 4. do something here to fill the buffer with samples, e.g.
+	
+	#include <math.h> // somewhere earler (for M_PI and sinf())
+	
+	// then...
+	
+	int numChannels = 2;
+	int numSamplesPerChannel = 100000;
+	float sampleRate = 44100.f;
+	float frequency = 440.f;
+
+	for (int i = 0; i < numSamplesPerChannel; i++)
+	{
+        float sample = sinf (2. * M_PI * ((float) i / sampleRate) * frequency) ;
+        
+        for (int channel = 0; channel < numChannels; channel++)
+             buffer[channel][i] = sample * 0.5;
+	}
 	
 	// 5. Put into the AudioFile object
 	bool ok = audioFile.setAudioBuffer (buffer);
@@ -120,6 +137,11 @@ This simply reflects the data type you would like to use to store the underlying
 
 Versions
 -------
+
+##### 1.0.3 - 28th October 2018
+
+- Bug fixes
+- Documentation updates
 
 ##### 1.0.2 - 6th June 2017
 
