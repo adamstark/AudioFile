@@ -1,7 +1,7 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.0.2-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.0.3-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-GPL-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
@@ -137,6 +137,11 @@ This simply reflects the data type you would like to use to store the underlying
 
 Versions
 -------
+
+##### 1.0.3 - 28th October 2018
+
+- Bug fixes
+- Documentation updates
 
 ##### 1.0.2 - 6th June 2017
 
