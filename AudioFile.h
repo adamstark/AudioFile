@@ -150,10 +150,19 @@ private:
     int32_t fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int getIndexOfString (std::vector<uint8_t>& source, std::string s);
+    
+    //=============================================================
     T sixteenBitIntToSample (int16_t sample);
+    int16_t sampleToSixteenBitInt (T sample);
+    
+    //=============================================================
+    uint8_t sampleToSingleByte (T sample);
+    T singleByteToSample (uint8_t sample);
+    
     uint32_t getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
     bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
     void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
+    T clamp (T v1, T minValue, T maxValue);
     
     //=============================================================
     void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
