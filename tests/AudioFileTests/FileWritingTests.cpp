@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE (WritingTest_WriteSineToneToManyFormats)
     boost::filesystem::create_directories("audio-write-tests");
   
     std::vector<int> sampleRates = {22050, 44100, 48000, 96000};
-    std::vector<int> bitDepths = {8, 16, 24};
+    std::vector<int> bitDepths = {8, 16, 24, 32};
     std::vector<int> numChannels = {1, 2};
     std::vector<AudioFileFormat> audioFormats = {AudioFileFormat::Wave, AudioFileFormat::Aiff};
     

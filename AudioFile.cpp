@@ -311,9 +311,9 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     }
     
     // check bit depth is either 8, 16 or 24 bit
-    if (bitDepth != 8 && bitDepth != 16 && bitDepth != 24)
+    if (bitDepth != 8 && bitDepth != 16 && bitDepth != 24 && bitDepth != 32)
     {
-        std::cout << "ERROR: this file has a bit depth that is not 8, 16 or 24 bits" << std::endl;
+        std::cout << "ERROR: this file has a bit depth that is not 8, 16, 24 or 32 bits" << std::endl;
         return false;
     }
     
@@ -351,11 +351,17 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                 int32_t sampleAsInt = 0;
                 sampleAsInt = (fileData[sampleIndex + 2] << 16) | (fileData[sampleIndex + 1] << 8) | fileData[sampleIndex];
                 
-                if (sampleAsInt & 0x800000) //  if the 24th bit is set, this is a negative number in 24-bit world
+                if (sampleAsInt & (1 << 23)) //  if the 24th bit is set, this is a negative number in 24-bit world
                     sampleAsInt = sampleAsInt | ~0xFFFFFF; // so make sure sign is extended to the 32 bit float
 
-                T sample = (T)sampleAsInt / (T)8388608.;
+                T sample = (T)sampleAsInt / (T)(1 << 23);
                 samples[channel].push_back (sample);
+            }
+            else if (bitDepth == 32)
+            {
+              int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex);
+              T sample = (T)sampleAsInt / (T)(INT_MAX);
+              samples[channel].push_back (sample);
             }
             else
             {
@@ -415,9 +421,9 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     }
     
     // check bit depth is either 8, 16 or 24 bit
-    if (bitDepth != 8 && bitDepth != 16 && bitDepth != 24)
+    if (bitDepth != 8 && bitDepth != 16 && bitDepth != 24 && bitDepth != 32)
     {
-        std::cout << "ERROR: this file has a bit depth that is not 8, 16 or 24 bits" << std::endl;
+        std::cout << "ERROR: this file has a bit depth that is not 8, 16, 24 or 32 bits" << std::endl;
         return false;
     }
     
@@ -592,7 +598,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
             }
             else if (bitDepth == 24)
             {
-                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)8388608.);
+                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)(1<<24));
                 
                 uint8_t bytes[3];
                 bytes[2] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
@@ -602,6 +608,21 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
                 fileData.push_back (bytes[0]);
                 fileData.push_back (bytes[1]);
                 fileData.push_back (bytes[2]);
+            }
+            else if (bitDepth == 32)
+            {
+              int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)(1<<32));
+              
+              uint8_t bytes[4];
+              bytes[3] = (uint8_t) (sampleAsIntAgain >> 24) & 0xFF;
+              bytes[2] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
+              bytes[1] = (uint8_t) (sampleAsIntAgain >>  8) & 0xFF;
+              bytes[0] = (uint8_t) (sampleAsIntAgain >>  0) & 0xFF;
+              
+              fileData.push_back (bytes[0]);
+              fileData.push_back (bytes[1]);
+              fileData.push_back (bytes[2]);
+              fileData.push_back (bytes[3]);
             }
             else
             {
