@@ -245,7 +245,11 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				OTHER_LDFLAGS = "-lboost_unit_test_framework";
+				OTHER_LDFLAGS = (
+					"-lboost_unit_test_framework",
+					"-lboost_system",
+					"-lboost_filesystem",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -256,7 +260,11 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				OTHER_LDFLAGS = "-lboost_unit_test_framework";
+				OTHER_LDFLAGS = (
+					"-lboost_unit_test_framework",
+					"-lboost_system",
+					"-lboost_filesystem",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

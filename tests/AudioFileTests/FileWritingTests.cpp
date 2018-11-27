@@ -2,9 +2,11 @@
 #define FILE_WRITING_TESTS
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
+#include <boost/filesystem.hpp>
 #include <iostream>
 #include <vector>
 #include <math.h>
+
 
 #include "../../AudioFile.h"
 
@@ -54,6 +56,9 @@ BOOST_AUTO_TEST_SUITE (WritingTests)
 //=============================================================
 BOOST_AUTO_TEST_CASE (WritingTest_WriteSineToneToManyFormats)
 {
+    // Create output directory if it doesn't exist
+    boost::filesystem::create_directories("audio-write-tests");
+  
     std::vector<int> sampleRates = {22050, 44100, 48000, 96000};
     std::vector<int> bitDepths = {8, 16, 24};
     std::vector<int> numChannels = {1, 2};
