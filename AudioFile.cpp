@@ -360,7 +360,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
             else if (bitDepth == 32)
             {
               int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex);
-              T sample = (T)sampleAsInt / (T)(INT_MAX);
+              T sample = (T)sampleAsInt / (T)(INT32_MAX);
               samples[channel].push_back (sample);
             }
             else
@@ -598,7 +598,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
             }
             else if (bitDepth == 24)
             {
-                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)(1<<23));
+                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)(1 << 23));
                 
                 uint8_t bytes[3];
                 bytes[2] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
@@ -611,7 +611,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
             }
             else if (bitDepth == 32)
             {
-              int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)(1<<31));
+              int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)(1 << 31));
               
               uint8_t bytes[4];
               bytes[3] = (uint8_t) (sampleAsIntAgain >> 24) & 0xFF;
