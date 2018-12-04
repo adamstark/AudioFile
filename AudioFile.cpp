@@ -360,7 +360,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
             else if (bitDepth == 32)
             {
               int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex);
-              T sample = (T)sampleAsInt / (T)(INT32_MAX);
+              T sample = (T)sampleAsInt / (T)(std::numeric_limits<std::int32_t>::max());
               samples[channel].push_back (sample);
             }
             else
