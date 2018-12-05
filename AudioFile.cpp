@@ -611,8 +611,8 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
             }
             else if (bitDepth == 32)
             {
-              int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)(1 << 31));
-              
+              int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * std::numeric_limits<int32_t>::max());
+
               uint8_t bytes[4];
               bytes[3] = (uint8_t) (sampleAsIntAgain >> 24) & 0xFF;
               bytes[2] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
