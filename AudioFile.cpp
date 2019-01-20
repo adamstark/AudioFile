@@ -220,19 +220,23 @@ void AudioFile<T>::setSampleRate (uint32_t newSampleRate)
 template <class T>
 bool AudioFile<T>::load (std::string filePath)
 {
-    std::ifstream file (filePath, std::ios::binary);
-    
+    FILE * file;
     // check the file exists
-    if (! file.good())
-    {
+    if ((file = fopen(filePath.c_str(), "rb")) == NULL) {
         std::cout << "ERROR: File doesn't exist or otherwise can't load file" << std::endl;
         std::cout << filePath << std::endl;
         return false;
     }
-    
-    file.unsetf (std::ios::skipws);
-    std::istream_iterator<uint8_t> begin (file), end;
-    std::vector<uint8_t> fileData (begin, end);
+    fseek(file, 0L, SEEK_END);
+    long filesize = ftell(file);
+    fseek(file, 0L, SEEK_SET);
+    uint8_t * buffer = (uint8_t*)malloc(filesize);
+    fread(buffer, 1, filesize, file);
+
+    std::vector<uint8_t> fileData = std::vector<uint8_t>(buffer, buffer + filesize);
+
+    fclose(file);
+    free(buffer);
     
     // get audio file format
     audioFileFormat = determineAudioFileFormat (fileData);
