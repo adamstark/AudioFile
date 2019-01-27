@@ -36,12 +36,12 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
 
     if (format == AudioFileFormat::Wave)
     {
-        return audioFile.save ("audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".wav", format);
+        return audioFile.save ("./audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".wav", format);
     }
     
     else if (format == AudioFileFormat::Aiff)
     {
-        return audioFile.save ("audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".aif", format);
+        return audioFile.save ("./audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".aif", format);
     }
     
     return false;
