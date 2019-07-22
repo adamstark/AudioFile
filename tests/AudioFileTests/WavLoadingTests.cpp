@@ -29,6 +29,10 @@
 //#include "test-headers/wav_mono_8bit_48000.h"
 #include "test-headers/wav_mono_16bit_48000.h"
 
+// --------------------------------------------
+// Test audio files: 48kHz 8-channel
+#include "test-headers/wav_8chan_24bit_48000.h"
+
 //=============================================================
 BOOST_AUTO_TEST_SUITE (WavLoadingTests)
 
@@ -98,7 +102,7 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_24bit_44100)
 //=============================================================
 BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_8bit_44100)
 {
-
+    //TODO
 }
 
 //=============================================================
@@ -125,7 +129,7 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_16bit_44100)
 //=============================================================
 BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_24bit_44100)
 {
-    
+    //TODO
 }
 
 //=============================================================
@@ -194,7 +198,7 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_24bit_48000)
 //=============================================================
 BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_8bit_48000)
 {
-    
+    //TODO
 }
 
 //=============================================================
@@ -221,8 +225,30 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_16bit_48000)
 //=============================================================
 BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_24bit_48000)
 {
-    
+    //TODO
 }
+
+//=============================================================
+BOOST_AUTO_TEST_CASE (WavLoadingTests_8chan_24bit_48000)
+{
+    AudioFile<double> audioFile;
+    bool loadedOK = audioFile.load ("test-audio/wav_8chan_24bit_48000.wav");
+
+    BOOST_CHECK (loadedOK);
+    BOOST_CHECK_EQUAL (audioFile.getNumSamplesPerChannel(), wav_8chan_24bit_48000::numSamplesPerChannel);
+    BOOST_CHECK_EQUAL (audioFile.getBitDepth(), wav_8chan_24bit_48000::bitDepth);
+    BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_8chan_24bit_48000::sampleRate);
+    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_8chan_24bit_48000::numChannels);
+
+    for (int i = 0; i < wav_8chan_24bit_48000::testBuffer.size(); i++)
+    {
+        for (int k = 0; k < audioFile.getNumChannels(); k++)
+        {
+            BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_8chan_24bit_48000::testBuffer[k][i], 0.00001);
+        }
+    }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

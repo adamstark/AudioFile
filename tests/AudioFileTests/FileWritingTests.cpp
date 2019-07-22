@@ -29,8 +29,16 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     
     audioFile.setSampleRate (sampleRate);
     audioFile.setBitDepth (bitDepth);
-    
-    std::string numChannelsAsString = numChannels == 1 ? "mono" : "stereo";
+
+    std::string numChannelsAsString;
+    if (numChannels == 1) {
+        numChannelsAsString = "mono";
+    } else if (numChannels == 2) {
+        numChannelsAsString = "stereo";
+    } else {
+        numChannelsAsString = std::to_string(numChannels) + "chan";
+    }
+
     std::string bitDepthAsString = std::to_string (bitDepth);
     std::string sampleRateAsString = std::to_string (sampleRate);
 
@@ -56,7 +64,7 @@ BOOST_AUTO_TEST_CASE (WritingTest_WriteSineToneToManyFormats)
 {
     std::vector<int> sampleRates = {22050, 44100, 48000, 96000};
     std::vector<int> bitDepths = {8, 16, 24};
-    std::vector<int> numChannels = {1, 2};
+    std::vector<int> numChannels = {1, 2, 8};
     std::vector<AudioFileFormat> audioFormats = {AudioFileFormat::Wave, AudioFileFormat::Aiff};
     
     for (auto& sampleRate : sampleRates)
