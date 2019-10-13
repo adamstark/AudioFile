@@ -135,6 +135,8 @@ AudioFile is a template class and so it can be instantiated using floating point
 	
 This simply reflects the data type you would like to use to store the underlying audio samples. You can still read or write 8, 16 or 24-bit audio files, regardless of the type that you use (unless your system uses a precision for floats less than your desired bit depth).
 
+I have heard of people using the library with other types, but I have not designed for those cases. Let me know if you are interested in this supporting a specific type more formally.
+
 Versions
 -------
 
