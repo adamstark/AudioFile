@@ -561,7 +561,7 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     sampleRate = getAiffSampleRate (fileData, p + 16);
     
     // check the sample rate was properly decoded
-    if (sampleRate == -1)
+    if (sampleRate == 0)
     {
         std::cout << "ERROR: this AIFF file has an unsupported sample rate" << std::endl;
         return false;
@@ -653,7 +653,7 @@ uint32_t AudioFile<T>::getAiffSampleRate (std::vector<uint8_t>& fileData, int sa
             return it.first;
     }
     
-    return -1;
+    return 0;
 }
 
 //=============================================================
