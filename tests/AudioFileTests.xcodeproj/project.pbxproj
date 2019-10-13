@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		E325EC261E4222B700D059F0 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E325EC251E4222B700D059F0 /* main.cpp */; };
-		E36147DA1E429ADB0071F23D /* AudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E36147D81E429ADB0071F23D /* AudioFile.cpp */; };
 		E38438C91E5A26EC006C3352 /* FileWritingTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38438C71E5A26EC006C3352 /* FileWritingTests.cpp */; };
 		E39C59A61E4BE42400EA7B67 /* AiffLoadingTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E39C59A41E4BE42400EA7B67 /* AiffLoadingTests.cpp */; };
 		E3A0C94D1E4229C40071404A /* WavLoadingTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E3A0C94C1E4229C40071404A /* WavLoadingTests.cpp */; };
@@ -29,7 +28,6 @@
 /* Begin PBXFileReference section */
 		E325EC221E4222B700D059F0 /* AudioFileTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AudioFileTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		E325EC251E4222B700D059F0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		E36147D81E429ADB0071F23D /* AudioFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFile.cpp; path = ../../AudioFile.cpp; sourceTree = "<group>"; };
 		E36147D91E429ADB0071F23D /* AudioFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioFile.h; path = ../../AudioFile.h; sourceTree = "<group>"; };
 		E38438C71E5A26EC006C3352 /* FileWritingTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileWritingTests.cpp; sourceTree = "<group>"; };
 		E39C59A41E4BE42400EA7B67 /* AiffLoadingTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AiffLoadingTests.cpp; sourceTree = "<group>"; };
@@ -68,7 +66,6 @@
 			children = (
 				E3A0C94B1E4229BB0071404A /* tests */,
 				E325EC251E4222B700D059F0 /* main.cpp */,
-				E36147D81E429ADB0071F23D /* AudioFile.cpp */,
 				E36147D91E429ADB0071F23D /* AudioFile.h */,
 			);
 			path = AudioFileTests;
@@ -124,6 +121,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = E325EC191E4222B700D059F0;
@@ -142,7 +140,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E39C59A61E4BE42400EA7B67 /* AiffLoadingTests.cpp in Sources */,
-				E36147DA1E429ADB0071F23D /* AudioFile.cpp in Sources */,
 				E325EC261E4222B700D059F0 /* main.cpp in Sources */,
 				E3A0C94D1E4229C40071404A /* WavLoadingTests.cpp in Sources */,
 				E38438C91E5A26EC006C3352 /* FileWritingTests.cpp in Sources */,
