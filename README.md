@@ -1,11 +1,11 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.0.4-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.0.5-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-GPL-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
-A simple C++ library for reading and writing audio files. 
+A simple header-only C++ library for reading and writing audio files. 
 
 Current supported formats:
 
@@ -139,6 +139,10 @@ I have heard of people using the library with other types, but I have not design
 
 Versions
 -------
+
+##### 1.0.5 - 14th October 2019
+
+- Added include of <algorithm> to better support Visual Studio
 
 ##### 1.0.4 - 13th October 2019
 
