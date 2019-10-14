@@ -30,6 +30,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <iterator>
+#include <algorithm>
 
 //=============================================================
 /** The different types of audio file, plus some other types to 
