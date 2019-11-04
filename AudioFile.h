@@ -32,6 +32,21 @@
 #include <iterator>
 #include <algorithm>
 
+// disable some warnings on Windows
+#if defined (_MSC_VER)
+    __pragma(warning (push))
+    __pragma(warning (disable : 4244))
+    __pragma(warning (disable : 4457))
+    __pragma(warning (disable : 4458))
+    __pragma(warning (disable : 4389))
+    __pragma(warning (disable : 4996))
+#elif defined (__GNUC__)
+    _Pragma("GCC diagnostic push")
+    _Pragma("GCC diagnostic ignored \"-Wconversion\"")
+    _Pragma("GCC diagnostic ignored \"-Wsign-compare\"")
+    _Pragma("GCC diagnostic ignored \"-Wshadow\"")
+#endif
+
 //=============================================================
 /** The different types of audio file, plus some other types to 
  * indicate a failure to load a file, or that one hasn't been
@@ -1145,5 +1160,11 @@ void AudioFile<T>::reportError (std::string errorMessage)
     if (logErrorsToConsole)
         std::cout << errorMessage << std::endl;
 }
+
+#if defined (_MSC_VER)
+    __pragma(warning (pop))
+#elif defined (__GNUC__)
+    _Pragma("GCC diagnostic pop")
+#endif
 
 #endif /* AudioFile_h */
