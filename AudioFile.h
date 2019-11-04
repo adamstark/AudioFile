@@ -147,6 +147,11 @@ public:
      */
     AudioBuffer samples;
     
+    //=============================================================
+    /** An optional iXML chunk that can be added to the AudioFile. 
+     */
+    std::string iXMLChunk;
+    
 private:
     
     //=============================================================
@@ -476,6 +481,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     // try and find the start points of key chunks
     int indexOfDataChunk = getIndexOfString (fileData, "data");
     int indexOfFormatChunk = getIndexOfString (fileData, "fmt");
+    int indexOfXMLChunk = getIndexOfString (fileData, "iXML");
     
     // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
     // then it is unlikely we'll able to read this file, so abort
@@ -586,6 +592,14 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
         }
     }
 
+    // -----------------------------------------------------------
+    // iXML CHUNK
+    if (indexOfXMLChunk != -1)
+    {
+        int32_t chunkSize = fourBytesToInt (fileData, indexOfXMLChunk + 4);
+        iXMLChunk = std::string ((const char*) &fileData[indexOfXMLChunk + 8], chunkSize);
+    }
+
     return true;
 }
 
@@ -605,6 +619,7 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     // try and find the start points of key chunks
     int indexOfCommChunk = getIndexOfString (fileData, "COMM");
     int indexOfSoundDataChunk = getIndexOfString (fileData, "SSND");
+    int indexOfXMLChunk = getIndexOfString (fileData, "iXML");
     
     // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
     // then it is unlikely we'll able to read this file, so abort
@@ -715,6 +730,14 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
             }
         }
     }
+
+    // -----------------------------------------------------------
+    // iXML CHUNK
+    if (indexOfXMLChunk != -1)
+    {
+        int32_t chunkSize = fourBytesToInt (fileData, indexOfXMLChunk + 4);
+        iXMLChunk = std::string ((const char*) &fileData[indexOfXMLChunk + 8], chunkSize);
+    }
     
     return true;
 }
@@ -781,6 +804,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
     int32_t dataChunkSize = getNumSamplesPerChannel() * (getNumChannels() * bitDepth / 8);
     int16_t audioFormat = bitDepth == 32 ? WavAudioFormat::IEEEFloat : WavAudioFormat::PCM;
     int32_t formatChunkSize = audioFormat == WavAudioFormat::PCM ? 16 : 18;
+    int32_t iXMLChunkSize = static_cast<int32_t> (iXMLChunk.size());
     
     // -----------------------------------------------------------
     // HEADER CHUNK
@@ -789,6 +813,11 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
     // The file size in bytes is the header chunk size (4, not counting RIFF and WAVE) + the format
     // chunk size (24) + the metadata part of the data chunk plus the actual data chunk size
     int32_t fileSizeInBytes = 4 + formatChunkSize + 8 + 8 + dataChunkSize;
+    if (iXMLChunkSize > 0)
+    {
+        fileSizeInBytes += (8 + iXMLChunkSize);
+    }
+
     addInt32ToFileData (fileData, fileSizeInBytes);
     
     addStringToFileData (fileData, "WAVE");
@@ -863,6 +892,15 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
         }
     }
     
+    // -----------------------------------------------------------
+    // iXML CHUNK
+    if (iXMLChunkSize > 0) 
+    {
+        addStringToFileData (fileData, "iXML");
+        addInt32ToFileData (fileData, iXMLChunkSize);
+        addStringToFileData (fileData, iXMLChunk);
+    }
+    
     // check that the various sizes we put in the metadata are correct
     if (fileSizeInBytes != static_cast<int32_t> (fileData.size() - 8) || dataChunkSize != (getNumSamplesPerChannel() * getNumChannels() * (bitDepth / 8)))
     {
@@ -884,6 +922,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
     int32_t numBytesPerFrame = numBytesPerSample * getNumChannels();
     int32_t totalNumAudioSampleBytes = getNumSamplesPerChannel() * numBytesPerFrame;
     int32_t soundDataChunkSize = totalNumAudioSampleBytes + 8;
+    int32_t iXMLChunkSize = static_cast<int32_t> (iXMLChunk.size());
     
     // -----------------------------------------------------------
     // HEADER CHUNK
@@ -892,6 +931,11 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
     // The file size in bytes is the header chunk size (4, not counting FORM and AIFF) + the COMM
     // chunk size (26) + the metadata part of the SSND chunk plus the actual data chunk size
     int32_t fileSizeInBytes = 4 + 26 + 16 + totalNumAudioSampleBytes;
+    if (iXMLChunkSize > 0)
+    {
+        fileSizeInBytes += (8 + iXMLChunkSize);
+    }
+
     addInt32ToFileData (fileData, fileSizeInBytes, Endianness::BigEndian);
     
     addStringToFileData (fileData, "AIFF");
@@ -951,6 +995,15 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
                 return false;
             }
         }
+    }
+
+    // -----------------------------------------------------------
+    // iXML CHUNK
+    if (iXMLChunkSize > 0)
+    {
+        addStringToFileData (fileData, "iXML");
+        addInt32ToFileData (fileData, iXMLChunkSize);
+        addStringToFileData (fileData, iXMLChunk);
     }
     
     // check that the various sizes we put in the metadata are correct
