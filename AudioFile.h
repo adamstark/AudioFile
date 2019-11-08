@@ -255,6 +255,8 @@ enum AIFFAudioFormat
 template <class T>
 AudioFile<T>::AudioFile()
 {
+    static_assert(std::is_floating_point<T>::value, "ERROR: This version of AudioFile only supports floating point sample formats");
+
     bitDepth = 16;
     sampleRate = 44100;
     samples.resize (1);
