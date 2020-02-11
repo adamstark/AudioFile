@@ -63,11 +63,26 @@ public:
      * @Returns true if the file was successfully loaded
      */
     bool load (std::string filePath);
+
+#if defined(_MSC_VER)
+    //=============================================================
+    /** Loads an audio file from a given file path.
+     * @Returns true if the file was successfully loaded
+     */
+    bool load (std::wstring filePath);
+#endif
     
     /** Saves an audio file to a given file path.
      * @Returns true if the file was successfully saved
      */
     bool save (std::string filePath, AudioFileFormat format = AudioFileFormat::Wave);
+
+#if defined(_MSC_VER)
+    /** Saves an audio file to a given file path.
+     * @Returns true if the file was successfully saved
+     */
+    bool save (std::wstring filePath, AudioFileFormat format = AudioFileFormat::Wave);
+#endif
         
     //=============================================================
     /** @Returns the sample rate */
@@ -138,13 +153,21 @@ private:
     };
     
     //=============================================================
+    template <class StringType>
+    bool loadImpl (StringType filePath);
+    template <class StringType>
+    bool saveImpl (StringType filePath, AudioFileFormat format);
+
+    //=============================================================
     AudioFileFormat determineAudioFileFormat (std::vector<uint8_t>& fileData);
     bool decodeWaveFile (std::vector<uint8_t>& fileData);
     bool decodeAiffFile (std::vector<uint8_t>& fileData);
     
     //=============================================================
-    bool saveToWaveFile (std::string filePath);
-    bool saveToAiffFile (std::string filePath);
+    template <class StringType>
+    bool saveToWaveFile (StringType filePath);
+    template <class StringType>
+    bool saveToAiffFile (StringType filePath);
     
     //=============================================================
     void clearAudioBuffer();
@@ -173,7 +196,14 @@ private:
     void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i, Endianness endianness = Endianness::LittleEndian);
     
     //=============================================================
-    bool writeDataToFile (std::vector<uint8_t>& fileData, std::string filePath);
+    template <class StringType>
+    bool writeDataToFile (std::vector<uint8_t>& fileData, StringType filePath);
+
+    //=============================================================
+    void showFileLoadError (std::string filePath);
+    void showFileLoadError (std::wstring filePath);
+    void showFileSaveError (std::string filePath);
+    void showFileSaveError (std::wstring filePath);
     
     //=============================================================
     AudioFileFormat audioFileFormat;
@@ -381,13 +411,29 @@ void AudioFile<T>::setSampleRate (uint32_t newSampleRate)
 template <class T>
 bool AudioFile<T>::load (std::string filePath)
 {
+    return loadImpl(filePath);
+}
+
+//=============================================================
+#if defined(_MSC_VER)
+template <class T>
+bool AudioFile<T>::load (std::wstring filePath)
+{
+    return loadImpl(filePath);
+}
+#endif
+
+//=============================================================
+template <class T>
+template <class StringType>
+bool AudioFile<T>::loadImpl (StringType filePath)
+{
     std::ifstream file (filePath, std::ios::binary);
     
     // check the file exists
     if (! file.good())
     {
-        std::cout << "ERROR: File doesn't exist or otherwise can't load file" << std::endl;
-        std::cout << filePath << std::endl;
+        showFileLoadError(filePath);
         return false;
     }
     
@@ -685,6 +731,23 @@ void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint
 template <class T>
 bool AudioFile<T>::save (std::string filePath, AudioFileFormat format)
 {
+    return saveImpl(filePath, format);
+}
+
+#if defined(_MSC_VER)
+//=============================================================
+template <class T>
+bool AudioFile<T>::save (std::wstring filePath, AudioFileFormat format)
+{
+    return saveImpl(filePath, format);
+}
+#endif
+
+//=============================================================
+template <class T>
+template <class StringType>
+bool AudioFile<T>::saveImpl (StringType filePath, AudioFileFormat format)
+{
     if (format == AudioFileFormat::Wave)
     {
         return saveToWaveFile (filePath);
@@ -699,7 +762,8 @@ bool AudioFile<T>::save (std::string filePath, AudioFileFormat format)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::saveToWaveFile (std::string filePath)
+template <class StringType>
+bool AudioFile<T>::saveToWaveFile (StringType filePath)
 {
     std::vector<uint8_t> fileData;
     
@@ -775,7 +839,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
     // check that the various sizes we put in the metadata are correct
     if (fileSizeInBytes != (fileData.size() - 8) || dataChunkSize != (getNumSamplesPerChannel() * getNumChannels() * (bitDepth / 8)))
     {
-        std::cout << "ERROR: couldn't save file to " << filePath << std::endl;
+        showFileSaveError(filePath);
         return false;
     }
     
@@ -785,7 +849,8 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::saveToAiffFile (std::string filePath)
+template <class StringType>
+bool AudioFile<T>::saveToAiffFile (StringType filePath)
 {
     std::vector<uint8_t> fileData;
     
@@ -859,7 +924,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
     // check that the various sizes we put in the metadata are correct
     if (fileSizeInBytes != (fileData.size() - 8) || soundDataChunkSize != getNumSamplesPerChannel() *  numBytesPerFrame + 8)
     {
-        std::cout << "ERROR: couldn't save file to " << filePath << std::endl;
+        showFileSaveError(filePath);
         return false;
     }
     
@@ -869,7 +934,8 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::writeDataToFile (std::vector<uint8_t>& fileData, std::string filePath)
+template <class StringType>
+bool AudioFile<T>::writeDataToFile (std::vector<uint8_t>& fileData, StringType filePath)
 {
     std::ofstream outputFile (filePath, std::ios::binary);
     
@@ -887,6 +953,36 @@ bool AudioFile<T>::writeDataToFile (std::vector<uint8_t>& fileData, std::string 
     }
     
     return false;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::showFileLoadError (std::string filePath)
+{
+    std::cout << "ERROR: File doesn't exist or otherwise can't load file" << std::endl;
+    std::cout << filePath << std::endl;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::showFileLoadError (std::wstring filePath)
+{
+    std::wcout << L"ERROR: File doesn't exist or otherwise can't load file" << std::endl;
+    std::wcout << filePath << std::endl;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::showFileSaveError (std::string filePath)
+{
+    std::cout << "ERROR: couldn't save file to " << filePath << std::endl;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::showFileSaveError (std::wstring filePath)
+{
+    std::wcout << L"ERROR: couldn't save file to " << filePath << std::endl;
 }
 
 //=============================================================
