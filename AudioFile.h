@@ -198,6 +198,12 @@ private:
     //=============================================================
     template <class StringType>
     bool writeDataToFile (std::vector<uint8_t>& fileData, StringType filePath);
+
+    //=============================================================
+    void showFileLoadError (std::string filePath);
+    void showFileLoadError (std::wstring filePath);
+    void showFileSaveError (std::string filePath);
+    void showFileSaveError (std::wstring filePath);
     
     //=============================================================
     AudioFileFormat audioFileFormat;
@@ -427,8 +433,7 @@ bool AudioFile<T>::loadImpl (StringType filePath)
     // check the file exists
     if (! file.good())
     {
-        std::cout << "ERROR: File doesn't exist or otherwise can't load file" << std::endl;
-        std::cout << filePath << std::endl;
+        showFileLoadError(filePath);
         return false;
     }
     
@@ -834,7 +839,7 @@ bool AudioFile<T>::saveToWaveFile (StringType filePath)
     // check that the various sizes we put in the metadata are correct
     if (fileSizeInBytes != (fileData.size() - 8) || dataChunkSize != (getNumSamplesPerChannel() * getNumChannels() * (bitDepth / 8)))
     {
-        std::cout << "ERROR: couldn't save file to " << filePath << std::endl;
+        showFileSaveError(filePath);
         return false;
     }
     
@@ -919,7 +924,7 @@ bool AudioFile<T>::saveToAiffFile (StringType filePath)
     // check that the various sizes we put in the metadata are correct
     if (fileSizeInBytes != (fileData.size() - 8) || soundDataChunkSize != getNumSamplesPerChannel() *  numBytesPerFrame + 8)
     {
-        std::cout << "ERROR: couldn't save file to " << filePath << std::endl;
+        showFileSaveError(filePath);
         return false;
     }
     
@@ -948,6 +953,36 @@ bool AudioFile<T>::writeDataToFile (std::vector<uint8_t>& fileData, StringType f
     }
     
     return false;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::showFileLoadError (std::string filePath)
+{
+    std::cout << "ERROR: File doesn't exist or otherwise can't load file" << std::endl;
+    std::cout << filePath << std::endl;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::showFileLoadError (std::wstring filePath)
+{
+    std::wcout << L"ERROR: File doesn't exist or otherwise can't load file" << std::endl;
+    std::wcout << filePath << std::endl;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::showFileSaveError (std::string filePath)
+{
+    std::cout << "ERROR: couldn't save file to " << filePath << std::endl;
+}
+
+//=============================================================
+template <class T>
+void AudioFile<T>::showFileSaveError (std::wstring filePath)
+{
+    std::wcout << L"ERROR: couldn't save file to " << filePath << std::endl;
 }
 
 //=============================================================
