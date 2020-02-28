@@ -137,6 +137,16 @@ This simply reflects the data type you would like to use to store the underlying
 
 I have heard of people using the library with other types, but I have not designed for those cases. Let me know if you are interested in this supporting a specific type more formally.
 
+Error Messages
+-----------------
+
+By default, the library logs error messages to the console to provide information on what has gone wrong (e.g. a file we tried to load didn't exist). 
+
+If you prefer not to see these messages, you can disable this error logging behaviour using:
+
+	audioFile.shouldLogErrorsToConsole (false);
+
+
 Versions
 -------
 
