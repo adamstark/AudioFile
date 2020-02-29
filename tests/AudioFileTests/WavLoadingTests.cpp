@@ -42,9 +42,9 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_8bit_44100)
     BOOST_CHECK_EQUAL (audioFile.getNumSamplesPerChannel(), wav_stereo_8bit_44100::numSamplesPerChannel);
     BOOST_CHECK_EQUAL (audioFile.getBitDepth(), wav_stereo_8bit_44100::bitDepth);
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_8bit_44100::sampleRate);
-    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_8bit_44100::testBuffer.size());
+    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), static_cast<int> (wav_stereo_8bit_44100::testBuffer.size()));
     
-    for (int i = 0; i < wav_stereo_8bit_44100::testBuffer[0].size(); i++)
+    for (size_t i = 0; i < wav_stereo_8bit_44100::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
@@ -63,9 +63,9 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_16bit_44100)
     BOOST_CHECK_EQUAL (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
     BOOST_CHECK_EQUAL (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
-    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_16bit_44100::testBuffer.size());
+    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
     
-    for (int i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
+    for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
@@ -84,9 +84,9 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_24bit_44100)
     BOOST_CHECK_EQUAL (audioFile.getNumSamplesPerChannel(), wav_stereo_24bit_44100::numSamplesPerChannel);
     BOOST_CHECK_EQUAL (audioFile.getBitDepth(), wav_stereo_24bit_44100::bitDepth);
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_24bit_44100::sampleRate);
-    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_24bit_44100::testBuffer.size());
+    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), static_cast<int> (wav_stereo_24bit_44100::testBuffer.size()));
     
-    for (int i = 0; i < wav_stereo_24bit_44100::testBuffer[0].size(); i++)
+    for (size_t i = 0; i < wav_stereo_24bit_44100::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
@@ -111,9 +111,9 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_16bit_44100)
     BOOST_CHECK_EQUAL (audioFile.getNumSamplesPerChannel(), wav_mono_16bit_44100::numSamplesPerChannel);
     BOOST_CHECK_EQUAL (audioFile.getBitDepth(), wav_mono_16bit_44100::bitDepth);
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_mono_16bit_44100::sampleRate);
-    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_mono_16bit_44100::numChannels);
+    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), static_cast<int> (wav_mono_16bit_44100::numChannels));
     
-    for (int i = 0; i < wav_mono_16bit_44100::testBuffer.size(); i++)
+    for (size_t i = 0; i < wav_mono_16bit_44100::testBuffer.size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
@@ -138,9 +138,9 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_8bit_48000)
     BOOST_CHECK_EQUAL (audioFile.getNumSamplesPerChannel(), wav_stereo_8bit_48000::numSamplesPerChannel);
     BOOST_CHECK_EQUAL (audioFile.getBitDepth(), wav_stereo_8bit_48000::bitDepth);
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_8bit_48000::sampleRate);
-    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_8bit_48000::testBuffer.size());
+    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), static_cast<int> (wav_stereo_8bit_48000::testBuffer.size()));
     
-    for (int i = 0; i < wav_stereo_8bit_48000::testBuffer[0].size(); i++)
+    for (size_t i = 0; i < wav_stereo_8bit_48000::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
@@ -159,9 +159,9 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_16bit_48000)
     BOOST_CHECK_EQUAL (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_48000::numSamplesPerChannel);
     BOOST_CHECK_EQUAL (audioFile.getBitDepth(), wav_stereo_16bit_48000::bitDepth);
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_16bit_48000::sampleRate);
-    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_16bit_48000::testBuffer.size());
+    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_48000::testBuffer.size()));
     
-    for (int i = 0; i < wav_stereo_16bit_48000::testBuffer[0].size(); i++)
+    for (size_t i = 0; i < wav_stereo_16bit_48000::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
@@ -180,9 +180,9 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Stereo_24bit_48000)
     BOOST_CHECK_EQUAL (audioFile.getNumSamplesPerChannel(), wav_stereo_24bit_48000::numSamplesPerChannel);
     BOOST_CHECK_EQUAL (audioFile.getBitDepth(), wav_stereo_24bit_48000::bitDepth);
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_stereo_24bit_48000::sampleRate);
-    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_stereo_24bit_48000::testBuffer.size());
+    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), static_cast<int> (wav_stereo_24bit_48000::testBuffer.size()));
     
-    for (int i = 0; i < wav_stereo_24bit_48000::testBuffer[0].size(); i++)
+    for (size_t i = 0; i < wav_stereo_24bit_48000::testBuffer[0].size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
@@ -207,9 +207,9 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_Mono_16bit_48000)
     BOOST_CHECK_EQUAL (audioFile.getNumSamplesPerChannel(), wav_mono_16bit_48000::numSamplesPerChannel);
     BOOST_CHECK_EQUAL (audioFile.getBitDepth(), wav_mono_16bit_48000::bitDepth);
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_mono_16bit_48000::sampleRate);
-    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_mono_16bit_48000::numChannels);
+    BOOST_CHECK_EQUAL (audioFile.getNumChannels(), static_cast<int> (wav_mono_16bit_48000::numChannels));
     
-    for (int i = 0; i < wav_mono_16bit_48000::testBuffer.size(); i++)
+    for (size_t i = 0; i < wav_mono_16bit_48000::testBuffer.size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
         {
