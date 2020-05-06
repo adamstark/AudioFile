@@ -490,9 +490,9 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     }
     
     // check the number of channels is mono or stereo
-    if (numChannels < 1 ||numChannels > 2)
+    if (numChannels < 1 || numChannels > 128)
     {
-        reportError ("ERROR: this WAV file seems to be neither mono nor stereo (perhaps multi-track, or corrupted?)");
+        reportError ("ERROR: this WAV file seems to be an invalid number of channels (or corrupted?)");
         return false;
     }
     
