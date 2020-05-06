@@ -44,12 +44,12 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
 
     if (format == AudioFileFormat::Wave)
     {
-        return audioFile.save ("audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".wav");
+        return audioFile.save ("./audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".wav", format);
     }
     
     else if (format == AudioFileFormat::Aiff)
     {
-        return audioFile.save ("audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".aif");
+        return audioFile.save ("./audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".aif", format);
     }
     
     return false;
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_SUITE (WritingTests)
 BOOST_AUTO_TEST_CASE (WritingTest_WriteSineToneToManyFormats)
 {
     std::vector<int> sampleRates = {22050, 44100, 48000, 96000};
-    std::vector<int> bitDepths = {8, 16, 24};
+    std::vector<int> bitDepths = {8, 16, 24, 32};
     std::vector<int> numChannels = {1, 2, 8};
     std::vector<AudioFileFormat> audioFormats = {AudioFileFormat::Wave, AudioFileFormat::Aiff};
     

@@ -22,7 +22,7 @@ def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, fileFor
 
 	header += "int numSamplesPerChannel = " + str (numSamples) + ";\n"
 	header += "int bitDepth = " + str(bitRate) + ";\n"
-	header += "int sampleRate = " + str(sampleRate) + ";\n"
+	header += "uint32_t sampleRate = " + str(sampleRate) + ";\n"
 	header += "int numChannels = " + str(numChannels) + ";\n"
 	header += "\n"
 	if numChannels == 1:
@@ -89,6 +89,8 @@ for fileName in os.listdir("test-audio"):
       		makeHeader (fileName, audioSignal, numChannels, 16, fs, fileFormat)
       	elif enc == "pcm24":
       		makeHeader (fileName, audioSignal, numChannels, 24, fs, fileFormat)
+      	elif enc == "float32":
+      		makeHeader (fileName, audioSignal, numChannels, 32, fs, fileFormat)
       	else:
       		print "Unknown bit depth:", enc
       		assert (False)

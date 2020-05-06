@@ -1,11 +1,11 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.0.3-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.0.6-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-GPL-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
-A simple C++ library for reading and writing audio files. 
+A simple header-only C++ library for reading and writing audio files. 
 
 Current supported formats:
 
@@ -135,8 +135,34 @@ AudioFile is a template class and so it can be instantiated using floating point
 	
 This simply reflects the data type you would like to use to store the underlying audio samples. You can still read or write 8, 16 or 24-bit audio files, regardless of the type that you use (unless your system uses a precision for floats less than your desired bit depth).
 
+I have heard of people using the library with other types, but I have not designed for those cases. Let me know if you are interested in this supporting a specific type more formally.
+
+Error Messages
+-----------------
+
+By default, the library logs error messages to the console to provide information on what has gone wrong (e.g. a file we tried to load didn't exist). 
+
+If you prefer not to see these messages, you can disable this error logging behaviour using:
+
+	audioFile.shouldLogErrorsToConsole (false);
+
+
 Versions
 -------
+
+##### 1.0.6 - 29th February 2020
+
+- Made error logging to the console optional
+- Fixed lots of compiler warnings 
+
+##### 1.0.5 - 14th October 2019
+
+- Added include of <algorithm> to better support Visual Studio
+
+##### 1.0.4 - 13th October 2019
+
+- Changed to a header-only library. Now you can just include AudioFile.h
+- Bug fixes
 
 ##### 1.0.3 - 28th October 2018
 
