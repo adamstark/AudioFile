@@ -36,7 +36,7 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     } else if (numChannels == 2) {
         numChannelsAsString = "stereo";
     } else {
-        numChannelsAsString = std::to_string(numChannels) + "chan";
+        numChannelsAsString = std::to_string(numChannels) + " channels";
     }
 
     std::string bitDepthAsString = std::to_string (bitDepth);
