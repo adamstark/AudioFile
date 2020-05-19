@@ -480,7 +480,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     // -----------------------------------------------------------
     // try and find the start points of key chunks
     int indexOfDataChunk = getIndexOfString (fileData, "data");
-    int indexOfFormatChunk = getIndexOfString (fileData, "fmt");
+    int indexOfFormatChunk = getIndexOfString (fileData, "fmt ");
     int indexOfXMLChunk = getIndexOfString (fileData, "iXML");
     
     // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
