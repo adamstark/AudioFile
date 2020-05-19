@@ -177,6 +177,7 @@ private:
     int32_t fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int getIndexOfString (std::vector<uint8_t>& source, std::string s);
+    int getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
     
     //=============================================================
     T sixteenBitIntToSample (int16_t sample);
@@ -479,9 +480,9 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     
     // -----------------------------------------------------------
     // try and find the start points of key chunks
-    int indexOfDataChunk = getIndexOfString (fileData, "data");
-    int indexOfFormatChunk = getIndexOfString (fileData, "fmt ");
-    int indexOfXMLChunk = getIndexOfString (fileData, "iXML");
+    int indexOfDataChunk = getIndexOfChunk (fileData, "data", 12);
+    int indexOfFormatChunk = getIndexOfChunk (fileData, "fmt ", 12);
+    int indexOfXMLChunk = getIndexOfChunk (fileData, "iXML", 12);
     
     // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
     // then it is unlikely we'll able to read this file, so abort
@@ -617,9 +618,9 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     
     // -----------------------------------------------------------
     // try and find the start points of key chunks
-    int indexOfCommChunk = getIndexOfString (fileData, "COMM");
-    int indexOfSoundDataChunk = getIndexOfString (fileData, "SSND");
-    int indexOfXMLChunk = getIndexOfString (fileData, "iXML");
+    int indexOfCommChunk = getIndexOfChunk (fileData, "COMM", 12, Endianness::BigEndian);
+    int indexOfSoundDataChunk = getIndexOfChunk (fileData, "SSND", 12, Endianness::BigEndian);
+    int indexOfXMLChunk = getIndexOfChunk (fileData, "iXML", 12, Endianness::BigEndian);
     
     // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
     // then it is unlikely we'll able to read this file, so abort
@@ -1166,6 +1167,33 @@ int AudioFile<T>::getIndexOfString (std::vector<uint8_t>& source, std::string st
     }
     
     return index;
+}
+
+//=============================================================
+template <class T>
+int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness)
+{
+    constexpr int dataLen = 4;
+    if (chunkHeaderID.size() != dataLen)
+    {
+        assert (false && "Invalid chunk header ID string");
+        return -1;
+    }
+
+    int i = startIndex;
+    while (i < source.size() - dataLen)
+    {
+        if (memcmp (&source[i], chunkHeaderID.data(), dataLen) == 0)
+        {
+            return i;
+        }
+
+        i += dataLen;
+        auto chunkSize = fourBytesToInt (source, i, endianness);
+        i += (dataLen + chunkSize);
+    }
+
+    return -1;
 }
 
 //=============================================================
