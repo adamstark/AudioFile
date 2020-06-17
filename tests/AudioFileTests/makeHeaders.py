@@ -27,7 +27,7 @@ def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, fileFor
 	header += "\n"
 	if numChannels == 1:
 		header += "std::vector<double> testBuffer = "
-	elif numChannels == 2:
+	else:
 		header += "std::vector<std::vector<double>> testBuffer = {"
 
 	numSamples = 500 # override to prevent enormous file sizes
@@ -40,16 +40,16 @@ def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, fileFor
 
 			if numChannels == 1:
 				header += str (audioSignal[i])
-			elif numChannels == 2:
+			else:
 				header += str (audioSignal.T[k][i])
-			if i < (numSamples - 1): 
+			if i < (numSamples - 1):
 				header += ", "
 
 		header += "}"
 		if k < numChannels - 1:
 			header += ", "
 
-	if numChannels == 2:
+	if numChannels > 1:
 		header += "}"
 
 	header += ";"
@@ -64,7 +64,7 @@ def makeHeader (fileName, audioSignal, numChannels, bitRate, sampleRate, fileFor
 # get all wav files
 for fileName in os.listdir("test-audio"):
     if fileName.endswith(".wav") or fileName.endswith(".aif"):
-      	
+
       	if fileName.endswith(".wav"):
       		audioSignal,  fs,  enc  =  wavread ("test-audio/" + fileName)
       		fileFormat = "wav"
@@ -72,14 +72,14 @@ for fileName in os.listdir("test-audio"):
       		audioSignal,  fs,  enc  =  aiffread ("test-audio/" + fileName)
       		fileFormat = "aif"
       	else:
-      		assert (False) 
+      		assert (False)
 
       	if len (audioSignal.shape) == 1:
       		numChannels = 1
       	elif len (audioSignal.shape) == 2:
-      		numChannels = 2
-      	else:
-      		assert (False)
+			numChannels = audioSignal.shape[1]
+        else:
+      	    assert (False)
 
       	#print fileName, enc
 
@@ -94,7 +94,3 @@ for fileName in os.listdir("test-audio"):
       	else:
       		print "Unknown bit depth:", enc
       		assert (False)
-	
-
-
-
