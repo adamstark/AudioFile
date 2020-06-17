@@ -284,12 +284,10 @@ BOOST_AUTO_TEST_CASE (WavLoadingTests_8chan_24bit_48000)
     BOOST_CHECK_EQUAL (audioFile.getSampleRate(), wav_8chan_24bit_48000::sampleRate);
     BOOST_CHECK_EQUAL (audioFile.getNumChannels(), wav_8chan_24bit_48000::numChannels);
 
-    for (int i = 0; i < wav_8chan_24bit_48000::testBuffer.size(); i++)
+    for (size_t i = 0; i < wav_8chan_24bit_48000::testBuffer.size(); i++)
     {
         for (int k = 0; k < audioFile.getNumChannels(); k++)
-        {
             BOOST_CHECK_CLOSE (audioFile.samples[k][i], wav_8chan_24bit_48000::testBuffer[k][i], 0.00001);
-        }
     }
 }
 
