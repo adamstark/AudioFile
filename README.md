@@ -1,10 +1,3 @@
-# Celemony Additions
-
-This fork was created by Celemony to read and write iXML data chunks. 
-More information about iXML can be found here:
-
-http://www.ixml.info/
-
 # AudioFile
 
 <!-- Version and License Badges -->
@@ -179,6 +172,14 @@ Versions
 ##### 1.0.2 - 6th June 2017
 
 - Bug fixes
+
+Contributions
+-------
+
+* Multichannel (i.e. >2 channels) audio file support ([Sidelobe](https://github.com/Sidelobe))
+* Read/write of iXML data chunks ([mynameisjohn](https://github.com/mynameisjohn))
+* Remove warnings ([Abhinav1997](https://github.com/Abhinav1997))
+
 
 License
 -------
