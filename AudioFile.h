@@ -500,11 +500,11 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     uint16_t audioFormat = twoBytesToInt (fileData, f + 8);
     uint16_t numChannels = twoBytesToInt (fileData, f + 10);
     sampleRate = (uint32_t) fourBytesToInt (fileData, f + 12);
-    int32_t numBytesPerSecond = fourBytesToInt (fileData, f + 16);
-    int16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
+    uint32_t numBytesPerSecond = fourBytesToInt (fileData, f + 16);
+    uint16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
     bitDepth = (int) twoBytesToInt (fileData, f + 22);
     
-    int numBytesPerSample = bitDepth / 8;
+    uint16_t numBytesPerSample = static_cast<uint16_t> (bitDepth) / 8;
     
     // check that the audio format is PCM or Float or extensible
     if (audioFormat != WavAudioFormat::PCM && audioFormat != WavAudioFormat::IEEEFloat && audioFormat != WavAudioFormat::Extensible)
@@ -521,7 +521,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     }
     
     // check header data is consistent
-    if (numBytesPerSecond != static_cast<int32_t> ((numChannels * sampleRate * bitDepth) / 8) || numBytesPerBlock != (numChannels * numBytesPerSample))
+    if (numBytesPerSecond != static_cast<uint32_t> ((numChannels * sampleRate * bitDepth) / 8) || numBytesPerBlock != (numChannels * numBytesPerSample))
     {
         reportError ("ERROR: the header data in this WAV file seems to be inconsistent");
         return false;
