@@ -1,7 +1,7 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.0.6-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.0.7-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-GPL-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
@@ -149,6 +149,12 @@ If you prefer not to see these messages, you can disable this error logging beha
 
 Versions
 -------
+
+##### 1.0.7 - 3rd July 2020
+
+- Support for 32-bit audio files
+- Support for multi-channel audio files
+- Reading/writing of [iXML data chunks](http://www.ixml.info/)
 
 ##### 1.0.6 - 29th February 2020
 
