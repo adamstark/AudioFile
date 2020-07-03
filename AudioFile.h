@@ -497,8 +497,8 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     int f = indexOfFormatChunk;
     std::string formatChunkID (fileData.begin() + f, fileData.begin() + f + 4);
     //int32_t formatChunkSize = fourBytesToInt (fileData, f + 4);
-    int16_t audioFormat = twoBytesToInt (fileData, f + 8);
-    int16_t numChannels = twoBytesToInt (fileData, f + 10);
+    uint16_t audioFormat = twoBytesToInt (fileData, f + 8);
+    uint16_t numChannels = twoBytesToInt (fileData, f + 10);
     sampleRate = (uint32_t) fourBytesToInt (fileData, f + 12);
     int32_t numBytesPerSecond = fourBytesToInt (fileData, f + 16);
     int16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
@@ -506,8 +506,8 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     
     int numBytesPerSample = bitDepth / 8;
     
-    // check that the audio format is PCM or Float
-    if (audioFormat != WavAudioFormat::PCM && audioFormat != WavAudioFormat::IEEEFloat)
+    // check that the audio format is PCM or Float or extensible
+    if (audioFormat != WavAudioFormat::PCM && audioFormat != WavAudioFormat::IEEEFloat && audioFormat != WavAudioFormat::Extensible)
     {
         reportError ("ERROR: this .WAV file is encoded in a format that this library does not support at present");
         return false;
