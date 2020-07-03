@@ -32,6 +32,21 @@
 #include <iterator>
 #include <algorithm>
 
+// disable some warnings on Windows
+#if defined (_MSC_VER)
+    __pragma(warning (push))
+    __pragma(warning (disable : 4244))
+    __pragma(warning (disable : 4457))
+    __pragma(warning (disable : 4458))
+    __pragma(warning (disable : 4389))
+    __pragma(warning (disable : 4996))
+#elif defined (__GNUC__)
+    _Pragma("GCC diagnostic push")
+    _Pragma("GCC diagnostic ignored \"-Wconversion\"")
+    _Pragma("GCC diagnostic ignored \"-Wsign-compare\"")
+    _Pragma("GCC diagnostic ignored \"-Wshadow\"")
+#endif
+
 //=============================================================
 /** The different types of audio file, plus some other types to 
  * indicate a failure to load a file, or that one hasn't been
@@ -132,6 +147,11 @@ public:
      */
     AudioBuffer samples;
     
+    //=============================================================
+    /** An optional iXML chunk that can be added to the AudioFile. 
+     */
+    std::string iXMLChunk;
+    
 private:
     
     //=============================================================
@@ -157,6 +177,7 @@ private:
     int32_t fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int getIndexOfString (std::vector<uint8_t>& source, std::string s);
+    int getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
     
     //=============================================================
     T sixteenBitIntToSample (int16_t sample);
@@ -240,6 +261,8 @@ enum AIFFAudioFormat
 template <class T>
 AudioFile<T>::AudioFile()
 {
+    static_assert(std::is_floating_point<T>::value, "ERROR: This version of AudioFile only supports floating point sample formats");
+
     bitDepth = 16;
     sampleRate = 44100;
     samples.resize (1);
@@ -457,8 +480,9 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     
     // -----------------------------------------------------------
     // try and find the start points of key chunks
-    int indexOfDataChunk = getIndexOfString (fileData, "data");
-    int indexOfFormatChunk = getIndexOfString (fileData, "fmt");
+    int indexOfDataChunk = getIndexOfChunk (fileData, "data", 12);
+    int indexOfFormatChunk = getIndexOfChunk (fileData, "fmt ", 12);
+    int indexOfXMLChunk = getIndexOfChunk (fileData, "iXML", 12);
     
     // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
     // then it is unlikely we'll able to read this file, so abort
@@ -569,6 +593,14 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
         }
     }
 
+    // -----------------------------------------------------------
+    // iXML CHUNK
+    if (indexOfXMLChunk != -1)
+    {
+        int32_t chunkSize = fourBytesToInt (fileData, indexOfXMLChunk + 4);
+        iXMLChunk = std::string ((const char*) &fileData[indexOfXMLChunk + 8], chunkSize);
+    }
+
     return true;
 }
 
@@ -586,8 +618,9 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     
     // -----------------------------------------------------------
     // try and find the start points of key chunks
-    int indexOfCommChunk = getIndexOfString (fileData, "COMM");
-    int indexOfSoundDataChunk = getIndexOfString (fileData, "SSND");
+    int indexOfCommChunk = getIndexOfChunk (fileData, "COMM", 12, Endianness::BigEndian);
+    int indexOfSoundDataChunk = getIndexOfChunk (fileData, "SSND", 12, Endianness::BigEndian);
+    int indexOfXMLChunk = getIndexOfChunk (fileData, "iXML", 12, Endianness::BigEndian);
     
     // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
     // then it is unlikely we'll able to read this file, so abort
@@ -698,6 +731,14 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
             }
         }
     }
+
+    // -----------------------------------------------------------
+    // iXML CHUNK
+    if (indexOfXMLChunk != -1)
+    {
+        int32_t chunkSize = fourBytesToInt (fileData, indexOfXMLChunk + 4);
+        iXMLChunk = std::string ((const char*) &fileData[indexOfXMLChunk + 8], chunkSize);
+    }
     
     return true;
 }
@@ -764,6 +805,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
     int32_t dataChunkSize = getNumSamplesPerChannel() * (getNumChannels() * bitDepth / 8);
     int16_t audioFormat = bitDepth == 32 ? WavAudioFormat::IEEEFloat : WavAudioFormat::PCM;
     int32_t formatChunkSize = audioFormat == WavAudioFormat::PCM ? 16 : 18;
+    int32_t iXMLChunkSize = static_cast<int32_t> (iXMLChunk.size());
     
     // -----------------------------------------------------------
     // HEADER CHUNK
@@ -772,6 +814,11 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
     // The file size in bytes is the header chunk size (4, not counting RIFF and WAVE) + the format
     // chunk size (24) + the metadata part of the data chunk plus the actual data chunk size
     int32_t fileSizeInBytes = 4 + formatChunkSize + 8 + 8 + dataChunkSize;
+    if (iXMLChunkSize > 0)
+    {
+        fileSizeInBytes += (8 + iXMLChunkSize);
+    }
+
     addInt32ToFileData (fileData, fileSizeInBytes);
     
     addStringToFileData (fileData, "WAVE");
@@ -846,6 +893,15 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
         }
     }
     
+    // -----------------------------------------------------------
+    // iXML CHUNK
+    if (iXMLChunkSize > 0) 
+    {
+        addStringToFileData (fileData, "iXML");
+        addInt32ToFileData (fileData, iXMLChunkSize);
+        addStringToFileData (fileData, iXMLChunk);
+    }
+    
     // check that the various sizes we put in the metadata are correct
     if (fileSizeInBytes != static_cast<int32_t> (fileData.size() - 8) || dataChunkSize != (getNumSamplesPerChannel() * getNumChannels() * (bitDepth / 8)))
     {
@@ -867,6 +923,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
     int32_t numBytesPerFrame = numBytesPerSample * getNumChannels();
     int32_t totalNumAudioSampleBytes = getNumSamplesPerChannel() * numBytesPerFrame;
     int32_t soundDataChunkSize = totalNumAudioSampleBytes + 8;
+    int32_t iXMLChunkSize = static_cast<int32_t> (iXMLChunk.size());
     
     // -----------------------------------------------------------
     // HEADER CHUNK
@@ -875,6 +932,11 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
     // The file size in bytes is the header chunk size (4, not counting FORM and AIFF) + the COMM
     // chunk size (26) + the metadata part of the SSND chunk plus the actual data chunk size
     int32_t fileSizeInBytes = 4 + 26 + 16 + totalNumAudioSampleBytes;
+    if (iXMLChunkSize > 0)
+    {
+        fileSizeInBytes += (8 + iXMLChunkSize);
+    }
+
     addInt32ToFileData (fileData, fileSizeInBytes, Endianness::BigEndian);
     
     addStringToFileData (fileData, "AIFF");
@@ -934,6 +996,15 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
                 return false;
             }
         }
+    }
+
+    // -----------------------------------------------------------
+    // iXML CHUNK
+    if (iXMLChunkSize > 0)
+    {
+        addStringToFileData (fileData, "iXML");
+        addInt32ToFileData (fileData, iXMLChunkSize);
+        addStringToFileData (fileData, iXMLChunk);
     }
     
     // check that the various sizes we put in the metadata are correct
@@ -1100,6 +1171,33 @@ int AudioFile<T>::getIndexOfString (std::vector<uint8_t>& source, std::string st
 
 //=============================================================
 template <class T>
+int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness)
+{
+    constexpr int dataLen = 4;
+    if (chunkHeaderID.size() != dataLen)
+    {
+        assert (false && "Invalid chunk header ID string");
+        return -1;
+    }
+
+    int i = startIndex;
+    while (i < source.size() - dataLen)
+    {
+        if (memcmp (&source[i], chunkHeaderID.data(), dataLen) == 0)
+        {
+            return i;
+        }
+
+        i += dataLen;
+        auto chunkSize = fourBytesToInt (source, i, endianness);
+        i += (dataLen + chunkSize);
+    }
+
+    return -1;
+}
+
+//=============================================================
+template <class T>
 T AudioFile<T>::sixteenBitIntToSample (int16_t sample)
 {
     return static_cast<T> (sample) / static_cast<T> (32768.);
@@ -1145,5 +1243,11 @@ void AudioFile<T>::reportError (std::string errorMessage)
     if (logErrorsToConsole)
         std::cout << errorMessage << std::endl;
 }
+
+#if defined (_MSC_VER)
+    __pragma(warning (pop))
+#elif defined (__GNUC__)
+    _Pragma("GCC diagnostic pop")
+#endif
 
 #endif /* AudioFile_h */

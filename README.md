@@ -1,3 +1,10 @@
+# Celemony Additions
+
+This fork was created by Celemony to read and write iXML data chunks. 
+More information about iXML can be found here:
+
+http://www.ixml.info/
+
 # AudioFile
 
 <!-- Version and License Badges -->
