@@ -11,6 +11,7 @@
 		E38438C91E5A26EC006C3352 /* FileWritingTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38438C71E5A26EC006C3352 /* FileWritingTests.cpp */; };
 		E39C59A61E4BE42400EA7B67 /* AiffLoadingTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E39C59A41E4BE42400EA7B67 /* AiffLoadingTests.cpp */; };
 		E3A0C94D1E4229C40071404A /* WavLoadingTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E3A0C94C1E4229C40071404A /* WavLoadingTests.cpp */; };
+		E3F0E142250C1BE400F8BB3D /* GeneralTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E3F0E141250C1BE400F8BB3D /* GeneralTests.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,7 @@
 		E38438C71E5A26EC006C3352 /* FileWritingTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileWritingTests.cpp; sourceTree = "<group>"; };
 		E39C59A41E4BE42400EA7B67 /* AiffLoadingTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AiffLoadingTests.cpp; sourceTree = "<group>"; };
 		E3A0C94C1E4229C40071404A /* WavLoadingTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WavLoadingTests.cpp; sourceTree = "<group>"; };
+		E3F0E141250C1BE400F8BB3D /* GeneralTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeneralTests.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +79,7 @@
 				E3A0C94C1E4229C40071404A /* WavLoadingTests.cpp */,
 				E39C59A41E4BE42400EA7B67 /* AiffLoadingTests.cpp */,
 				E38438C71E5A26EC006C3352 /* FileWritingTests.cpp */,
+				E3F0E141250C1BE400F8BB3D /* GeneralTests.cpp */,
 			);
 			name = tests;
 			sourceTree = "<group>";
@@ -143,6 +146,7 @@
 				E325EC261E4222B700D059F0 /* main.cpp in Sources */,
 				E3A0C94D1E4229C40071404A /* WavLoadingTests.cpp in Sources */,
 				E38438C91E5A26EC006C3352 /* FileWritingTests.cpp in Sources */,
+				E3F0E142250C1BE400F8BB3D /* GeneralTests.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

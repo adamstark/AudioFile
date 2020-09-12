@@ -72,6 +72,9 @@ public:
     //=============================================================
     /** Constructor */
     AudioFile();
+    
+    /** Constructor, using a given file path to load a file */
+    AudioFile (std::string filePath);
         
     //=============================================================
     /** Loads an audio file from a given file path.
@@ -268,6 +271,14 @@ AudioFile<T>::AudioFile()
     samples.resize (1);
     samples[0].resize (0);
     audioFileFormat = AudioFileFormat::NotLoaded;
+}
+
+//=============================================================
+template <class T>
+AudioFile<T>::AudioFile (std::string filePath)
+ :  AudioFile<T>()
+{
+    load (filePath);
 }
 
 //=============================================================
