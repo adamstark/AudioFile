@@ -1014,7 +1014,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
     if (iXMLChunkSize > 0)
     {
         addStringToFileData (fileData, "iXML");
-        addInt32ToFileData (fileData, iXMLChunkSize);
+        addInt32ToFileData (fileData, iXMLChunkSize, Endianness::BigEndian);
         addStringToFileData (fileData, iXMLChunk);
     }
     
