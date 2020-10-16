@@ -408,15 +408,16 @@ void AudioFile<T>::load (const std::string &filePath)
     }
 
 
+    auto const startPosition = file.tellg();
     file.ignore(std::numeric_limits<std::streamsize>::max());
-    file.seekg(file.tellg());
+    file.seekg(startPosition);
 
     auto fileData = std::vector<uint8_t>(file.gcount());
 
     file.read((char*)&fileData[0], fileData.size());
     
     // get audio file format
-    audioFileFormat = determineAudioFileFormat (fileData);
+    audioFileFormat = determineAudioFileFormat(fileData);
     
     if (audioFileFormat == AudioFileFormat::Wave) {
         decodeWaveFile (fileData);
