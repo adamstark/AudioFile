@@ -25,8 +25,9 @@
 
 #include <iostream>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 #include <string>
+#include <cstring>
 #include <fstream>
 #include <unordered_map>
 #include <iterator>
