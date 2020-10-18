@@ -1,5 +1,6 @@
 #include <iostream>
-#include <filesystem>
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <AudioFile.h>
 
  //=======================================================================
