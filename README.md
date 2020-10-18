@@ -1,7 +1,7 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.0.7-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.0.8-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-GPL-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
@@ -122,6 +122,12 @@ Usage
 	audioFile.save ("path/to/desired/audioFile.aif", AudioFileFormat::Aiff);
 
 
+Examples
+-----------------
+
+Please see the `examples` folder for some examples on library usage. 
+
+
 A Note On Types
 -----------------
 
@@ -149,6 +155,12 @@ If you prefer not to see these messages, you can disable this error logging beha
 
 Versions
 -------
+
+##### 1.0.8 - 18th October 2020
+
+- CMake support
+- Construct instances with a file path
+- Bug fixes
 
 ##### 1.0.7 - 3rd July 2020
 
@@ -185,7 +197,16 @@ Contributions
 * Multichannel (i.e. >2 channels) audio file support ([Sidelobe](https://github.com/Sidelobe))
 * Read/write of iXML data chunks ([mynameisjohn](https://github.com/mynameisjohn))
 * Remove warnings ([Abhinav1997](https://github.com/Abhinav1997))
+* Better support on Ubuntu ([BenjaminHinchliff](https://github.com/BenjaminHinchliff))
 
+Want to Contribute?
+-------
+
+If you would like to submit a pull request for this library, please do! But kindly follow the following simple guidelines...
+
+* Make the changes as concise as is possible for the change you are proposing
+* Avoid unnecessarily changing a large number of lines - e.g. commits changing the number of spaces in indentations on all lines (and so on)
+* Keep to the code style of this library which is the [JUCE Coding Standards](https://juce.com/discover/stories/coding-standards)
 
 License
 -------
