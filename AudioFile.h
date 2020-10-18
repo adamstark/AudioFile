@@ -25,8 +25,9 @@
 
 #include <iostream>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 #include <string>
+#include <cstring>
 #include <fstream>
 #include <unordered_map>
 #include <iterator>
@@ -72,6 +73,9 @@ public:
     //=============================================================
     /** Constructor */
     AudioFile();
+    
+    /** Constructor, using a given file path to load a file */
+    AudioFile (std::string filePath);
         
     //=============================================================
     /** Loads an audio file from a given file path.
@@ -268,6 +272,14 @@ AudioFile<T>::AudioFile()
     samples.resize (1);
     samples[0].resize (0);
     audioFileFormat = AudioFileFormat::NotLoaded;
+}
+
+//=============================================================
+template <class T>
+AudioFile<T>::AudioFile (std::string filePath)
+ :  AudioFile<T>()
+{
+    load (filePath);
 }
 
 //=============================================================
@@ -497,17 +509,17 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     int f = indexOfFormatChunk;
     std::string formatChunkID (fileData.begin() + f, fileData.begin() + f + 4);
     //int32_t formatChunkSize = fourBytesToInt (fileData, f + 4);
-    int16_t audioFormat = twoBytesToInt (fileData, f + 8);
-    int16_t numChannels = twoBytesToInt (fileData, f + 10);
+    uint16_t audioFormat = twoBytesToInt (fileData, f + 8);
+    uint16_t numChannels = twoBytesToInt (fileData, f + 10);
     sampleRate = (uint32_t) fourBytesToInt (fileData, f + 12);
-    int32_t numBytesPerSecond = fourBytesToInt (fileData, f + 16);
-    int16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
+    uint32_t numBytesPerSecond = fourBytesToInt (fileData, f + 16);
+    uint16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
     bitDepth = (int) twoBytesToInt (fileData, f + 22);
     
-    int numBytesPerSample = bitDepth / 8;
+    uint16_t numBytesPerSample = static_cast<uint16_t> (bitDepth) / 8;
     
-    // check that the audio format is PCM or Float
-    if (audioFormat != WavAudioFormat::PCM && audioFormat != WavAudioFormat::IEEEFloat)
+    // check that the audio format is PCM or Float or extensible
+    if (audioFormat != WavAudioFormat::PCM && audioFormat != WavAudioFormat::IEEEFloat && audioFormat != WavAudioFormat::Extensible)
     {
         reportError ("ERROR: this .WAV file is encoded in a format that this library does not support at present");
         return false;
@@ -521,7 +533,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     }
     
     // check header data is consistent
-    if ((numBytesPerSecond != (numChannels * sampleRate * bitDepth) / 8) || (numBytesPerBlock != (numChannels * numBytesPerSample)))
+    if (numBytesPerSecond != static_cast<uint32_t> ((numChannels * sampleRate * bitDepth) / 8) || numBytesPerBlock != (numChannels * numBytesPerSample))
     {
         reportError ("ERROR: the header data in this WAV file seems to be inconsistent");
         return false;
