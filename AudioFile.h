@@ -1199,19 +1199,19 @@ int64_t AudioFile<T>::eightBytesToInt(std::vector<uint8_t>& source, int startInd
     int64_t result = 0;
 
     if (endianness == Endianness::LittleEndian)
-        result = (static_cast<unsigned __int64>(source[startIndex + 7]) << 56)
-            | (static_cast<unsigned __int64>(source[startIndex + 6]) << 48)
-            | (static_cast<unsigned __int64>(source[startIndex + 5]) << 40)
-            | (static_cast<unsigned __int64>(source[startIndex + 4]) << 32)
+        result = (static_cast<int64_t>(source[startIndex + 7]) << 56)
+            | (static_cast<int64_t>(source[startIndex + 6]) << 48)
+            | (static_cast<int64_t>(source[startIndex + 5]) << 40)
+            | (static_cast<int64_t>(source[startIndex + 4]) << 32)
             | (source[startIndex + 3] << 24)
             | (source[startIndex + 2] << 16)
             | (source[startIndex + 1] << 8)
             | source[startIndex];
     else
-        result = (static_cast<unsigned __int64>(source[startIndex]) << 56)
-            | (static_cast<unsigned __int64>(source[startIndex + 1]) << 48)
-            | (static_cast<unsigned __int64>(source[startIndex + 2]) << 40)
-            | (static_cast<unsigned __int64>(source[startIndex + 3]) << 32)
+        result = (static_cast<int64_t>(source[startIndex]) << 56)
+            | (static_cast<int64_t>(source[startIndex + 1]) << 48)
+            | (static_cast<int64_t>(source[startIndex + 2]) << 40)
+            | (static_cast<int64_t>(source[startIndex + 3]) << 32)
             | (source[startIndex + 4] << 24)
             | (source[startIndex + 5] << 16)
             | (source[startIndex + 6] << 8)
