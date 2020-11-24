@@ -1203,19 +1203,19 @@ int64_t AudioFile<T>::eightBytesToInt(std::vector<uint8_t>& source, int startInd
             | (static_cast<int64_t>(source[startIndex + 6]) << 48)
             | (static_cast<int64_t>(source[startIndex + 5]) << 40)
             | (static_cast<int64_t>(source[startIndex + 4]) << 32)
-            | (source[startIndex + 3] << 24)
-            | (source[startIndex + 2] << 16)
-            | (source[startIndex + 1] << 8)
-            | source[startIndex];
+            | (static_cast<int64_t>(source[startIndex + 3]) << 24)
+            | (static_cast<int64_t>(source[startIndex + 2]) << 16)
+            | (static_cast<int64_t>(source[startIndex + 1]) << 8)
+            | static_cast<int64_t>(source[startIndex]);
     else
         result = (static_cast<int64_t>(source[startIndex]) << 56)
             | (static_cast<int64_t>(source[startIndex + 1]) << 48)
             | (static_cast<int64_t>(source[startIndex + 2]) << 40)
             | (static_cast<int64_t>(source[startIndex + 3]) << 32)
-            | (source[startIndex + 4] << 24)
-            | (source[startIndex + 5] << 16)
-            | (source[startIndex + 6] << 8)
-            | source[startIndex + 7];
+            | (static_cast<int64_t>(source[startIndex + 4]) << 24)
+            | (static_cast<int64_t>(source[startIndex + 5]) << 16)
+            | (static_cast<int64_t>(source[startIndex + 6]) << 8)
+            | static_cast<int64_t>(source[startIndex + 7]);
     return result;
 }
 
