@@ -199,6 +199,7 @@ private:
     
     //=============================================================
     void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
+    void addInt64ToFileData(std::vector<uint8_t>& fileData, int64_t i, Endianness endianness = Endianness::LittleEndian);
     void addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i, Endianness endianness = Endianness::LittleEndian);
     void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i, Endianness endianness = Endianness::LittleEndian);
     
