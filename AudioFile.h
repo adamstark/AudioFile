@@ -178,6 +178,7 @@ private:
     void clearAudioBuffer();
     
     //=============================================================
+    int64_t eightBytesToInt(std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int32_t fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int getIndexOfString (std::vector<uint8_t>& source, std::string s);
@@ -539,10 +540,10 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
         return false;
     }
     
-    // check bit depth is either 8, 16, 24 or 32 bit
-    if (bitDepth != 8 && bitDepth != 16 && bitDepth != 24 && bitDepth != 32)
+    // check bit depth is either 8, 16, 24, 32 or 64 bit
+    if (bitDepth != 8 && bitDepth != 16 && bitDepth != 24 && bitDepth != 32 && bitDepth != 64)
     {
-        reportError ("ERROR: this file has a bit depth that is not 8, 16, 24 or 32 bits");
+        reportError ("ERROR: this file has a bit depth that is not 8, 16, 24, 32 or 64 bits");
         return false;
     }
     
@@ -597,6 +598,20 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                     sample = (T) sampleAsInt / static_cast<float> (std::numeric_limits<std::int32_t>::max());
                 
                 samples[channel].push_back (sample);
+            }
+            else if (bitDepth == 64)
+            {
+                int64_t sampleAsInt = eightBytesToInt(fileData, sampleIndex);
+                T sample;
+
+                if (audioFormat == WavAudioFormat::IEEEFloat) {
+                    sample = (T)reinterpret_cast<double&> (sampleAsInt);
+                } else {
+                    // assume PCM
+                    sample = (T)sampleAsInt / static_cast<float> (std::numeric_limits<std::int64_t>::max());
+                }
+
+                samples[channel].push_back(sample);
             }
             else
             {
@@ -897,6 +912,17 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
                 
                 addInt32ToFileData (fileData, sampleAsInt, Endianness::LittleEndian);
             }
+            else if (bitDepth == 64)
+            {
+                int64_t sampleAsInt;
+
+                if (audioFormat == WavAudioFormat::IEEEFloat)
+                    sampleAsInt = (int64_t) reinterpret_cast<int64_t&> (samples[channel][i]);
+                else // assume PCM
+                    sampleAsInt = (int64_t)(samples[channel][i] * std::numeric_limits<int64_t>::max());
+
+                addInt64ToFileData(fileData, sampleAsInt, Endianness::LittleEndian);
+            }
             else
             {
                 assert (false && "Trying to write a file with unsupported bit depth");
@@ -1062,6 +1088,39 @@ void AudioFile<T>::addStringToFileData (std::vector<uint8_t>& fileData, std::str
 
 //=============================================================
 template <class T>
+void AudioFile<T>::addInt64ToFileData(std::vector<uint8_t>& fileData, int64_t i, Endianness endianness)
+{
+    uint8_t bytes[8];
+
+    if (endianness == Endianness::LittleEndian)
+    {
+        bytes[7] = (i >> 56) & 0xFF;
+        bytes[6] = (i >> 48) & 0xFF;
+        bytes[5] = (i >> 40) & 0xFF;
+        bytes[4] = (i >> 32) & 0xFF;
+        bytes[3] = (i >> 24) & 0xFF;
+        bytes[2] = (i >> 16) & 0xFF;
+        bytes[1] = (i >> 8) & 0xFF;
+        bytes[0] = i & 0xFF;
+    }
+    else
+    {
+        bytes[0] = (i >> 56) & 0xFF;
+        bytes[1] = (i >> 48) & 0xFF;
+        bytes[2] = (i >> 40) & 0xFF;
+        bytes[3] = (i >> 32) & 0xFF;
+        bytes[4] = (i >> 24) & 0xFF;
+        bytes[5] = (i >> 16) & 0xFF;
+        bytes[6] = (i >> 8) & 0xFF;
+        bytes[7] = i & 0xFF;
+    }
+
+    for (int i = 0; i < 8; i++)
+        fileData.push_back(bytes[i]);
+}
+
+//=============================================================
+template <class T>
 void AudioFile<T>::addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i, Endianness endianness)
 {
     uint8_t bytes[4];
@@ -1130,6 +1189,33 @@ AudioFileFormat AudioFile<T>::determineAudioFileFormat (std::vector<uint8_t>& fi
         return AudioFileFormat::Aiff;
     else
         return AudioFileFormat::Error;
+}
+
+//=============================================================
+template <class T>
+int64_t AudioFile<T>::eightBytesToInt(std::vector<uint8_t>& source, int startIndex, Endianness endianness)
+{
+    int64_t result = 0;
+
+    if (endianness == Endianness::LittleEndian)
+        result = (static_cast<unsigned __int64>(source[startIndex + 7]) << 56)
+            | (static_cast<unsigned __int64>(source[startIndex + 6]) << 48)
+            | (static_cast<unsigned __int64>(source[startIndex + 5]) << 40)
+            | (static_cast<unsigned __int64>(source[startIndex + 4]) << 32)
+            | (source[startIndex + 3] << 24)
+            | (source[startIndex + 2] << 16)
+            | (source[startIndex + 1] << 8)
+            | source[startIndex];
+    else
+        result = (static_cast<unsigned __int64>(source[startIndex]) << 56)
+            | (static_cast<unsigned __int64>(source[startIndex + 1]) << 48)
+            | (static_cast<unsigned __int64>(source[startIndex + 2]) << 40)
+            | (static_cast<unsigned __int64>(source[startIndex + 3]) << 32)
+            | (source[startIndex + 4] << 24)
+            | (source[startIndex + 5] << 16)
+            | (source[startIndex + 6] << 8)
+            | source[startIndex + 7];
+    return result;
 }
 
 //=============================================================
