@@ -918,9 +918,14 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
                 int64_t sampleAsInt;
 
                 if (audioFormat == WavAudioFormat::IEEEFloat)
-                    sampleAsInt = (int64_t) reinterpret_cast<int64_t&> (samples[channel][i]);
+                {
+                    double sample{ static_cast<double>(samples[channel][i]) };
+                    sampleAsInt = (int64_t) reinterpret_cast<int64_t&> (sample);
+                }
                 else // assume PCM
+                {
                     sampleAsInt = (int64_t)(samples[channel][i] * std::numeric_limits<int64_t>::max());
+                }
 
                 addInt64ToFileData(fileData, sampleAsInt, Endianness::LittleEndian);
             }
