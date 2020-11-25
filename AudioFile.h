@@ -907,9 +907,14 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
                 int32_t sampleAsInt;
                 
                 if (audioFormat == WavAudioFormat::IEEEFloat)
+                {
+                    float sample{ static_cast<float>(samples[channel][i]) };
                     sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (samples[channel][i]);
+                }
                 else // assume PCM
-                    sampleAsInt = (int32_t) (samples[channel][i] * std::numeric_limits<int32_t>::max());
+                {
+                    sampleAsInt = (int32_t)(samples[channel][i] * std::numeric_limits<int32_t>::max());
+                }
                 
                 addInt32ToFileData (fileData, sampleAsInt, Endianness::LittleEndian);
             }
