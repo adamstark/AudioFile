@@ -458,9 +458,25 @@ bool AudioFile<T>::load (std::string filePath)
         return false;
     }
     
-    file.unsetf (std::ios::skipws);
-    std::istream_iterator<uint8_t> begin (file), end;
-    std::vector<uint8_t> fileData (begin, end);
+    std::vector<uint8_t> fileData;
+
+	file.unsetf(std::ios::skipws);
+
+	file.seekg(0, std::ios::end);
+	size_t length = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	// allocate
+	fileData.resize(length);
+
+	file.read(reinterpret_cast<char*>(fileData.data()), length);
+	file.close();
+
+	if (file.gcount() != length)
+	{
+		reportError("ERROR: Couldn't read entire file\n" + filePath);
+		return false;
+	}
     
     // get audio file format
     audioFileFormat = determineAudioFileFormat (fileData);
