@@ -564,6 +564,12 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
         {
             int sampleIndex = samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;
             
+            if ((sampleIndex + (bitDepth / 8)) >= fileData.size())
+            {
+                reportError ("ERROR: read file error as the metadata indicates more samples than there are in the file data");
+                return false;
+            }
+            
             if (bitDepth == 8)
             {
                 T sample = singleByteToSample (fileData[sampleIndex]);
@@ -701,6 +707,12 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
         for (int channel = 0; channel < numChannels; channel++)
         {
             int sampleIndex = samplesStartIndex + (numBytesPerFrame * i) + channel * numBytesPerSample;
+            
+            if ((sampleIndex + (bitDepth / 8)) >= fileData.size())
+            {
+                reportError ("ERROR: read file error as the metadata indicates more samples than there are in the file data");
+                return false;
+            }
             
             if (bitDepth == 8)
             {
