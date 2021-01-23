@@ -1,7 +1,7 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.0.8-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.0.9-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-GPL-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
@@ -156,6 +156,11 @@ If you prefer not to see these messages, you can disable this error logging beha
 Versions
 -------
 
+##### 1.0.9 - 23rd January 2021
+
+- Faster loading of audio files
+- Bug fixes
+
 ##### 1.0.8 - 18th October 2020
 
 - CMake support
@@ -198,6 +203,7 @@ Contributions
 * Read/write of iXML data chunks ([mynameisjohn](https://github.com/mynameisjohn))
 * Remove warnings ([Abhinav1997](https://github.com/Abhinav1997))
 * Better support on Ubuntu ([BenjaminHinchliff](https://github.com/BenjaminHinchliff))
+* Faster loading of audio files ([helloimmatt](https://github.com/helloimmatt/))
 
 Want to Contribute?
 -------
