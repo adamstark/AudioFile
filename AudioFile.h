@@ -89,6 +89,10 @@ public:
     bool save (std::string filePath, AudioFileFormat format = AudioFileFormat::Wave);
         
     //=============================================================
+    /** Loads an audio file from a pointer to data in memory */
+    bool loadFromMemory (std::vector<uint8_t>& fileData);
+    
+    //=============================================================
     /** @Returns the sample rate */
     uint32_t getSampleRate() const;
     
@@ -478,6 +482,13 @@ bool AudioFile<T>::load (std::string filePath)
 		return false;
 	}
     
+    return loadFromMemory (fileData);
+}
+
+//=============================================================
+template <class T>
+bool AudioFile<T>::loadFromMemory (std::vector<uint8_t>& fileData)
+{
     // get audio file format
     audioFileFormat = determineAudioFileFormat (fileData);
     
