@@ -89,7 +89,7 @@ public:
     bool save (std::string filePath, AudioFileFormat format = AudioFileFormat::Wave);
         
     //=============================================================
-    /** Loads an audio file from a pointer to data in memory */
+    /** Loads an audio file from data in memory */
     bool loadFromMemory (std::vector<uint8_t>& fileData);
     
     //=============================================================
