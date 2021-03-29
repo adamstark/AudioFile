@@ -12,6 +12,12 @@ include (GNUInstallDirs)
 add_library (${PROJECT_NAME} INTERFACE)
 
 #===============================================================================
+if(MSVC)
+  # needed for M_PI macro
+  add_definitions(-D_USE_MATH_DEFINES)
+endif()
+
+#===============================================================================
 target_include_directories (
   ${PROJECT_NAME}
   INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>
