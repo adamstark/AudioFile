@@ -22,7 +22,7 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          make
+          cmake --build .
 
       - name: Unit Tests
         run: |
