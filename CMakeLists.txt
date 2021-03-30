@@ -9,7 +9,17 @@ project ("AudioFile" VERSION 1.0.9
 include (GNUInstallDirs)
 
 #===============================================================================
+option (BUILD_TESTS "Build tests" ON)
+option (BUILD_EXAMPLES "Build examples" ON)
+
+#===============================================================================
 add_library (${PROJECT_NAME} INTERFACE)
+
+#===============================================================================
+if(MSVC)
+  # needed for M_PI macro
+  add_definitions(-D_USE_MATH_DEFINES)
+endif()
 
 #===============================================================================
 target_include_directories (
@@ -21,10 +31,14 @@ target_include_directories (
 target_compile_features (${PROJECT_NAME} INTERFACE cxx_std_11)
 
 #===============================================================================
-add_subdirectory (examples)
+if (BUILD_EXAMPLES)
+  add_subdirectory (examples)
+endif ()
 
-enable_testing()
-add_subdirectory (tests)
+if (BUILD_TESTS)
+  enable_testing()
+  add_subdirectory (tests)
+endif ()
 
 #===============================================================================
 set (CMAKE_SUPPRESS_REGENERATION true)
