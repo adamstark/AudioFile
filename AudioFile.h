@@ -90,21 +90,34 @@ public:
     
     //=============================================================
     /** Constructor */
-    AudioFile();
+    AudioFile ();
     
-    /** Constructor, using a given file path to load a file */
-    AudioFile (std::string filePath);
+    /** Constructor, using a given file path to load a file 
+     * When eagerload is set to false, need to explicitly call load function to get data to memory.
+    */
+    AudioFile (std::string filePath, bool eagerload = true);
         
     //=============================================================
     /** Loads an audio file from a given file path.
      * @Returns true if the file was successfully loaded
      */
     bool load (std::string filePath);
-    
+
+    //=============================================================
+    /** Loads an audio file from a previously given file path (through the constructor).
+     * @Returns true if the file was successfully loaded
+     */
+    bool load ();
+
     /** Saves an audio file to a given file path.
      * @Returns true if the file was successfully saved
      */
     bool save (std::string filePath, AudioFileFormat format = AudioFileFormat::Wave);
+
+    /** Stores wave header (data from riff and ftm chunks) in second param .
+     * @Returns true if the data was successfully stored
+     */
+    bool extractWaveHeader(WaveHeader& output);
 
     //=============================================================
     /** @Returns the sample rate */
@@ -175,7 +188,9 @@ public:
     std::string iXMLChunk;
     
 private:
-    
+    //=============================================================
+    std::string filePath = "";
+
     //=============================================================
     enum class Endianness
     {
@@ -188,7 +203,7 @@ private:
     bool decodeWaveFile (std::vector<uint8_t>& fileData);
     bool decodeWaveFile (std::vector<uint8_t>& fileData, WaveHeader header);
     bool decodeWaveHeader (std::vector<uint8_t>& fileData, WaveHeader& output);
-//=============================================================
+    //=============================================================
 
     bool decodeAiffFile (std::vector<uint8_t>& fileData);
     
@@ -298,10 +313,13 @@ AudioFile<T>::AudioFile()
 
 //=============================================================
 template <class T>
-AudioFile<T>::AudioFile (std::string filePath)
+AudioFile<T>::AudioFile (std::string filePathParam, bool eagerload)
  :  AudioFile<T>()
 {
-    load (filePath);
+    filePath = filePathParam;
+    if (eagerload){
+        load();
+    }
 }
 
 //=============================================================
@@ -469,11 +487,30 @@ void AudioFile<T>::shouldLogErrorsToConsole (bool logErrors)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::load (std::string filePath)
+bool AudioFile<T>::load ()
 {
+    if (filePath == ""){
+        reportError("ERROR: Trying to load without provided filepath");
+        return false;
+    }
+    return load(filePath);
+}
+
+//=============================================================
+template <class T>
+bool AudioFile<T>::load (std::string filePathParam)
+{
+    if (filePath != "")
+    {
+        reportError ("ERROR: Trying to load path with explicit file path (" + filePathParam + "), while one was already set, using original (" + filePath + ")");
+    } 
+    else 
+    {
+        filePath = filePathParam;
+    }
+
     std::ifstream file (filePath, std::ios::binary);
     
-    // check the file exists
     if (! file.good())
     {
         reportError ("ERROR: File doesn't exist or otherwise can't load file\n"  + filePath);
@@ -522,9 +559,10 @@ template <class T>
 bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
 {
     WaveHeader header;
-    decodeWaveHeader(fileData, header);
-    decodeWaveFile(fileData, header);
-    return true;
+    if (!decodeWaveHeader(fileData, header)){
+        return false;
+    }
+    return decodeWaveFile(fileData, header);
 }
 
 //=============================================================
@@ -682,6 +720,7 @@ bool AudioFile<T>::decodeWaveHeader (std::vector<uint8_t>& fileData, WaveHeader&
     int d = indexOfDataChunk;
     output.dataChunkID = std::string(fileData.begin() + d, fileData.begin() + d + 4);
     output.dataChunkSize = fourBytesToInt (fileData, d + 4);
+    return true;
 }
 
 //=============================================================
@@ -881,6 +920,44 @@ bool AudioFile<T>::save (std::string filePath, AudioFileFormat format)
     
     return false;
 }
+
+template<class T>
+bool AudioFile<T>::extractWaveHeader(WaveHeader& output)
+{
+    if (filePath == ""){
+        reportError("ERROR: Trying to extact header without provided filepath");
+        return false;
+    }
+
+    const int length = 44;
+
+    std::ifstream file (filePath, std::ios::binary);
+    if (! file.good())
+    {
+        reportError ("ERROR: File doesn't exist or otherwise can't load file\n"  + filePath);
+        return false;
+    }
+    
+    std::vector<uint8_t> fileData;
+
+	fileData.resize (length);
+
+	file.read(reinterpret_cast<char*> (fileData.data()), length);
+	file.close();
+
+    if ( determineAudioFileFormat (fileData) != AudioFileFormat::Wave){
+		reportError ("ERROR: Can't extract wave header, not a wave file\n" + filePath);
+    }
+
+	if (file.gcount() != length)
+	{
+		reportError ("ERROR: Couldn't read enough data to read wave header\n" + filePath);
+		return false;
+	}
+    
+    return decodeWaveHeader(fileData, output);
+}
+
 
 //=============================================================
 template <class T>
