@@ -500,14 +500,7 @@ bool AudioFile<T>::load ()
 template <class T>
 bool AudioFile<T>::load (std::string filePathParam)
 {
-    if (filePath != "")
-    {
-        reportError ("ERROR: Trying to load path with explicit file path (" + filePathParam + "), while one was already set, using original (" + filePath + ")");
-    } 
-    else 
-    {
-        filePath = filePathParam;
-    }
+    filePath = filePathParam;
 
     std::ifstream file (filePath, std::ios::binary);
     
