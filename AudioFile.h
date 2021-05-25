@@ -201,7 +201,6 @@ private:
     //=============================================================
     AudioFileFormat determineAudioFileFormat (std::vector<uint8_t>& fileData);
     bool decodeWaveFile (std::vector<uint8_t>& fileData);
-    bool decodeWaveFile (std::vector<uint8_t>& fileData, WaveHeader header);
     bool decodeWaveHeader (std::vector<uint8_t>& fileData, WaveHeader& output);
     //=============================================================
 
@@ -555,13 +554,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     if (!decodeWaveHeader(fileData, header)){
         return false;
     }
-    return decodeWaveFile(fileData, header);
-}
 
-//=============================================================
-template <class T>
-bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData, WaveHeader header)
-{
     int numSamples = header.dataChunkSize / (header.numChannels * header.bitDepth / 8);
     int indexOfDataChunk = getIndexOfChunk (fileData, "data", 12);
     int samplesStartIndex = indexOfDataChunk + 8;
