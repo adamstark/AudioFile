@@ -265,6 +265,20 @@ TEST_SUITE ("WavLoadingTests")
         }
     }
 
+    TEST_CASE ("WavLoadingTests_Mono_16bit_48000_extract_header")
+    {
+        AudioFile<double> audioFile(projectBuildDirectory + "/test-audio/wav_mono_16bit_48000.wav", false);
+        WaveHeader header;
+        bool loadedOK = audioFile.extractWaveHeader(header);
+
+        CHECK (loadedOK);
+        
+        CHECK_EQ (header.headerChunkID, "RIFF");
+        CHECK_EQ (header.formatChunkID, "fmt ");
+        CHECK_EQ (header.numChannels, wav_mono_16bit_48000::numChannels);
+        CHECK_EQ (header.sampleRate, wav_mono_16bit_48000::sampleRate);
+    }
+
     //=============================================================
     TEST_CASE ("WavLoadingTests_Mono_24bit_48000")
     {
