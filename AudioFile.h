@@ -61,6 +61,24 @@ enum class AudioFileFormat
     Aiff
 };
 
+struct WaveHeader
+{
+    std::string headerChunkID;
+    uint32_t chunkSize; //Size of entire file from here (so entire size - 8 bytes since headerChunkID and chunkSize are not included.
+    std::string format;
+    std::string formatChunkID;
+    uint32_t formatChunkSize;
+    uint16_t audioFormat;
+    uint16_t numChannels;
+    uint32_t sampleRate;
+    uint32_t numBytesPerSecond;
+    uint16_t numBytesPerBlock;
+    int bitDepth;
+    std::string dataChunkID;
+    int32_t dataChunkSize;
+};
+
+
 //=============================================================
 template <class T>
 class AudioFile
@@ -72,22 +90,35 @@ public:
     
     //=============================================================
     /** Constructor */
-    AudioFile();
+    AudioFile ();
     
-    /** Constructor, using a given file path to load a file */
-    AudioFile (std::string filePath);
+    /** Constructor, using a given file path to load a file 
+     * When eagerload is set to false, need to explicitly call load function to get data to memory.
+    */
+    AudioFile (std::string filePath, bool eagerload = true);
         
     //=============================================================
     /** Loads an audio file from a given file path.
      * @Returns true if the file was successfully loaded
      */
     bool load (std::string filePath);
-    
+
+    //=============================================================
+    /** Loads an audio file from a previously given file path (through the constructor).
+     * @Returns true if the file was successfully loaded
+     */
+    bool load ();
+
     /** Saves an audio file to a given file path.
      * @Returns true if the file was successfully saved
      */
     bool save (std::string filePath, AudioFileFormat format = AudioFileFormat::Wave);
-        
+
+    /** Stores wave header (data from riff and ftm chunks) in second param .
+     * @Returns true if the data was successfully stored
+     */
+    bool extractWaveHeader(WaveHeader& output);
+
     //=============================================================
     /** @Returns the sample rate */
     uint32_t getSampleRate() const;
@@ -157,7 +188,9 @@ public:
     std::string iXMLChunk;
     
 private:
-    
+    //=============================================================
+    std::string filePath = "";
+
     //=============================================================
     enum class Endianness
     {
@@ -168,6 +201,9 @@ private:
     //=============================================================
     AudioFileFormat determineAudioFileFormat (std::vector<uint8_t>& fileData);
     bool decodeWaveFile (std::vector<uint8_t>& fileData);
+    bool decodeWaveHeader (std::vector<uint8_t>& fileData, WaveHeader& output);
+    //=============================================================
+
     bool decodeAiffFile (std::vector<uint8_t>& fileData);
     
     //=============================================================
@@ -276,10 +312,13 @@ AudioFile<T>::AudioFile()
 
 //=============================================================
 template <class T>
-AudioFile<T>::AudioFile (std::string filePath)
+AudioFile<T>::AudioFile (std::string filePathParam, bool eagerload)
  :  AudioFile<T>()
 {
-    load (filePath);
+    filePath = filePathParam;
+    if (eagerload){
+        load();
+    }
 }
 
 //=============================================================
@@ -447,11 +486,23 @@ void AudioFile<T>::shouldLogErrorsToConsole (bool logErrors)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::load (std::string filePath)
+bool AudioFile<T>::load ()
 {
+    if (filePath == ""){
+        reportError("ERROR: Trying to load without provided filepath");
+        return false;
+    }
+    return load(filePath);
+}
+
+//=============================================================
+template <class T>
+bool AudioFile<T>::load (std::string filePathParam)
+{
+    filePath = filePathParam;
+
     std::ifstream file (filePath, std::ios::binary);
     
-    // check the file exists
     if (! file.good())
     {
         reportError ("ERROR: File doesn't exist or otherwise can't load file\n"  + filePath);
@@ -495,109 +546,47 @@ bool AudioFile<T>::load (std::string filePath)
         return false;
     }
 }
-
 //=============================================================
 template <class T>
 bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
 {
-    // -----------------------------------------------------------
-    // HEADER CHUNK
-    std::string headerChunkID (fileData.begin(), fileData.begin() + 4);
-    //int32_t fileSizeInBytes = fourBytesToInt (fileData, 4) + 8;
-    std::string format (fileData.begin() + 8, fileData.begin() + 12);
-    
-    // -----------------------------------------------------------
-    // try and find the start points of key chunks
-    int indexOfDataChunk = getIndexOfChunk (fileData, "data", 12);
-    int indexOfFormatChunk = getIndexOfChunk (fileData, "fmt ", 12);
-    int indexOfXMLChunk = getIndexOfChunk (fileData, "iXML", 12);
-    
-    // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
-    // then it is unlikely we'll able to read this file, so abort
-    if (indexOfDataChunk == -1 || indexOfFormatChunk == -1 || headerChunkID != "RIFF" || format != "WAVE")
-    {
-        reportError ("ERROR: this doesn't seem to be a valid .WAV file");
+    WaveHeader header;
+    if (!decodeWaveHeader(fileData, header)){
         return false;
     }
-    
-    // -----------------------------------------------------------
-    // FORMAT CHUNK
-    int f = indexOfFormatChunk;
-    std::string formatChunkID (fileData.begin() + f, fileData.begin() + f + 4);
-    //int32_t formatChunkSize = fourBytesToInt (fileData, f + 4);
-    uint16_t audioFormat = twoBytesToInt (fileData, f + 8);
-    uint16_t numChannels = twoBytesToInt (fileData, f + 10);
-    sampleRate = (uint32_t) fourBytesToInt (fileData, f + 12);
-    uint32_t numBytesPerSecond = fourBytesToInt (fileData, f + 16);
-    uint16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
-    bitDepth = (int) twoBytesToInt (fileData, f + 22);
-    
+
+    int numSamples = header.dataChunkSize / (header.numChannels * header.bitDepth / 8);
+    int indexOfDataChunk = getIndexOfChunk (fileData, "data", 12);
+    int samplesStartIndex = indexOfDataChunk + 8;
     uint16_t numBytesPerSample = static_cast<uint16_t> (bitDepth) / 8;
     
-    // check that the audio format is PCM or Float or extensible
-    if (audioFormat != WavAudioFormat::PCM && audioFormat != WavAudioFormat::IEEEFloat && audioFormat != WavAudioFormat::Extensible)
-    {
-        reportError ("ERROR: this .WAV file is encoded in a format that this library does not support at present");
-        return false;
-    }
-    
-    // check the number of channels is mono or stereo
-    if (numChannels < 1 || numChannels > 128)
-    {
-        reportError ("ERROR: this WAV file seems to be an invalid number of channels (or corrupted?)");
-        return false;
-    }
-    
-    // check header data is consistent
-    if (numBytesPerSecond != static_cast<uint32_t> ((numChannels * sampleRate * bitDepth) / 8) || numBytesPerBlock != (numChannels * numBytesPerSample))
-    {
-        reportError ("ERROR: the header data in this WAV file seems to be inconsistent");
-        return false;
-    }
-    
-    // check bit depth is either 8, 16, 24 or 32 bit
-    if (bitDepth != 8 && bitDepth != 16 && bitDepth != 24 && bitDepth != 32)
-    {
-        reportError ("ERROR: this file has a bit depth that is not 8, 16, 24 or 32 bits");
-        return false;
-    }
-    
-    // -----------------------------------------------------------
-    // DATA CHUNK
-    int d = indexOfDataChunk;
-    std::string dataChunkID (fileData.begin() + d, fileData.begin() + d + 4);
-    int32_t dataChunkSize = fourBytesToInt (fileData, d + 4);
-    
-    int numSamples = dataChunkSize / (numChannels * bitDepth / 8);
-    int samplesStartIndex = indexOfDataChunk + 8;
-    
     clearAudioBuffer();
-    samples.resize (numChannels);
+    samples.resize (header.numChannels);
     
     for (int i = 0; i < numSamples; i++)
     {
-        for (int channel = 0; channel < numChannels; channel++)
+        for (int channel = 0; channel < header.numChannels; channel++)
         {
-            int sampleIndex = samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;
+            int sampleIndex = samplesStartIndex + (header.numBytesPerBlock * i) + channel * numBytesPerSample;
             
-            if ((sampleIndex + (bitDepth / 8) - 1) >= fileData.size())
+            if ((sampleIndex + (header.bitDepth / 8) - 1) >= fileData.size())
             {
                 reportError ("ERROR: read file error as the metadata indicates more samples than there are in the file data");
                 return false;
             }
             
-            if (bitDepth == 8)
+            if (header.bitDepth == 8)
             {
                 T sample = singleByteToSample (fileData[sampleIndex]);
                 samples[channel].push_back (sample);
             }
-            else if (bitDepth == 16)
+            else if (header.bitDepth == 16)
             {
                 int16_t sampleAsInt = twoBytesToInt (fileData, sampleIndex);
                 T sample = sixteenBitIntToSample (sampleAsInt);
                 samples[channel].push_back (sample);
             }
-            else if (bitDepth == 24)
+            else if (header.bitDepth == 24)
             {
                 int32_t sampleAsInt = 0;
                 sampleAsInt = (fileData[sampleIndex + 2] << 16) | (fileData[sampleIndex + 1] << 8) | fileData[sampleIndex];
@@ -608,12 +597,12 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                 T sample = (T)sampleAsInt / (T)8388608.;
                 samples[channel].push_back (sample);
             }
-            else if (bitDepth == 32)
+            else if (header.bitDepth == 32)
             {
                 int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex);
                 T sample;
                 
-                if (audioFormat == WavAudioFormat::IEEEFloat)
+                if (header.audioFormat == WavAudioFormat::IEEEFloat)
                     sample = (T)reinterpret_cast<float&> (sampleAsInt);
                 else // assume PCM
                     sample = (T) sampleAsInt / static_cast<float> (std::numeric_limits<std::int32_t>::max());
@@ -629,12 +618,94 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
 
     // -----------------------------------------------------------
     // iXML CHUNK
+    int indexOfXMLChunk = getIndexOfChunk (fileData, "iXML", 12);
     if (indexOfXMLChunk != -1)
     {
         int32_t chunkSize = fourBytesToInt (fileData, indexOfXMLChunk + 4);
         iXMLChunk = std::string ((const char*) &fileData[indexOfXMLChunk + 8], chunkSize);
     }
 
+    return true;
+}
+
+//=============================================================
+template <class T>
+bool AudioFile<T>::decodeWaveHeader (std::vector<uint8_t>& fileData, WaveHeader& output)
+{
+    if (fileData.size() < 44){
+        reportError ("ERROR: Not enough data to valid .WAV header");
+        return false;
+    }
+
+    // -----------------------------------------------------------
+    // HEADER CHUNK
+    output.headerChunkID = std::string(fileData.begin(), fileData.begin() + 4);
+    output.chunkSize = fourBytesToInt (fileData, 4);
+    output.format = std::string(fileData.begin() + 8, fileData.begin() + 12);
+    
+    // -----------------------------------------------------------
+    // try and find the start points of key chunks
+    int indexOfDataChunk = getIndexOfChunk (fileData, "data", 12);
+    int indexOfFormatChunk = getIndexOfChunk (fileData, "fmt ", 12);
+    
+    // if we can't find the data or format chunks, or the IDs/formats don't seem to be as expected
+    // then it is unlikely we'll able to read this file, so abort
+    if (indexOfDataChunk == -1 || indexOfFormatChunk == -1 || output.headerChunkID != "RIFF" || output.format != "WAVE")
+    {
+        reportError ("ERROR: this doesn't seem to be a valid .WAV file");
+        return false;
+    }
+    
+    // -----------------------------------------------------------
+    // FORMAT CHUNK
+    int f = indexOfFormatChunk;
+    output.formatChunkID = std::string(fileData.begin() + f, fileData.begin() + f + 4);
+    output.formatChunkSize = fourBytesToInt (fileData, f + 4);
+    output.audioFormat = twoBytesToInt (fileData, f + 8);
+    output.numChannels = twoBytesToInt (fileData, f + 10);
+    sampleRate = output.sampleRate = (uint32_t) fourBytesToInt (fileData, f + 12);
+    output.numBytesPerSecond = fourBytesToInt (fileData, f + 16);
+    output.numBytesPerBlock = twoBytesToInt (fileData, f + 20);
+    bitDepth = output.bitDepth =  twoBytesToInt (fileData, f + 22);
+    
+    // check that the audio format is PCM or Float or extensible
+    if (output.audioFormat != WavAudioFormat::PCM 
+    && output.audioFormat != WavAudioFormat::IEEEFloat 
+    && output.audioFormat != WavAudioFormat::Extensible)
+    {
+        reportError ("ERROR: this .WAV file is encoded in a format that this library does not support at present");
+        return false;
+    }
+    
+    // check the number of channels is mono or stereo
+    if (output.numChannels < 1 || output.numChannels > 128)
+    {
+        reportError ("ERROR: this WAV file seems to be an invalid number of channels (or corrupted?)");
+        return false;
+    }
+    
+    uint16_t numBytesPerSample = static_cast<uint16_t> (bitDepth) / 8;
+
+    // check header data is consistent
+    if (output.numBytesPerSecond != static_cast<uint32_t> ((output.numChannels * output.sampleRate * output.bitDepth) / 8) 
+    || output.numBytesPerBlock != (output.numChannels * numBytesPerSample))
+    {
+        reportError ("ERROR: the header data in this WAV file seems to be inconsistent");
+        return false;
+    }
+    
+    // check bit depth is either 8, 16, 24 or 32 bit
+    if (output.bitDepth != 8 && output.bitDepth != 16 && output.bitDepth != 24 && output.bitDepth != 32)
+    {
+        reportError ("ERROR: this file has a bit depth that is not 8, 16, 24 or 32 bits");
+        return false;
+    }
+    
+    // -----------------------------------------------------------
+    // DATA CHUNK
+    int d = indexOfDataChunk;
+    output.dataChunkID = std::string(fileData.begin() + d, fileData.begin() + d + 4);
+    output.dataChunkSize = fourBytesToInt (fileData, d + 4);
     return true;
 }
 
@@ -711,7 +782,7 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     // sanity check the data
     if ((soundDataChunkSize - 8) != totalNumAudioSampleBytes || totalNumAudioSampleBytes > static_cast<long>(fileData.size() - samplesStartIndex))
     {
-        reportError ("ERROR: the metadatafor this file doesn't seem right");
+        reportError ("ERROR: the metadata for this file doesn't seem right");
         return false;
     }
     
@@ -835,6 +906,44 @@ bool AudioFile<T>::save (std::string filePath, AudioFileFormat format)
     
     return false;
 }
+
+template<class T>
+bool AudioFile<T>::extractWaveHeader(WaveHeader& output)
+{
+    if (filePath == ""){
+        reportError("ERROR: Trying to extact header without provided filepath");
+        return false;
+    }
+
+    const int length = 44;
+
+    std::ifstream file (filePath, std::ios::binary);
+    if (! file.good())
+    {
+        reportError ("ERROR: File doesn't exist or otherwise can't load file\n"  + filePath);
+        return false;
+    }
+    
+    std::vector<uint8_t> fileData;
+
+	fileData.resize (length);
+
+	file.read(reinterpret_cast<char*> (fileData.data()), length);
+	file.close();
+
+    if ( determineAudioFileFormat (fileData) != AudioFileFormat::Wave){
+		reportError ("ERROR: Can't extract wave header, not a wave file\n" + filePath);
+    }
+
+	if (file.gcount() != length)
+	{
+		reportError ("ERROR: Couldn't read enough data to read wave header\n" + filePath);
+		return false;
+	}
+    
+    return decodeWaveHeader(fileData, output);
+}
+
 
 //=============================================================
 template <class T>
