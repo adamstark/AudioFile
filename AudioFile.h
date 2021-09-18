@@ -23,6 +23,12 @@
 #ifndef _AS_AudioFile_h
 #define _AS_AudioFile_h
 
+#if defined (_MSC_VER)
+#undef max
+#undef min
+#define NOMINMAX
+#endif
+
 #include <iostream>
 #include <vector>
 #include <cassert>
@@ -32,6 +38,7 @@
 #include <unordered_map>
 #include <iterator>
 #include <algorithm>
+#include <limits>
 
 // disable some warnings on Windows
 #if defined (_MSC_VER)
