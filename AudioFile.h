@@ -166,7 +166,7 @@ private:
     };
     
     //=============================================================
-    AudioFileFormat determineAudioFileFormat (std::vector<uint8_t>& fileData);
+    static AudioFileFormat determineAudioFileFormat (std::vector<uint8_t> const& fileData);
     bool decodeWaveFile (std::vector<uint8_t> const& fileData);
     bool decodeAiffFile (std::vector<uint8_t> const& fileData);
     
@@ -180,7 +180,6 @@ private:
     //=============================================================
     static int32_t fourBytesToInt (std::vector<uint8_t> const& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     static int16_t twoBytesToInt (std::vector<uint8_t> const& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
-    // TODO: unused
     static int getIndexOfChunk (std::vector<uint8_t> const& source, std::string const& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
     
     //=============================================================
@@ -483,19 +482,19 @@ bool AudioFile<T>::load (std::string const& filePath)
     
     // get audio file format
     _audioFileFormat = determineAudioFileFormat (fileData);
-    
-    if (_audioFileFormat == AudioFileFormat::Wave)
+
+    switch (_audioFileFormat)
     {
-        return decodeWaveFile (fileData);
-    }
-    else if (_audioFileFormat == AudioFileFormat::Aiff)
-    {
-        return decodeAiffFile (fileData);
-    }
-    else
-    {
-        reportError ("Audio File Type: Error");
-        return false;
+        case AudioFileFormat::Wave:
+            return decodeWaveFile (fileData);
+            break;
+        case AudioFileFormat::Aiff:
+            return decodeAiffFile (fileData);
+            break;
+        default:
+            reportError ("Audio File Type: Error");
+            return false;
+            break;
     }
 }
 
@@ -833,13 +832,16 @@ void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint
 template <class T>
 bool AudioFile<T>::save (std::string const& filePath, AudioFileFormat format) const
 {
-    if (format == AudioFileFormat::Wave)
+    switch (format)
     {
-        return saveToWaveFile (filePath);
-    }
-    else if (format == AudioFileFormat::Aiff)
-    {
-        return saveToAiffFile (filePath);
+        case AudioFileFormat::Wave:
+            return saveToWaveFile (filePath);
+            break;
+        case AudioFileFormat::Aiff:
+            return saveToAiffFile (filePath);
+            break;
+        default:
+            break;
     }
     
     return false;
@@ -1152,7 +1154,7 @@ void AudioFile<T>::clearAudioBuffer()
 
 //=============================================================
 template <class T>
-AudioFileFormat AudioFile<T>::determineAudioFileFormat (std::vector<uint8_t>& fileData)
+AudioFileFormat AudioFile<T>::determineAudioFileFormat (std::vector<uint8_t> const& fileData)
 {
     std::string header (fileData.begin(), fileData.begin() + 4);
     
