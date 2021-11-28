@@ -817,7 +817,9 @@ void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint
 {
     if (aiffSampleRateTable.count (sampleRate) > 0)
     {
-        if (auto const sampleRateRepresentations = aiffSampleRateTable.find(sampleRate); sampleRateRepresentations != aiffSampleRateTable.end())
+        auto const sampleRateRepresentations = aiffSampleRateTable.find(sampleRate);
+
+        if (sampleRateRepresentations != aiffSampleRateTable.end())
         {
             auto const& sampleRateRepresentationBytes = sampleRateRepresentations->second;
 
