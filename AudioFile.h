@@ -265,7 +265,7 @@ enum AIFFAudioFormat
 template <class T>
 AudioFile<T>::AudioFile()
 {
-    static_assert(std::is_floating_point<T>::value, "ERROR: This version of AudioFile only supports floating point sample formats");
+    // static_assert(std::is_floating_point<T>::value, "ERROR: This version of AudioFile only supports floating point sample formats");
 
     bitDepth = 16;
     sampleRate = 44100;
@@ -1236,11 +1236,29 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
     return -1;
 }
 
+template <class T, class S>
+static T resample(S sample)
+{
+    auto diff = sizeof(T) - sizeof(S);
+
+    if      (diff > 0) { return sample << (diff * 8); }
+    else if (diff < 0) { return sample >> (diff * 8); }
+    else { return sample; }
+}
+
 //=============================================================
 template <class T>
 T AudioFile<T>::sixteenBitIntToSample (int16_t sample)
 {
-    return static_cast<T> (sample) / static_cast<T> (32768.);
+    if (std::is_floating_point<T>::value)
+    {
+        return static_cast<T> (sample) / static_cast<T> (32768.);
+    }
+
+    else if(std::numeric_limits<T>::is_integer)
+    {
+        return resample<T, int16_t>(sample);
+    }
 }
 
 //=============================================================
