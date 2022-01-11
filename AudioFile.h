@@ -265,8 +265,6 @@ enum AIFFAudioFormat
 template <class T>
 AudioFile<T>::AudioFile()
 {
-    // static_assert(std::is_floating_point<T>::value, "ERROR: This version of AudioFile only supports floating point sample formats");
-
     bitDepth = 16;
     sampleRate = 44100;
     samples.resize (1);
@@ -1236,6 +1234,7 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
     return -1;
 }
 
+//=============================================================
 template <class T, class S>
 static T resample(S sample)
 {
@@ -1265,24 +1264,46 @@ T AudioFile<T>::sixteenBitIntToSample (int16_t sample)
 template <class T>
 int16_t AudioFile<T>::sampleToSixteenBitInt (T sample)
 {
-    sample = clamp (sample, -1., 1.);
-    return static_cast<int16_t> (sample * 32767.);
+    if (std::is_floating_point<T>::value)
+    {
+        sample = clamp (sample, -1., 1.);
+        return static_cast<int16_t> (sample * 32767.);
+    }
+    else
+    {
+        return return resample<int16_t, T>(sample);
+    }
 }
 
 //=============================================================
 template <class T>
 uint8_t AudioFile<T>::sampleToSingleByte (T sample)
 {
-    sample = clamp (sample, -1., 1.);
-    sample = (sample + 1.) / 2.;
-    return static_cast<uint8_t> (sample * 255.);
+    if (std::is_floating_point<T>::value)
+    {
+        sample = clamp (sample, -1., 1.);
+        sample = (sample + 1.) / 2.;
+        return static_cast<uint8_t> (sample * 255.);
+    }
+    else
+    {
+        return return resample<int8_t, T>(sample);
+    }
 }
 
 //=============================================================
 template <class T>
 T AudioFile<T>::singleByteToSample (uint8_t sample)
 {
-    return static_cast<T> (sample - 128) / static_cast<T> (128.);
+    if (std::is_floating_point<T>::value)
+    {
+        return static_cast<T> (sample - 128) / static_cast<T> (128.);
+    }
+
+    else if(std::numeric_limits<T>::is_integer)
+    {
+        return resample<T, int8_t>(sample);
+    }
 }
 
 //=============================================================
