@@ -1240,8 +1240,8 @@ static T resample(S sample)
 {
     auto diff = sizeof(T) - sizeof(S);
 
-    if      (diff > 0) { return sample << (diff * 8); }
-    else if (diff < 0) { return sample >> (diff * 8); }
+    if      (diff > 0) { return (int)sample << (diff * 8); }
+    else if (diff < 0) { return (int)sample >> (diff * 8); }
     else { return sample; }
 }
 
@@ -1271,7 +1271,7 @@ int16_t AudioFile<T>::sampleToSixteenBitInt (T sample)
     }
     else
     {
-        return return resample<int16_t, T>(sample);
+        return resample<int16_t, T>(sample);
     }
 }
 
@@ -1287,7 +1287,7 @@ uint8_t AudioFile<T>::sampleToSingleByte (T sample)
     }
     else
     {
-        return return resample<int8_t, T>(sample);
+        return resample<int8_t, T>(sample);
     }
 }
 
