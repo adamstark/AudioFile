@@ -1,7 +1,7 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.0.9-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.1.0-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
@@ -155,6 +155,12 @@ If you prefer not to see these messages, you can disable this error logging beha
 
 Versions
 -------
+
+##### 1.1.0 - 15th January 2022
+
+- Moved project to MIT licence
+- Added option to load an audio file already in memory
+- CI Workflow improvements and bug fixes
 
 ##### 1.0.9 - 23rd January 2021
 
