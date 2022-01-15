@@ -204,6 +204,8 @@ Contributions
 * Remove warnings ([Abhinav1997](https://github.com/Abhinav1997))
 * Better support on Ubuntu ([BenjaminHinchliff](https://github.com/BenjaminHinchliff))
 * Faster loading of audio files ([helloimmatt](https://github.com/helloimmatt/))
+* Improvements to Github Actions workflow ([emiro85](https://github.com/emiro85))
+* Pull request review ([MatthieuHernandez](https://github.com/MatthieuHernandez))
 
 Want to Contribute?
 -------
