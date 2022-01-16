@@ -1,7 +1,7 @@
 #include "doctest.h"
 #include <iostream>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include <AudioFile.h>
 
 //=============================================================
