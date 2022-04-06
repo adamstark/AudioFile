@@ -1261,13 +1261,13 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
 }
 
 //=============================================================
-template <class T, class S>
-static T resample(S sample)
+template <class FROM, class TO>
+static TO resampleIntegerSample(FROM sample)
 {
-    auto diff = sizeof(T) - sizeof(S);
+    auto diff = (int)sizeof(TO) - (int)sizeof(FROM);
 
     if      (diff > 0) { return (int)sample << (diff * 8); }
-    else if (diff < 0) { return (int)sample >> (diff * 8); }
+    else if (diff < 0) { return (int)sample >> (-diff * 8); }
     else { return sample; }
 }
 
@@ -1282,7 +1282,7 @@ T AudioFile<T>::sixteenBitIntToSample (int16_t sample)
 
     else if(std::numeric_limits<T>::is_integer)
     {
-        return resample<T, int16_t>(sample);
+        return resampleIntegerSample<int16_t, T>(sample);
     }
 }
 
@@ -1297,7 +1297,7 @@ int16_t AudioFile<T>::sampleToSixteenBitInt (T sample)
     }
     else
     {
-        return resample<int16_t, T>(sample);
+        return resampleIntegerSample<T, int16_t>(sample);
     }
 }
 
@@ -1313,7 +1313,7 @@ uint8_t AudioFile<T>::sampleToSingleByte (T sample)
     }
     else
     {
-        return resample<int8_t, T>(sample);
+        return resampleIntegerSample<T, int8_t>(sample);
     }
 }
 
@@ -1328,7 +1328,7 @@ T AudioFile<T>::singleByteToSample (uint8_t sample)
 
     else if(std::numeric_limits<T>::is_integer)
     {
-        return resample<T, int8_t>(sample);
+        return resampleIntegerSample<int8_t, T>(sample);
     }
 }
 

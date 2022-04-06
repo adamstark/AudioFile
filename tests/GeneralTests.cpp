@@ -93,4 +93,20 @@ TEST_SUITE ("General Tests")
             
         checkFilesAreExactlyTheSame (a, b);
     }
+
+    //=============================================================
+    TEST_CASE ("GeneralTests::SingleIntegerResampling")
+    {
+        // check downsampling 16bit to 8bit
+        CHECK_EQ (resampleIntegerSample<int16_t, int8_t>(32767), 127);
+        CHECK_EQ (resampleIntegerSample<int16_t, int8_t>(0), 0);
+        CHECK_EQ (resampleIntegerSample<int16_t, int8_t>(-32767), -128);
+
+        // check upsampling 8bit to 16bit
+        // Note: upsampling is particularly lossy and does not make perfect
+        // use of sample's range of values.
+        CHECK_EQ (resampleIntegerSample<int8_t, int16_t>(127), 32512);
+        CHECK_EQ (resampleIntegerSample<int16_t, int8_t>(0), 0);
+        CHECK_EQ (resampleIntegerSample<int8_t, int16_t>(-128), -32768);
+    }
 }
