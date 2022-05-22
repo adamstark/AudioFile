@@ -201,15 +201,20 @@ private:
     int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int getIndexOfString (std::vector<uint8_t>& source, std::string s);
     int getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
+
+    //=============================================================
+    T twentyFourBitIntToSample (int32_t sample);
+    int32_t sampleToTwentyFourBitInt (T sample);
     
     //=============================================================
     T sixteenBitIntToSample (int16_t sample);
     int16_t sampleToSixteenBitInt (T sample);
     
     //=============================================================
-    uint8_t sampleToSingleByte (T sample);
+    int8_t sampleToSingleByte (T sample);
     T singleByteToSample (uint8_t sample);
-    
+    T singleByteToSample (int8_t sample);
+
     uint32_t getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
     bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
     void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
@@ -279,7 +284,15 @@ enum AIFFAudioFormat
 //=============================================================
 /* IMPLEMENTATION */
 //=============================================================
+template <class FROM, class TO>
+static TO resampleIntegerSample(FROM sample)
+{
+    auto diff = (int)sizeof(TO) - (int)sizeof(FROM);
 
+    if      (diff > 0) { return (int)sample << (diff * 8); }
+    else if (diff < 0) { return (int)sample >> (-diff * 8); }
+    else { return sample; }
+}
 //=============================================================
 template <class T>
 AudioFile<T>::AudioFile()
@@ -629,7 +642,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                 if (sampleAsInt & 0x800000) //  if the 24th bit is set, this is a negative number in 24-bit world
                     sampleAsInt = sampleAsInt | ~0xFFFFFF; // so make sure sign is extended to the 32 bit float
 
-                T sample = (T)sampleAsInt / (T)8388608.;
+                T sample = twentyFourBitIntToSample(sampleAsInt);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 32)
@@ -640,7 +653,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                 if (audioFormat == WavAudioFormat::IEEEFloat)
                     sample = (T)reinterpret_cast<float&> (sampleAsInt);
                 else // assume PCM
-                    sample = (T) sampleAsInt / static_cast<float> (std::numeric_limits<std::int32_t>::max());
+                    sample = resampleIntegerSample<int32_t, T>(sampleAsInt);
                 
                 samples[channel].push_back (sample);
             }
@@ -756,8 +769,7 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
             
             if (bitDepth == 8)
             {
-                int8_t sampleAsSigned8Bit = (int8_t)fileData[sampleIndex];
-                T sample = (T)sampleAsSigned8Bit / (T)128.;
+                T sample = singleByteToSample ((int8_t)fileData[sampleIndex]);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 16)
@@ -773,8 +785,8 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
                 
                 if (sampleAsInt & 0x800000) //  if the 24th bit is set, this is a negative number in 24-bit world
                     sampleAsInt = sampleAsInt | ~0xFFFFFF; // so make sure sign is extended to the 32 bit float
-                
-                T sample = (T)sampleAsInt / (T)8388608.;
+
+                T sample = twentyFourBitIntToSample(sampleAsInt);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 32)
@@ -784,9 +796,9 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
                 
                 if (audioFormat == AIFFAudioFormat::Compressed)
                     sample = (T)reinterpret_cast<float&> (sampleAsInt);
-                else // assume uncompressed
-                    sample = (T) sampleAsInt / static_cast<float> (std::numeric_limits<std::int32_t>::max());
-                    
+                else // assume PCM
+                    sample = resampleIntegerSample<int32_t, T>(sampleAsInt);
+                
                 samples[channel].push_back (sample);
             }
             else
@@ -917,7 +929,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                uint8_t byte = sampleToSingleByte (samples[channel][i]);
+                int8_t byte = sampleToSingleByte (samples[channel][i]);
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
@@ -1027,7 +1039,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                uint8_t byte = sampleToSingleByte (samples[channel][i]);
+                int8_t byte = sampleToSingleByte (samples[channel][i]);
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
@@ -1261,14 +1273,33 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
 }
 
 //=============================================================
-template <class FROM, class TO>
-static TO resampleIntegerSample(FROM sample)
+template <class T>
+T AudioFile<T>::twentyFourBitIntToSample (int32_t sample)
 {
-    auto diff = (int)sizeof(TO) - (int)sizeof(FROM);
+    if (std::is_floating_point<T>::value)
+    {
+        return static_cast<T> (sample) / static_cast<T> (8388608.);
+    }
 
-    if      (diff > 0) { return (int)sample << (diff * 8); }
-    else if (diff < 0) { return (int)sample >> (-diff * 8); }
-    else { return sample; }
+    else if(std::numeric_limits<T>::is_integer)
+    {
+        return resampleIntegerSample<int32_t, T>(sample);
+    }
+}
+
+//=============================================================
+template <class T>
+int32_t AudioFile<T>::sampleToTwentyFourBitInt (T sample)
+{
+    if (std::is_floating_point<T>::value)
+    {
+        sample = clamp (sample, -1., 1.);
+        return static_cast<int32_t> (sample * 8388608.);
+    }
+    else
+    {
+        return resampleIntegerSample<T, int32_t>(sample);
+    }
 }
 
 //=============================================================
@@ -1303,13 +1334,13 @@ int16_t AudioFile<T>::sampleToSixteenBitInt (T sample)
 
 //=============================================================
 template <class T>
-uint8_t AudioFile<T>::sampleToSingleByte (T sample)
+int8_t AudioFile<T>::sampleToSingleByte (T sample)
 {
     if (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
         sample = (sample + 1.) / 2.;
-        return static_cast<uint8_t> (sample * 255.);
+        return static_cast<int8_t> (sample * (T)0x7F);
     }
     else
     {
@@ -1328,10 +1359,24 @@ T AudioFile<T>::singleByteToSample (uint8_t sample)
 
     else if(std::numeric_limits<T>::is_integer)
     {
-        return resampleIntegerSample<int8_t, T>(sample);
+        return resampleIntegerSample<int8_t, T>(sample - 0x7F);
     }
 }
 
+//=============================================================
+template <class T>
+T AudioFile<T>::singleByteToSample (int8_t sample)
+{
+    if (std::is_floating_point<T>::value)
+    {
+        return static_cast<T> (sample) / static_cast<T> (128.);
+    }
+
+    else if(std::numeric_limits<T>::is_integer)
+    {
+        return resampleIntegerSample<int8_t, T>(sample);
+    }
+}
 //=============================================================
 template <class T>
 T AudioFile<T>::clamp (T value, T minValue, T maxValue)
