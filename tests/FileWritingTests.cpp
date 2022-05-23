@@ -29,7 +29,7 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     {
         // compute the maximum positive value of T as some signed
         // integer type.
-        maxValue = (~((T)0)) >> 1;
+        maxValue = (T)~(1 << (sizeof(T) * 8 - 1));
     }
 
     for (int i = 0; i < audioFile.getNumSamplesPerChannel(); i++)
