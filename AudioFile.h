@@ -497,7 +497,17 @@ bool AudioFile<T>::load (std::string filePath)
 		return false;
 	}
     
-    return loadFromMemory (fileData);
+    // Handle very small files that will break our attempt to read the
+    // first header info from them
+    if (fileData.size() < 12)
+    {
+        reportError ("ERROR: File is not a valid audio file\n" + filePath);
+        return false;
+    }
+    else
+    {
+        return loadFromMemory (fileData);
+    }
 }
 
 //=============================================================
