@@ -642,7 +642,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                 if (audioFormat == WavAudioFormat::IEEEFloat) 
                 {
                     float f;
-                    memcpy(&f, &sampleAsInt, sizeof(int32_t));
+                    memcpy (&f, &sampleAsInt, sizeof(int32_t));
                     sample = (T)f;
                 }
                 else // assume PCM
@@ -793,7 +793,7 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
                 if (audioFormat == AIFFAudioFormat::Compressed) 
                 {
                     float f;
-                    memcpy(&f, &sampleAsInt, sizeof(int32_t));
+                    memcpy (&f, &sampleAsInt, sizeof(int32_t));
                     sample = (T)f;
                 }
                 else // assume uncompressed
