@@ -140,7 +140,7 @@ namespace examples
         //---------------------------------------------------------------
         // 4. Write audio file to disk
         
-        std::string outputFilePath = "quieter-audio-filer.wav"; // change this to somewhere useful for you
+        std::string outputFilePath = "quieter-audio-file.wav"; // change this to somewhere useful for you
         a.save (outputFilePath, AudioFileFormat::Aiff);
     }
 }
