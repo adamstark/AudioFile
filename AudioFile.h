@@ -638,16 +638,17 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
             {
                 int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex);
                 T sample;
+                
                 if (audioFormat == WavAudioFormat::IEEEFloat) 
-		{
+                {
                     float f;
                     memcpy(&f, &sampleAsInt, sizeof(int32_t));
                     sample = (T)f;
                 }
                 else // assume PCM
-		{
+                {
                     sample = (T) sampleAsInt / static_cast<float> (std::numeric_limits<std::int32_t>::max());
-		}
+                }
                 
                 samples[channel].push_back (sample);
             }
@@ -788,16 +789,17 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
             {
                 int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex, Endianness::BigEndian);
                 T sample;
+                
                 if (audioFormat == AIFFAudioFormat::Compressed) 
-		{
+                {
                     float f;
                     memcpy(&f, &sampleAsInt, sizeof(int32_t));
                     sample = (T)f;
                 }
                 else // assume uncompressed
-		{
+                {
                     sample = (T) sampleAsInt / static_cast<float> (std::numeric_limits<std::int32_t>::max());
-		}
+                }
                     
                 samples[channel].push_back (sample);
             }
