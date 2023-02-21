@@ -103,7 +103,7 @@ Usage
 	audioFile.setNumSamplesPerChannel (numSamples);
 	
 	// Set the number of channels
-	audioFile.setNumChannels (int numChannels);
+	audioFile.setNumChannels (numChannels);
 	
 ### Set bit depth and sample rate
 	
