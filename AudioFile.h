@@ -508,7 +508,17 @@ bool AudioFile<T>::load (std::string filePath)
 		return false;
 	}
     
-    return loadFromMemory (fileData);
+    // Handle very small files that will break our attempt to read the
+    // first header info from them
+    if (fileData.size() < 12)
+    {
+        reportError ("ERROR: File is not a valid audio file\n" + filePath);
+        return false;
+    }
+    else
+    {
+        return loadFromMemory (fileData);
+    }
 }
 
 //=============================================================
@@ -650,10 +660,16 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                 int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex);
                 T sample;
                 
-                if (audioFormat == WavAudioFormat::IEEEFloat)
-                    sample = (T)reinterpret_cast<float&> (sampleAsInt);
+                if (audioFormat == WavAudioFormat::IEEEFloat) 
+                {
+                    float f;
+                    memcpy (&f, &sampleAsInt, sizeof(int32_t));
+                    sample = (T)f;
+                }
                 else // assume PCM
+                {
                     sample = resampleIntegerSample<int32_t, T>(sampleAsInt);
+                }
                 
                 samples[channel].push_back (sample);
             }
@@ -1200,14 +1216,22 @@ AudioFileFormat AudioFile<T>::determineAudioFileFormat (std::vector<uint8_t>& fi
 template <class T>
 int32_t AudioFile<T>::fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness)
 {
-    int32_t result;
-    
-    if (endianness == Endianness::LittleEndian)
-        result = (source[startIndex + 3] << 24) | (source[startIndex + 2] << 16) | (source[startIndex + 1] << 8) | source[startIndex];
+    if (source.size() >= (startIndex + 4))
+    {
+        int32_t result;
+        
+        if (endianness == Endianness::LittleEndian)
+            result = (source[startIndex + 3] << 24) | (source[startIndex + 2] << 16) | (source[startIndex + 1] << 8) | source[startIndex];
+        else
+            result = (source[startIndex] << 24) | (source[startIndex + 1] << 16) | (source[startIndex + 2] << 8) | source[startIndex + 3];
+        
+        return result;
+    }
     else
-        result = (source[startIndex] << 24) | (source[startIndex + 1] << 16) | (source[startIndex + 2] << 8) | source[startIndex + 3];
-    
-    return result;
+    {
+        assert (false && "Attempted to read four bytes from vector at position where out of bounds access would occur");
+        return 0; // this is a dummy value as we don't have one to return
+    }
 }
 
 //=============================================================
@@ -1250,6 +1274,7 @@ template <class T>
 int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness)
 {
     constexpr int dataLen = 4;
+    
     if (chunkHeaderID.size() != dataLen)
     {
         assert (false && "Invalid chunk header ID string");
@@ -1265,6 +1290,11 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
         }
 
         i += dataLen;
+        
+        // If somehow we don't have 4 bytes left to read, then exit with -1
+        if ((i + 4) >= source.size())
+            return -1;
+        
         auto chunkSize = fourBytesToInt (source, i, endianness);
         i += (dataLen + chunkSize);
     }
