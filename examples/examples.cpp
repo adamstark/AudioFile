@@ -59,7 +59,7 @@ namespace examples
         {
             for (int channel = 0; channel < a.getNumChannels(); channel++)
             {
-                a.samples[channel][i] = sin ((static_cast<float> (i) / sampleRate) * frequencyInHz * 2.f * M_PI);
+                a.samples[channel][i] = sin ((static_cast<float> (i) / sampleRate) * frequencyInHz * 2.f * (float)M_PI);
             }
         }
         

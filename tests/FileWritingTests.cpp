@@ -20,10 +20,10 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     
     for (int i = 0; i < audioFile.getNumSamplesPerChannel(); i++)
     {
-        float sample = sinf (2. * M_PI * ((float) i / sampleRateAsFloat) * 440.) ;
+        float sample = sinf (2.f * (float)M_PI * ((float) i / sampleRateAsFloat) * 440.f) ;
         
         for (int k = 0; k < audioFile.getNumChannels(); k++)
-            audioFile.samples[k][i] = sample * 0.5;
+            audioFile.samples[k][i] = sample * 0.5f;
     }
     
     audioFile.setSampleRate (sampleRate);
