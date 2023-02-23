@@ -212,10 +212,8 @@ private:
     
     //=============================================================
     int8_t sampleToSingleByte (T sample);
-public:
     T singleByteToSample (uint8_t sample);
     T singleByteToSample (int8_t sample);
-private:
     uint32_t getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
     bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
     void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);

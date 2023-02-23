@@ -110,18 +110,6 @@ TEST_SUITE ("General Tests")
         CHECK_EQ (resampleIntegerSample<int16_t, int8_t>(0), 0);
         CHECK_EQ (resampleIntegerSample<int8_t, int16_t>(-128), -32768);
     }
-
-    //=============================================================
-    TEST_CASE ("GeneralTests::SingleByteToSample")
-    {
-        AudioFile<double> dummy;
-
-        CHECK_EQ (dummy.singleByteToSample((uint8_t)128), 0);
-        CHECK_EQ (dummy.singleByteToSample((int8_t)0), 0);
-
-        CHECK (dummy.singleByteToSample((uint8_t)255) == doctest::Approx (1).epsilon (0.05));
-        CHECK (dummy.singleByteToSample((uint8_t)0) == doctest::Approx (-1).epsilon (0.05));
-    }
     //=============================================================
     TEST_CASE ("GeneralTests::IntegerFormat")
     {
