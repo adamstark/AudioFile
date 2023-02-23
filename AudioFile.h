@@ -1383,7 +1383,7 @@ T AudioFile<T>::singleByteToSample (uint8_t sample)
 {
     if (std::is_floating_point<T>::value)
     {
-        return static_cast<T> (static_cast<int>(sample) - 128) / static_cast<T> (128.);
+        return static_cast<T> (sample - 128) / static_cast<T> (128.);
     }
 
     else if(std::numeric_limits<T>::is_integer)
