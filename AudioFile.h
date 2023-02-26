@@ -384,7 +384,7 @@ bool AudioFile<T>::setAudioBuffer (AudioBuffer& newBuffer)
     
     if (numChannels <= 0)
     {
-        assert (false && "The buffer your are trying to use has no channels");
+        assert (false && "The buffer you are trying to use has no channels");
         return false;
     }
     
@@ -1309,8 +1309,7 @@ T AudioFile<T>::twentyFourBitIntToSample (int32_t sample)
     {
         return static_cast<T> (sample) / static_cast<T> (8388608.);
     }
-
-    else if(std::numeric_limits<T>::is_integer)
+    else if (std::numeric_limits<T>::is_integer)
     {
         return resampleIntegerSample<int32_t, T>(sample);
     }
@@ -1327,7 +1326,7 @@ int32_t AudioFile<T>::sampleToTwentyFourBitInt (T sample)
     }
     else
     {
-        return resampleIntegerSample<T, int32_t>(sample);
+        return resampleIntegerSample<T, int32_t> (sample);
     }
 }
 
@@ -1339,10 +1338,9 @@ T AudioFile<T>::sixteenBitIntToSample (int16_t sample)
     {
         return static_cast<T> (sample) / static_cast<T> (32768.);
     }
-
-    else if(std::numeric_limits<T>::is_integer)
+    else if (std::numeric_limits<T>::is_integer)
     {
-        return resampleIntegerSample<int16_t, T>(sample);
+        return resampleIntegerSample<int16_t, T> (sample);
     }
 }
 
@@ -1357,7 +1355,7 @@ int16_t AudioFile<T>::sampleToSixteenBitInt (T sample)
     }
     else
     {
-        return resampleIntegerSample<T, int16_t>(sample);
+        return resampleIntegerSample<T, int16_t> (sample);
     }
 }
 
@@ -1373,7 +1371,7 @@ int8_t AudioFile<T>::sampleToSingleByte (T sample)
     }
     else
     {
-        return resampleIntegerSample<T, int8_t>(sample);
+        return resampleIntegerSample<T, int8_t> (sample);
     }
 }
 
@@ -1385,10 +1383,9 @@ T AudioFile<T>::singleByteToSample (uint8_t sample)
     {
         return static_cast<T> (sample - 128) / static_cast<T> (128.);
     }
-
-    else if(std::numeric_limits<T>::is_integer)
+    else if (std::numeric_limits<T>::is_integer)
     {
-        return resampleIntegerSample<int8_t, T>(sample - 0x7F);
+        return resampleIntegerSample<int8_t, T> (sample - 0x7F);
     }
 }
 
@@ -1400,12 +1397,12 @@ T AudioFile<T>::singleByteToSample (int8_t sample)
     {
         return static_cast<T> (sample) / static_cast<T> (128.);
     }
-
-    else if(std::numeric_limits<T>::is_integer)
+    else if (std::numeric_limits<T>::is_integer)
     {
-        return resampleIntegerSample<int8_t, T>(sample);
+        return resampleIntegerSample<int8_t, T> (sample);
     }
 }
+
 //=============================================================
 template <class T>
 T AudioFile<T>::clamp (T value, T minValue, T maxValue)

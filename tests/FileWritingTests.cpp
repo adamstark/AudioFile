@@ -21,6 +21,7 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     
     // In the case of an integer representation, this value will be
     T maxValue;
+    
     if (std::is_floating_point<T>::value)
     {
         maxValue = 1;
