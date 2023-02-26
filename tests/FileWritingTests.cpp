@@ -11,13 +11,13 @@ const std::string projectBuildDirectory = PROJECT_BINARY_DIR;
 // Writes an audio file with a given number of channels, sample rate, bit depth and format
 // Returns true if it was successful
 template <typename T>
-bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFileFormat format)
+void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFileFormat format)
 {
     float sampleRateAsFloat = (float) sampleRate;
     
-    AudioFile<T> audioFile;
+    AudioFile<T> audioFileWriter;
     
-    audioFile.setAudioBufferSize (numChannels, sampleRate * 4);
+    audioFileWriter.setAudioBufferSize (numChannels, sampleRate * 4);
     
     // In the case of an integer representation, this value will be
     T maxValue;
@@ -33,16 +33,16 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
         maxValue = (T)~(1 << (sizeof(T) * 8 - 1));
     }
 
-    for (int i = 0; i < audioFile.getNumSamplesPerChannel(); i++)
+    for (int i = 0; i < audioFileWriter.getNumSamplesPerChannel(); i++)
     {
         T sample = (T)(sinf (2. * M_PI * ((float) i / sampleRateAsFloat) * 440.) * maxValue);
         
-        for (int k = 0; k < audioFile.getNumChannels(); k++)
-            audioFile.samples[k][i] = sample * 0.5f;
+        for (int k = 0; k < audioFileWriter.getNumChannels(); k++)
+            audioFileWriter.samples[k][i] = sample * 0.5f;
     }
     
-    audioFile.setSampleRate (sampleRate);
-    audioFile.setBitDepth (bitDepth);
+    audioFileWriter.setSampleRate (sampleRate);
+    audioFileWriter.setBitDepth (bitDepth);
 
     std::string numChannelsAsString;
     if (numChannels == 1)
@@ -55,25 +55,63 @@ bool writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     std::string bitDepthAsString = std::to_string (bitDepth);
     std::string sampleRateAsString = std::to_string (sampleRate);
 
+    std::string filePath;
+    
     if (format == AudioFileFormat::Wave)
     {
-        return audioFile.save (projectBuildDirectory + "/audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".wav", format);
+        filePath = projectBuildDirectory + "/audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".wav";
     }
-    
     else if (format == AudioFileFormat::Aiff)
     {
-        return audioFile.save (projectBuildDirectory + "/audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".aif", format);
+        filePath = projectBuildDirectory + "/audio-write-tests/" + numChannelsAsString + "_" + sampleRateAsString + "_" + bitDepthAsString + "bit" + ".aif";
+        
     }
     
-    return false;
+    bool OK = audioFileWriter.save (filePath, format);
+    CHECK (OK);
+    
+    //-----------------------------------------------------------------
+    // for some key bit depths and mono/stereo files, read in the audio file
+    // we just wrote and do a sample-by-sample comparison to confirm we are
+    // writing good files
+    if ((bitDepth == 16 || bitDepth == 24) &&  numChannels <= 2)
+    {
+        AudioFile<T> audioFileReader;
+        audioFileReader.load (filePath);
+        
+        // confirm num channels
+        CHECK (audioFileReader.getNumChannels() == audioFileWriter.getNumChannels());
+        
+        // confirm bit depth
+        CHECK (audioFileReader.getBitDepth() == audioFileWriter.getBitDepth());
+        
+        // confirm sample rate
+        CHECK (audioFileReader.getSampleRate() == audioFileWriter.getSampleRate());
+        
+        // confirm the number of samples per channel
+        CHECK (audioFileReader.getNumSamplesPerChannel() == audioFileWriter.getNumSamplesPerChannel());
+        
+        for (size_t i = 0; i < 5000; i++)
+        {
+            for (int k = 0; k < audioFileReader.getNumChannels(); k++)
+            {
+                // NOTE: We can expect audio files we read back in to differ a small amount from the
+                // original because the range of audio files means we need to make a decision when
+                // reading/writing samples. For example, a 16-bit audio file is [-32768, +32767], so when we write a
+                // sample we will just multiply [-1, 1] by 32767, which will almost fill the range but not quite (it doesn't
+                // get to -32768. Similarly, when we read in a sample, we need to account for the -32768 and so we divide
+                // by 32768. This leads to very small differences in the written and retrieved values so we allow for
+                // some small differences here when we check.
+                REQUIRE (audioFileReader.samples[k][i] == doctest::Approx (audioFileWriter.samples[k][i]).epsilon (0.001));
+            }
+        }
+    }
 }
 
 
 //=============================================================
 TEST_SUITE ("Writing Tests")
 {
-    
-#if PEFORM_TEST_WRITE_TO_ALL_FORMATS
     //=============================================================
     TEST_CASE ("WritingTest::WriteSineToneToManyFormats")
     {
@@ -81,7 +119,7 @@ TEST_SUITE ("Writing Tests")
         std::vector<int> bitDepths = {8, 16, 24, 32};
         std::vector<int> numChannels = {1, 2, 8};
         std::vector<AudioFileFormat> audioFormats = {AudioFileFormat::Wave, AudioFileFormat::Aiff};
-        
+
         for (auto& sampleRate : sampleRates)
         {
             for (auto& bitDepth : bitDepths)
@@ -92,13 +130,14 @@ TEST_SUITE ("Writing Tests")
                     {
                         auto fmt_str = format == AudioFileFormat::Wave ? "wav" : "aiff";
                         std::cerr << sampleRate << " " << bitDepth << " " << channels << " " << fmt_str << std::endl;
-                        CHECK (writeTestAudioFile<float> (channels, sampleRate, bitDepth, format));
+                        writeTestAudioFile<float> (channels, sampleRate, bitDepth, format);
                     }
                 }
             }
         }
     }
 
+#if RUN_INTEGER_FORMAT_TESTS
     //=============================================================
     TEST_CASE ("WritingTest::WriteSineToneToManyFormats_Integer")
     {
@@ -106,7 +145,7 @@ TEST_SUITE ("Writing Tests")
         std::vector<int> bitDepths = {8, 16, 24, 32};
         std::vector<int> numChannels = {1, 2, 8};
         std::vector<AudioFileFormat> audioFormats = {AudioFileFormat::Wave, AudioFileFormat::Aiff};
-        
+
         for (auto& sampleRate : sampleRates)
         {
             for (auto& bitDepth : bitDepths)
@@ -115,7 +154,7 @@ TEST_SUITE ("Writing Tests")
                 {
                     for (auto& format : audioFormats)
                     {
-                        CHECK (writeTestAudioFile<int16_t> (channels, sampleRate, bitDepth, format));
+                        writeTestAudioFile<int16_t> (channels, sampleRate, bitDepth, format);
                     }
                 }
             }
