@@ -954,7 +954,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
             }
             else if (bitDepth == 24)
             {
-                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)8388608.);
+                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)8388607.);
                 
                 uint8_t bytes[3];
                 bytes[2] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
@@ -1064,7 +1064,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
             }
             else if (bitDepth == 24)
             {
-                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)8388608.);
+                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)8388607.);
                 
                 uint8_t bytes[3];
                 bytes[0] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
@@ -1322,7 +1322,7 @@ int32_t AudioFile<T>::sampleToTwentyFourBitInt (T sample)
     if (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
-        return static_cast<int32_t> (sample * 8388608.);
+        return static_cast<int32_t> (sample * 8388607.);
     }
     else
     {
