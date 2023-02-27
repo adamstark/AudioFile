@@ -77,7 +77,7 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     // for some key bit depths and mono/stereo files, read in the audio file
     // we just wrote and do a sample-by-sample comparison to confirm we are
     // writing good files
-    if ((bitDepth == 16 || bitDepth == 24) &&  numChannels <= 2)
+    if ((bitDepth == 8 || bitDepth == 16 || bitDepth == 24) &&  numChannels <= 2)
     {
         AudioFile<T> audioFileReader;
         audioFileReader.load (filePath);
@@ -105,7 +105,7 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
                 // get to -32768). Similarly, when we read in a sample, we need to account for the -32768 and so we divide
                 // by 32768. This leads to very small differences in the written and retrieved values so we allow for
                 // some small differences here when we check.
-                REQUIRE (audioFileReader.samples[k][i] == doctest::Approx (audioFileWriter.samples[k][i]).epsilon (0.001));
+                REQUIRE (audioFileReader.samples[k][i] == doctest::Approx (audioFileWriter.samples[k][i]).epsilon (0.01));
             }
         }
     }

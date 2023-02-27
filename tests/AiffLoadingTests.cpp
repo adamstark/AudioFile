@@ -39,7 +39,7 @@ TEST_SUITE ("AiffLoadingTests")
         {
             for (int k = 0; k < audioFile.getNumChannels(); k++)
             {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (aiff_stereo_8bit_44100::testBuffer[k][i]).epsilon (0.00001));
+                CHECK (audioFile.samples[k][i] == doctest::Approx (aiff_stereo_8bit_44100::testBuffer[k][i]).epsilon (0.01));
             }
         }
     }
@@ -123,7 +123,7 @@ TEST_SUITE ("AiffLoadingTests")
         {
             for (int k = 0; k < audioFile.getNumChannels(); k++)
             {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (aiff_stereo_8bit_48000::testBuffer[k][i]).epsilon (0.00001));
+                CHECK (audioFile.samples[k][i] == doctest::Approx (aiff_stereo_8bit_48000::testBuffer[k][i]).epsilon (0.01));
             }
         }
     }

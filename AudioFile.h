@@ -211,9 +211,10 @@ private:
     int16_t sampleToSixteenBitInt (T sample);
     
     //=============================================================
-    int8_t sampleToSingleByte (T sample);
-    T singleByteToSample (uint8_t sample);
-    T singleByteToSample (int8_t sample);
+    uint8_t sampleToUnsignedByte (T sample);
+    int8_t sampleToSignedByte (T sample);
+    T unsignedByteToSample (uint8_t sample);
+    T signedByteToSample (int8_t sample);
     uint32_t getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
     bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
     void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
@@ -634,7 +635,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
             
             if (bitDepth == 8)
             {
-                T sample = singleByteToSample (fileData[sampleIndex]);
+                T sample = unsignedByteToSample (fileData[sampleIndex]);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 16)
@@ -784,7 +785,7 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
             
             if (bitDepth == 8)
             {
-                T sample = singleByteToSample ((int8_t)fileData[sampleIndex]);
+                T sample = signedByteToSample (static_cast<int8_t> (fileData[sampleIndex]));
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 16)
@@ -944,7 +945,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                uint8_t byte = sampleToSingleByte (samples[channel][i]);
+                uint8_t byte = sampleToUnsignedByte (samples[channel][i]);
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
@@ -1054,7 +1055,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                uint8_t byte = sampleToSingleByte (samples[channel][i]);
+                uint8_t byte = static_cast<uint8_t> (sampleToSignedByte (samples[channel][i]));
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
@@ -1361,12 +1362,27 @@ int16_t AudioFile<T>::sampleToSixteenBitInt (T sample)
 
 //=============================================================
 template <class T>
-int8_t AudioFile<T>::sampleToSingleByte (T sample)
+uint8_t AudioFile<T>::sampleToUnsignedByte (T sample)
 {
     if (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
         sample = (sample + 1.) / 2.;
+        return static_cast<uint8_t> (1 + (sample * 254));
+    }
+    else
+    {
+        return resampleIntegerSample<T, int8_t> (sample);
+    }
+}
+
+//=============================================================
+template <class T>
+int8_t AudioFile<T>::sampleToSignedByte (T sample)
+{
+    if (std::is_floating_point<T>::value)
+    {
+        sample = clamp (sample, -1., 1.);
         return static_cast<int8_t> (sample * (T)0x7F);
     }
     else
@@ -1377,11 +1393,11 @@ int8_t AudioFile<T>::sampleToSingleByte (T sample)
 
 //=============================================================
 template <class T>
-T AudioFile<T>::singleByteToSample (uint8_t sample)
+T AudioFile<T>::unsignedByteToSample (uint8_t sample)
 {
     if (std::is_floating_point<T>::value)
     {
-        return static_cast<T> (sample - 128) / static_cast<T> (128.);
+        return static_cast<T> (sample - 128) / static_cast<T> (127.);
     }
     else if (std::numeric_limits<T>::is_integer)
     {
@@ -1391,11 +1407,11 @@ T AudioFile<T>::singleByteToSample (uint8_t sample)
 
 //=============================================================
 template <class T>
-T AudioFile<T>::singleByteToSample (int8_t sample)
+T AudioFile<T>::signedByteToSample (int8_t sample)
 {
     if (std::is_floating_point<T>::value)
     {
-        return static_cast<T> (sample) / static_cast<T> (128.);
+        return static_cast<T> (sample) / static_cast<T> (127.);
     }
     else if (std::numeric_limits<T>::is_integer)
     {
