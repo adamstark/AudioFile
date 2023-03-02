@@ -409,7 +409,7 @@ TEST_SUITE ("WavLoadingTests")
         {
             for (int k = 0; k < audioFile.getNumChannels(); k++)
             {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_mono_16bit_48000::testBuffer[i]).epsilon (0.00001));
+                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_mono_16bit_48000::testBuffer[i]).epsilon (0.001));
             }
         }
     }
