@@ -35,7 +35,7 @@
 const std::string projectBuildDirectory = PROJECT_BINARY_DIR;
 
 //=============================================================
-TEST_SUITE ("WavLoadingTests")
+TEST_SUITE ("WavLoadingTests - Floating Point Types - 8-bit File")
 {
     //=============================================================
     TEST_CASE ("WavLoadingTests_Stereo_8bit_44100")
@@ -57,187 +57,13 @@ TEST_SUITE ("WavLoadingTests")
             }
         }
     }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_16bit_44100")
-    {
-        AudioFile<double> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_44100.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_16bit_44100::testBuffer[k][i]).epsilon (0.00001));
-            }
-        }
-    }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_16bit_44100_Integer")
-    {
-        AudioFile<int16_t> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_44100.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_16bit_44100::testBuffer[k][i] * 0x7FFF).epsilon (1));
-            }
-        }
-    }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_24bit_44100")
-    {
-        AudioFile<double> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_24bit_44100.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_24bit_44100::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_24bit_44100::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_24bit_44100::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_24bit_44100::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_24bit_44100::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_24bit_44100::testBuffer[k][i]).epsilon (0.00001));
-            }
-        }
-    }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_24bit_44100_Integer")
-    {
-        AudioFile<int32_t> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_24bit_44100.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_24bit_44100::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_24bit_44100::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_24bit_44100::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_24bit_44100::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_24bit_44100::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_24bit_44100::testBuffer[k][i] * 0x7FFFFFFF).epsilon (1));
-            }
-        }
-    }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_32bit_44100")
-    {
-        AudioFile<double> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_32bit_44100.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_32bit_44100::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_32bit_44100::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_32bit_44100::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_32bit_44100::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_32bit_44100::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_32bit_44100::testBuffer[k][i]).epsilon (0.00001));
-            }
-        }
-    }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_32bit_44100_Integer")
-    {
-        AudioFile<int32_t> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_32bit_44100.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_32bit_44100::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_32bit_44100::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_32bit_44100::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_32bit_44100::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_32bit_44100::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_32bit_44100::testBuffer[k][i] * 0x7FFFFFFF).epsilon (1));
-            }
-        }
-    }
-
+    
     //=============================================================
     TEST_CASE ("WavLoadingTests_Mono_8bit_44100")
     {
         //TODO
     }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Mono_16bit_44100")
-    {
-        AudioFile<double> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_mono_16bit_44100.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_mono_16bit_44100::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_mono_16bit_44100::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_mono_16bit_44100::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_mono_16bit_44100::numChannels));
-        
-        for (size_t i = 0; i < wav_mono_16bit_44100::testBuffer.size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_mono_16bit_44100::testBuffer[i]).epsilon (0.00001));
-            }
-        }
-    }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Mono_16bit_44100_Integer")
-    {
-        AudioFile<int16_t> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_mono_16bit_44100.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_mono_16bit_44100::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_mono_16bit_44100::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_mono_16bit_44100::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_mono_16bit_44100::numChannels));
-        
-        for (size_t i = 0; i < wav_mono_16bit_44100::testBuffer.size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_mono_16bit_44100::testBuffer[i] * 0x7FFF).epsilon (1));
-            }
-        }
-    }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Mono_24bit_44100")
-    {
-        //TODO
-    }
-
+    
     //=============================================================
     TEST_CASE ("WavLoadingTests_Stereo_8bit_48000")
     {
@@ -258,28 +84,59 @@ TEST_SUITE ("WavLoadingTests")
             }
         }
     }
-
+    
     //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_8bit_48000_Integer")
+    TEST_CASE ("WavLoadingTests_Mono_8bit_48000")
     {
-        AudioFile<int8_t> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_8bit_48000.wav");
+        //TODO
+    }
+}
+
+//=============================================================
+TEST_SUITE ("WavLoadingTests - Floating Point Types - 16-bit File")
+{
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_16bit_44100")
+    {
+        AudioFile<double> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_44100.wav");
         
         CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_8bit_48000::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_8bit_48000::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_8bit_48000::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_8bit_48000::testBuffer.size()));
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
         
-        for (size_t i = 0; i < wav_stereo_8bit_48000::testBuffer[0].size(); i++)
+        for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
         {
             for (int k = 0; k < audioFile.getNumChannels(); k++)
             {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_8bit_48000::testBuffer[k][i] * 0x7F).epsilon (1));
+                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_16bit_44100::testBuffer[k][i]).epsilon (0.00001));
             }
         }
     }
-
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Mono_16bit_44100")
+    {
+        AudioFile<double> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_mono_16bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_mono_16bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_mono_16bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_mono_16bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_mono_16bit_44100::numChannels));
+        
+        for (size_t i = 0; i < wav_mono_16bit_44100::testBuffer.size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_mono_16bit_44100::testBuffer[i]).epsilon (0.00001));
+            }
+        }
+    }
+    
     //=============================================================
     TEST_CASE ("WavLoadingTests_Stereo_16bit_48000")
     {
@@ -300,99 +157,7 @@ TEST_SUITE ("WavLoadingTests")
             }
         }
     }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_16bit_48000_Integer")
-    {
-        AudioFile<int16_t> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_48000.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_48000::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_48000::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_48000::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_48000::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_16bit_48000::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_16bit_48000::testBuffer[k][i] * 0x7FFF).epsilon (0.001));
-            }
-        }
-    }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_24bit_48000")
-    {
-        AudioFile<double> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_24bit_48000.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_24bit_48000::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_24bit_48000::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_24bit_48000::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_24bit_48000::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_24bit_48000::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_24bit_48000::testBuffer[k][i]).epsilon (0.00001));
-            }
-        }
-    }
-
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_24bit_48000_Integer")
-    {
-        AudioFile<int32_t> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_24bit_48000.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_24bit_48000::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_24bit_48000::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_24bit_48000::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_24bit_48000::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_24bit_48000::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_24bit_48000::testBuffer[k][i] * 0x7FFFFF).epsilon (0.00001));
-            }
-        }
-    }
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_32bit_48000")
-    {
-        AudioFile<double> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_32bit_48000.wav");
-        
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_32bit_48000::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_32bit_48000::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_32bit_48000::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_32bit_48000::testBuffer.size()));
-        
-        for (size_t i = 0; i < wav_stereo_32bit_48000::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_32bit_48000::testBuffer[k][i]).epsilon (0.00001));
-            }
-        }
-    }
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Stereo_32bit_48000_Integer")
-    {
-        // TODO: 32bit stereo is floating point
-    }
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_Mono_8bit_48000")
-    {
-        //TODO
-    }
+    
     //=============================================================
     TEST_CASE ("WavLoadingTests_Mono_16bit_48000")
     {
@@ -413,68 +178,392 @@ TEST_SUITE ("WavLoadingTests")
             }
         }
     }
+}
+
+//=============================================================
+TEST_SUITE ("WavLoadingTests - Floating Point Types - 24-bit File")
+{
     //=============================================================
-    TEST_CASE ("WavLoadingTests_Mono_16bit_48000_Integer")
+    TEST_CASE ("WavLoadingTests_Stereo_24bit_44100")
     {
-        AudioFile<int16_t> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_mono_16bit_48000.wav");
+        AudioFile<double> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_24bit_44100.wav");
         
         CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_mono_16bit_48000::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_mono_16bit_48000::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_mono_16bit_48000::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_mono_16bit_48000::numChannels));
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_24bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_24bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_24bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_24bit_44100::testBuffer.size()));
         
-        for (size_t i = 0; i < wav_mono_16bit_48000::testBuffer.size(); i++)
+        for (size_t i = 0; i < wav_stereo_24bit_44100::testBuffer[0].size(); i++)
         {
             for (int k = 0; k < audioFile.getNumChannels(); k++)
             {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_mono_16bit_48000::testBuffer[i] * 0x7FFF).epsilon (1));
+                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_24bit_44100::testBuffer[k][i]).epsilon (0.00001));
             }
         }
     }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Mono_24bit_44100")
+    {
+        //TODO
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_24bit_48000")
+    {
+        AudioFile<double> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_24bit_48000.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_24bit_48000::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_24bit_48000::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_24bit_48000::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_24bit_48000::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_24bit_48000::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_24bit_48000::testBuffer[k][i]).epsilon (0.00001));
+            }
+        }
+    }
+    
     //=============================================================
     TEST_CASE ("WavLoadingTests_Mono_24bit_48000")
     {
         //TODO
     }
+}
+
+//=============================================================
+TEST_SUITE ("WavLoadingTests - Floating Point Types - 32-bit File")
+{
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_32bit_44100")
+    {
+        AudioFile<double> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_32bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_32bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_32bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_32bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_32bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_32bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_32bit_44100::testBuffer[k][i]).epsilon (0.00001));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_32bit_48000")
+    {
+        AudioFile<double> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_32bit_48000.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_32bit_48000::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_32bit_48000::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_32bit_48000::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_32bit_48000::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_32bit_48000::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_stereo_32bit_48000::testBuffer[k][i]).epsilon (0.00001));
+            }
+        }
+    }
+}
+
+//=============================================================
+TEST_SUITE ("WavLoadingTests - Integer Types - 8-bit file")
+{
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_8bit_44100_int8_t")
+    {
+        AudioFile<int8_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_8bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_8bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_8bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_8bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_8bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_8bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                REQUIRE_EQ (audioFile.samples[k][i], doctest::Approx (wav_stereo_8bit_44100::testBuffer[k][i] * 127).epsilon (0.01));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_8bit_44100_uint8_t")
+    {
+        AudioFile<uint8_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_8bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_8bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_8bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_8bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_8bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_8bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                REQUIRE_EQ (audioFile.samples[k][i], doctest::Approx (wav_stereo_8bit_44100::testBuffer[k][i] * 127 + 128).epsilon (0.01));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_8bit_44100_int16_t")
+    {
+        AudioFile<int16_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_8bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_8bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_8bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_8bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_8bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_8bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                REQUIRE_EQ (audioFile.samples[k][i], doctest::Approx (wav_stereo_8bit_44100::testBuffer[k][i] * 127).epsilon (0.01));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_8bit_44100_uint16_t")
+    {
+        AudioFile<uint16_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_8bit_44100.wav");
+
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_8bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_8bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_8bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_8bit_44100::testBuffer.size()));
+
+        for (size_t i = 0; i < wav_stereo_8bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                REQUIRE_EQ (audioFile.samples[k][i], doctest::Approx (wav_stereo_8bit_44100::testBuffer[k][i] * 127 + 128).epsilon (0.01));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_8bit_44100_int32_t")
+    {
+        AudioFile<int32_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_8bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_8bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_8bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_8bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_8bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_8bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                REQUIRE_EQ (audioFile.samples[k][i], doctest::Approx (wav_stereo_8bit_44100::testBuffer[k][i] * 127).epsilon (0.01));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_8bit_44100_uint32_t")
+    {
+        AudioFile<uint32_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_8bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_8bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_8bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_8bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_8bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_8bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                REQUIRE_EQ (audioFile.samples[k][i], doctest::Approx (wav_stereo_8bit_44100::testBuffer[k][i] * 127 + 128).epsilon (0.01));
+            }
+        }
+    }
+}
+
+//=============================================================
+TEST_SUITE ("WavLoadingTests - Integer Types - 16-bit file")
+{
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_16bit_44100_int16_t")
+    {
+        AudioFile<int16_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_44100.wav");
+
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
+
+        for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK_EQ (audioFile.samples[k][i], std::round (wav_stereo_16bit_44100::testBuffer[k][i] * 32767));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_16bit_44100_uint16_t")
+    {
+        AudioFile<uint16_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK_EQ (audioFile.samples[k][i], std::round (wav_stereo_16bit_44100::testBuffer[k][i] * 32767 + 32768));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_16bit_44100_int32_t")
+    {
+        AudioFile<int32_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK_EQ (audioFile.samples[k][i], std::round (wav_stereo_16bit_44100::testBuffer[k][i] * 32767));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_16bit_44100_uint16_t")
+    {
+        AudioFile<uint32_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK_EQ (audioFile.samples[k][i], std::round (wav_stereo_16bit_44100::testBuffer[k][i] * 32767 + 32768));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_16bit_44100_int64_t")
+    {
+        AudioFile<int64_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK_EQ (audioFile.samples[k][i], std::round (wav_stereo_16bit_44100::testBuffer[k][i] * 32767));
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WavLoadingTests_Stereo_16bit_44100_uint64_t")
+    {
+        AudioFile<uint64_t> audioFile;
+        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_stereo_16bit_44100.wav");
+        
+        CHECK (loadedOK);
+        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_stereo_16bit_44100::numSamplesPerChannel);
+        CHECK_EQ (audioFile.getBitDepth(), wav_stereo_16bit_44100::bitDepth);
+        CHECK_EQ (audioFile.getSampleRate(), wav_stereo_16bit_44100::sampleRate);
+        CHECK_EQ (audioFile.getNumChannels(), static_cast<int> (wav_stereo_16bit_44100::testBuffer.size()));
+        
+        for (size_t i = 0; i < wav_stereo_16bit_44100::testBuffer[0].size(); i++)
+        {
+            for (int k = 0; k < audioFile.getNumChannels(); k++)
+            {
+                CHECK_EQ (audioFile.samples[k][i], std::round (wav_stereo_16bit_44100::testBuffer[k][i] * 32767 + 32768));
+            }
+        }
+    }
+}
+
+//=============================================================
+TEST_SUITE ("WavLoadingTests - Floating Point Types - 8 Channel File")
+{
     //=============================================================
     TEST_CASE ("WavLoadingTests_8chan_24bit_48000")
     {
         AudioFile<double> audioFile;
         bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_8chan_24bit_48000.wav");
-
+        
         CHECK (loadedOK);
         CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_8chan_24bit_48000::numSamplesPerChannel);
         CHECK_EQ (audioFile.getBitDepth(), wav_8chan_24bit_48000::bitDepth);
         CHECK_EQ (audioFile.getSampleRate(), wav_8chan_24bit_48000::sampleRate);
         CHECK_EQ (audioFile.getNumChannels(), wav_8chan_24bit_48000::numChannels);
-
+        
         for (size_t i = 0; i < wav_8chan_24bit_48000::testBuffer[0].size(); i++)
         {
             for (int k = 0; k < audioFile.getNumChannels(); k++)
             {
                 CHECK (audioFile.samples[k][i] == doctest::Approx (wav_8chan_24bit_48000::testBuffer[k][i]).epsilon (0.00001));
-            }
-        }
-    }
-    //=============================================================
-    TEST_CASE ("WavLoadingTests_8chan_24bit_48000_Integer")
-    {
-        AudioFile<int32_t> audioFile;
-        bool loadedOK = audioFile.load (projectBuildDirectory + "/test-audio/wav_8chan_24bit_48000.wav");
-
-        CHECK (loadedOK);
-        CHECK_EQ (audioFile.getNumSamplesPerChannel(), wav_8chan_24bit_48000::numSamplesPerChannel);
-        CHECK_EQ (audioFile.getBitDepth(), wav_8chan_24bit_48000::bitDepth);
-        CHECK_EQ (audioFile.getSampleRate(), wav_8chan_24bit_48000::sampleRate);
-        CHECK_EQ (audioFile.getNumChannels(), wav_8chan_24bit_48000::numChannels);
-
-        for (size_t i = 0; i < wav_8chan_24bit_48000::testBuffer[0].size(); i++)
-        {
-            for (int k = 0; k < audioFile.getNumChannels(); k++)
-            {
-                CHECK (audioFile.samples[k][i] == doctest::Approx (wav_8chan_24bit_48000::testBuffer[k][i] * 0x7FFFFF).epsilon (1));
             }
         }
     }

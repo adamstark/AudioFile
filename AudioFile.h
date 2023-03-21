@@ -1334,16 +1334,44 @@ void AudioFile<T>::reportError (std::string errorMessage)
 }
 
 //=============================================================
+template <typename SignedType>
+typename std::make_unsigned<SignedType>::type convertSignedToUnsigned (SignedType signedValue)
+{
+    static_assert (std::is_signed<SignedType>::value, "The input value must be signed");
+    
+    typename std::make_unsigned<SignedType>::type unsignedValue = static_cast<typename std::make_unsigned<SignedType>::type> (1) + std::numeric_limits<SignedType>::max();
+    
+    unsignedValue += signedValue;
+    return unsignedValue;
+}
+
+//=============================================================
+enum SampleLimit
+{
+    SignedInt16_Min = -32768,
+    SignedInt16_Max = 32767,
+    UnsignedInt16_Min = 0,
+    UnsignedInt16_Max = 65535,
+    SignedInt24_Min = -8388608,
+    SignedInt24_Max = 8388607,
+    UnsignedInt24_Min = 0,
+    UnsignedInt24_Max = 16777215
+};
+
+//=============================================================
 template <class T>
 T AudioSampleConverter<T>::twentyFourBitIntToSample (int32_t sample)
 {
-    if (std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
         return static_cast<T> (sample) / static_cast<T> (8388607.);
     }
     else if (std::numeric_limits<T>::is_integer)
     {
-        return resampleIntegerSample<int32_t, T>(sample);
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (clamp (sample, SampleLimit::SignedInt24_Min, SampleLimit::SignedInt24_Max));
+        else
+            return static_cast<T> (clamp (sample + 8388608, SampleLimit::UnsignedInt24_Min, SampleLimit::UnsignedInt24_Max));
     }
 }
 
@@ -1351,14 +1379,17 @@ T AudioSampleConverter<T>::twentyFourBitIntToSample (int32_t sample)
 template <class T>
 int32_t AudioSampleConverter<T>::sampleToTwentyFourBitInt (T sample)
 {
-    if (std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
         return static_cast<int32_t> (sample * 8388607.);
     }
     else
     {
-        return resampleIntegerSample<T, int32_t> (sample);
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (clamp (sample, SampleLimit::SignedInt24_Min, SampleLimit::SignedInt24_Max));
+        else
+            return static_cast<int32_t> (clamp (sample, UnsignedInt24_Min, UnsignedInt24_Max) + SignedInt24_Min);
     }
 }
 
@@ -1366,13 +1397,16 @@ int32_t AudioSampleConverter<T>::sampleToTwentyFourBitInt (T sample)
 template <class T>
 T AudioSampleConverter<T>::sixteenBitIntToSample (int16_t sample)
 {
-    if (std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
         return static_cast<T> (sample) / static_cast<T> (32767.);
     }
-    else if (std::numeric_limits<T>::is_integer)
+    else if constexpr (std::numeric_limits<T>::is_integer)
     {
-        return resampleIntegerSample<int16_t, T> (sample);
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (sample);
+        else
+            return static_cast<T> (convertSignedToUnsigned<int16_t> (sample));
     }
 }
 
@@ -1380,14 +1414,17 @@ T AudioSampleConverter<T>::sixteenBitIntToSample (int16_t sample)
 template <class T>
 int16_t AudioSampleConverter<T>::sampleToSixteenBitInt (T sample)
 {
-    if (std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
         return static_cast<int16_t> (sample * 32767.);
     }
     else
     {
-        return resampleIntegerSample<T, int16_t> (sample);
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (clamp (sample, SampleLimit::SignedInt16_Min, SampleLimit::SignedInt16_Max));
+        else
+            return static_cast<int16_t> (clamp (sample, UnsignedInt16_Min, UnsignedInt16_Max) + SignedInt16_Min);
     }
 }
 
@@ -1403,7 +1440,10 @@ uint8_t AudioSampleConverter<T>::sampleToUnsignedByte (T sample)
     }
     else
     {
-        return resampleIntegerSample<T, int8_t> (sample);
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (clamp (sample, -128, 127) + 128);
+        else
+            return static_cast<uint8_t> (clamp (sample, 0, 255));
     }
 }
 
@@ -1411,14 +1451,17 @@ uint8_t AudioSampleConverter<T>::sampleToUnsignedByte (T sample)
 template <class T>
 int8_t AudioSampleConverter<T>::sampleToSignedByte (T sample)
 {
-    if (std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
         return static_cast<int8_t> (sample * (T)0x7F);
     }
     else
     {
-        return resampleIntegerSample<T, int8_t> (sample);
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (clamp (sample, -128, 127));
+        else
+            return static_cast<int8_t> (clamp (sample, 0, 255) - 128);
     }
 }
 
@@ -1432,7 +1475,10 @@ T AudioSampleConverter<T>::unsignedByteToSample (uint8_t sample)
     }
     else if (std::numeric_limits<T>::is_integer)
     {
-        return resampleIntegerSample<int8_t, T> (sample - 0x7F);
+        if constexpr (std::is_unsigned_v<T>)
+            return static_cast<T> (sample);
+        else
+            return static_cast<T> (sample - 128);
     }
 }
 
@@ -1440,13 +1486,16 @@ T AudioSampleConverter<T>::unsignedByteToSample (uint8_t sample)
 template <class T>
 T AudioSampleConverter<T>::signedByteToSample (int8_t sample)
 {
-    if (std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
         return static_cast<T> (sample) / static_cast<T> (127.);
     }
-    else if (std::numeric_limits<T>::is_integer)
+    else if constexpr (std::numeric_limits<T>::is_integer)
     {
-        return resampleIntegerSample<int8_t, T> (sample);
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (sample);
+        else
+            return static_cast<T> (convertSignedToUnsigned<int8_t> (sample));
     }
 }
 

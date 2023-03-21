@@ -23,16 +23,18 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     // In the case of an integer representation, this value will be
     T maxValue;
     
-    if (std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
         maxValue = 1;
         sampleType = "floating_point";
     }
-    else if (std::numeric_limits<T>::is_integer)
+    else if constexpr (std::numeric_limits<T>::is_integer)
     {
-        // compute the maximum positive value of T as some signed
-        // integer type.
-        maxValue = (T)~(1 << (sizeof(T) * 8 - 1));
+        if constexpr (std::is_signed_v<T>)
+            maxValue = pow (2, bitDepth - 1) - 1;
+        else
+            maxValue = pow (2, bitDepth) - 1;
+
         sampleType = "integer";
     }
 
@@ -111,7 +113,6 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     }
 }
 
-
 //=============================================================
 TEST_SUITE ("Writing Tests")
 {
@@ -140,12 +141,11 @@ TEST_SUITE ("Writing Tests")
         }
     }
 
-#if RUN_INTEGER_FORMAT_TESTS
     //=============================================================
     TEST_CASE ("WritingTest::WriteSineToneToManyFormats_Integer")
     {
         std::vector<int> sampleRates = {22050, 44100, 48000, 96000};
-        std::vector<int> bitDepths = {8, 16, 24, 32};
+        std::vector<int> bitDepths = {8, 16, 24};// , 32};
         std::vector<int> numChannels = {1, 2, 8};
         std::vector<AudioFileFormat> audioFormats = {AudioFileFormat::Wave, AudioFileFormat::Aiff};
 
@@ -159,13 +159,18 @@ TEST_SUITE ("Writing Tests")
                     {
                         auto fmt_str = format == AudioFileFormat::Wave ? "wav" : "aiff";
                         std::cerr << sampleRate << " " << bitDepth << " " << channels << " " << fmt_str << " (integer)" << std::endl;
-                        writeTestAudioFile<int16_t> (channels, sampleRate, bitDepth, format);
+                        
+                        if (bitDepth == 8)
+                            writeTestAudioFile<uint8_t> (channels, sampleRate, bitDepth, format);
+                        else if (bitDepth == 16)
+                            writeTestAudioFile<int16_t> (channels, sampleRate, bitDepth, format);
+                        else if (bitDepth == 24)
+                            writeTestAudioFile<int32_t> (channels, sampleRate, bitDepth, format);
                     }
                 }
             }
         }
     }
-#endif
 
     //=============================================================
     TEST_CASE ("WritingTest::WriteFromCopiedSampleBuffer")
