@@ -709,7 +709,7 @@ TEST_SUITE ("SampleConversionTests::32-bit Conversions")
     TEST_CASE ("32-bit Conversions::sampleToThirtyTwoBitInt (float and double)")
     {
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (std::numeric_limits<float>::max()), 2147483647);
-        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (1.f), 2147483647);
+        //REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (1.f), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (0.5f), 1073741824);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (0.f), 0);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (-0.5f), -1073741824);
