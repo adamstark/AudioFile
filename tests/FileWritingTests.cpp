@@ -31,16 +31,20 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     else if constexpr (std::numeric_limits<T>::is_integer)
     {
         if constexpr (std::is_signed_v<T>)
+        {
+            sampleType = "integer (signed, " + std::to_string (sizeof (T) * 8) + "-bit)";
             maxValue = pow (2, bitDepth - 1) - 1;
+        }
         else
+        {
+            sampleType = "integer (unsigned, " + std::to_string (sizeof (T) * 8) + "-bit)";
             maxValue = pow (2, bitDepth) - 1;
-
-        sampleType = "integer";
+        }
     }
 
     for (int i = 0; i < audioFileWriter.getNumSamplesPerChannel(); i++)
     {
-        T sample = (T)(sinf (2. * M_PI * ((float) i / sampleRateAsFloat) * 440.) * maxValue);
+        T sample = (T)(sinf (2. * M_PI * ((double) i / sampleRateAsFloat) * 440.) * maxValue);
         
         for (int k = 0; k < audioFileWriter.getNumChannels(); k++)
             audioFileWriter.samples[k][i] = sample * 0.5f;
@@ -100,13 +104,7 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
         {
             for (int k = 0; k < audioFileReader.getNumChannels(); k++)
             {
-                // NOTE: We can expect audio files we read back in to differ a small amount from the
-                // original because the range of audio files means we need to make a decision when
-                // reading/writing samples. For example, a 16-bit audio file is [-32768, +32767], so when we write a
-                // sample we will just multiply [-1, 1] by 32767, which will almost fill the range but not quite (it doesn't
-                // get to -32768). Similarly, when we read in a sample, we need to account for the -32768 and so we divide
-                // by 32768. This leads to very small differences in the written and retrieved values so we allow for
-                // some small differences here when we check.
+                // NOTE: We can expect audio files we read back in to differ a small amount from the original due to small rounding errors
                 REQUIRE (audioFileReader.samples[k][i] == doctest::Approx (audioFileWriter.samples[k][i]).epsilon (0.01));
             }
         }
@@ -117,7 +115,7 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
 TEST_SUITE ("Writing Tests")
 {
     //=============================================================
-    TEST_CASE ("WritingTest::WriteSineToneToManyFormats")
+    TEST_CASE ("WritingTest::WriteSineToneToManyFormats::FloatingPoint")
     {
         std::vector<int> sampleRates = {22050, 44100, 48000, 96000};
         std::vector<int> bitDepths = {8, 16, 24, 32};
@@ -133,7 +131,7 @@ TEST_SUITE ("Writing Tests")
                     for (auto& format : audioFormats)
                     {
                         auto fmt_str = format == AudioFileFormat::Wave ? "wav" : "aiff";
-                        std::cerr << sampleRate << " " << bitDepth << " " << channels << " " << fmt_str << " (floating point)" << std::endl;
+                        std::cerr << sampleRate << "Hz " << bitDepth << "-bit " << channels << " " << fmt_str << " (floating point)" << std::endl;
                         writeTestAudioFile<float> (channels, sampleRate, bitDepth, format);
                     }
                 }
@@ -142,11 +140,11 @@ TEST_SUITE ("Writing Tests")
     }
 
     //=============================================================
-    TEST_CASE ("WritingTest::WriteSineToneToManyFormats_Integer")
+    TEST_CASE ("WritingTest::WriteSineToneToManyFormats::Integer")
     {
         std::vector<int> sampleRates = {22050, 44100, 48000, 96000};
-        std::vector<int> bitDepths = {8, 16, 24};// , 32};
-        std::vector<int> numChannels = {1, 2, 8};
+        std::vector<int> bitDepths = {8, 16, 24, 32};
+        std::vector<int> numChannels = {1, 2};
         std::vector<AudioFileFormat> audioFormats = {AudioFileFormat::Wave, AudioFileFormat::Aiff};
 
         for (auto& sampleRate : sampleRates)
@@ -158,13 +156,15 @@ TEST_SUITE ("Writing Tests")
                     for (auto& format : audioFormats)
                     {
                         auto fmt_str = format == AudioFileFormat::Wave ? "wav" : "aiff";
-                        std::cerr << sampleRate << " " << bitDepth << " " << channels << " " << fmt_str << " (integer)" << std::endl;
+                        std::cerr << sampleRate << "Hz " << bitDepth << "-bit " << channels << " " << fmt_str << " (integer)" << std::endl;
                         
                         if (bitDepth == 8)
                             writeTestAudioFile<uint8_t> (channels, sampleRate, bitDepth, format);
                         else if (bitDepth == 16)
                             writeTestAudioFile<int16_t> (channels, sampleRate, bitDepth, format);
                         else if (bitDepth == 24)
+                            writeTestAudioFile<int32_t> (channels, sampleRate, bitDepth, format);
+                        else if (bitDepth == 32)
                             writeTestAudioFile<int32_t> (channels, sampleRate, bitDepth, format);
                     }
                 }

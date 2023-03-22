@@ -534,7 +534,7 @@ TEST_SUITE ("SampleConversionTests::16-bit Conversions")
 TEST_SUITE ("SampleConversionTests::24-bit Conversions")
 {
     //=============================================================
-    TEST_CASE ("24-bit Conversions::sixteenBitIntToSample (float and double)")
+    TEST_CASE ("24-bit Conversions::twentyFourBitIntToSample (float and double)")
     {
         REQUIRE_EQ (AudioSampleConverter<float>::twentyFourBitIntToSample (8388607), 1.f);
         REQUIRE_EQ (AudioSampleConverter<float>::twentyFourBitIntToSample (4194303), doctest::Approx (0.5f).epsilon (0.0001));
@@ -552,7 +552,7 @@ TEST_SUITE ("SampleConversionTests::24-bit Conversions")
     }
     
     //=============================================================
-    TEST_CASE ("24-bit Conversions::sixteenBitIntToSample (unsigned integers)")
+    TEST_CASE ("24-bit Conversions::twentyFourBitIntToSample (unsigned integers)")
     {
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::twentyFourBitIntToSample (8388607), 16777215);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::twentyFourBitIntToSample (4194303), 12582911);
@@ -570,7 +570,7 @@ TEST_SUITE ("SampleConversionTests::24-bit Conversions")
     }
     
     //=============================================================
-    TEST_CASE ("24-bit Conversions::sixteenBitIntToSample (signed integers)")
+    TEST_CASE ("24-bit Conversions::twentyFourBitIntToSample (signed integers)")
     {
         REQUIRE_EQ (AudioSampleConverter<int32_t>::twentyFourBitIntToSample (8388607), 8388607);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::twentyFourBitIntToSample (4194303), 4194303);
@@ -645,5 +645,127 @@ TEST_SUITE ("SampleConversionTests::24-bit Conversions")
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (-8388607), -8388607);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (-8388608), -8388608);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (std::numeric_limits<int64_t>::min()), -8388608);
+    }
+}
+
+//=============================================================
+TEST_SUITE ("SampleConversionTests::32-bit Conversions")
+{
+    //=============================================================
+    TEST_CASE ("32-bit Conversions::thirtyTwoBitIntToSample (float and double)")
+    {
+        REQUIRE_EQ (AudioSampleConverter<float>::thirtyTwoBitIntToSample (2147483647), 1.f);
+        REQUIRE_EQ (AudioSampleConverter<float>::thirtyTwoBitIntToSample (1073741824), doctest::Approx (0.5f).epsilon (0.0001));
+        REQUIRE_EQ (AudioSampleConverter<float>::thirtyTwoBitIntToSample (0), 0.f);
+        REQUIRE_EQ (AudioSampleConverter<float>::thirtyTwoBitIntToSample (-1073741824), doctest::Approx (-0.5f).epsilon (0.0001));
+        REQUIRE_EQ (AudioSampleConverter<float>::thirtyTwoBitIntToSample (-2147483647), -1.f);
+        REQUIRE_EQ (AudioSampleConverter<float>::thirtyTwoBitIntToSample (-2147483648), doctest::Approx (-1.00000000046566f).epsilon (0.0001));
+        
+        REQUIRE_EQ (AudioSampleConverter<double>::thirtyTwoBitIntToSample (2147483647), 1.);
+        REQUIRE_EQ (AudioSampleConverter<double>::thirtyTwoBitIntToSample (1073741824), doctest::Approx (0.5).epsilon (0.0001));
+        REQUIRE_EQ (AudioSampleConverter<double>::thirtyTwoBitIntToSample (0), 0.f);
+        REQUIRE_EQ (AudioSampleConverter<double>::thirtyTwoBitIntToSample (-1073741824), doctest::Approx (-0.5).epsilon (0.0001));
+        REQUIRE_EQ (AudioSampleConverter<double>::thirtyTwoBitIntToSample (-2147483647), -1.);
+        REQUIRE_EQ (AudioSampleConverter<double>::thirtyTwoBitIntToSample (-2147483648), doctest::Approx (-1.00000000046566).epsilon (0.0001));
+    }
+    
+    //=============================================================
+    TEST_CASE ("32-bit Conversions::thirtyTwoBitIntToSample (unsigned integer)")
+    {
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::thirtyTwoBitIntToSample (2147483647), 4294967295);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::thirtyTwoBitIntToSample (1073741824), 3221225472);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::thirtyTwoBitIntToSample (0), 2147483648);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::thirtyTwoBitIntToSample (-1073741824), 1073741824);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::thirtyTwoBitIntToSample (-2147483647), 1);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::thirtyTwoBitIntToSample (-2147483648), 0);
+        
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::thirtyTwoBitIntToSample (2147483647), 4294967295);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::thirtyTwoBitIntToSample (1073741824), 3221225472);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::thirtyTwoBitIntToSample (0), 2147483648);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::thirtyTwoBitIntToSample (-1073741824), 1073741824);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::thirtyTwoBitIntToSample (-2147483647), 1);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::thirtyTwoBitIntToSample (-2147483648), 0);
+    }
+    
+    //=============================================================
+    TEST_CASE ("32-bit Conversions::thirtyTwoBitIntToSample (signed integer)")
+    {
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::thirtyTwoBitIntToSample (2147483647), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::thirtyTwoBitIntToSample (1073741824), 1073741824);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::thirtyTwoBitIntToSample (0), 0);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::thirtyTwoBitIntToSample (-1073741824), -1073741824);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::thirtyTwoBitIntToSample (-2147483647), -2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::thirtyTwoBitIntToSample (-2147483648), -2147483648);
+        
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::thirtyTwoBitIntToSample (2147483647), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::thirtyTwoBitIntToSample (1073741824), 1073741824);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::thirtyTwoBitIntToSample (0), 0);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::thirtyTwoBitIntToSample (-1073741824), -1073741824);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::thirtyTwoBitIntToSample (-2147483647), -2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::thirtyTwoBitIntToSample (-2147483648), -2147483648);
+    }
+    
+    //=============================================================
+    TEST_CASE ("32-bit Conversions::sampleToThirtyTwoBitInt (float and double)")
+    {
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (std::numeric_limits<float>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (1.f), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (0.5f), 1073741824);
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (0.f), 0);
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (-0.5f), -1073741824);
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (-1.f), -2147483648); // ideally is -2147483647 but floating point rounding errors cause the value to shift. This doesn't happen with double
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (std::numeric_limits<float>::lowest()), -2147483648);
+        
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (std::numeric_limits<double>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (1.f), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (0.5f), 1073741823);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (0.f), 0);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (-0.5f), -1073741823);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (-1.), -2147483647);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (std::numeric_limits<double>::lowest()), -2147483647);
+    }
+    
+    //=============================================================
+    TEST_CASE ("32-bit Conversions::sampleToThirtyTwoBitInt (unsigned integers)")
+    {
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (std::numeric_limits<uint32_t>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (4294967295), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (3221225472), 1073741824);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (2147483648), 0);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (1073741824), -1073741824);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (1), -2147483647);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (0), -2147483648);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (std::numeric_limits<uint32_t>::min()), -2147483648);
+        
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (std::numeric_limits<uint64_t>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (4294967295), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (3221225472), 1073741824);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (2147483648), 0);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (1073741824), -1073741824);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (1), -2147483647);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (0), -2147483648);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (std::numeric_limits<uint64_t>::min()), -2147483648);
+    }
+    
+    //=============================================================
+    TEST_CASE ("32-bit Conversions::sampleToThirtyTwoBitInt (signed integers)")
+    {
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (std::numeric_limits<int32_t>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (2147483647), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (1073741824), 1073741824);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (0), 0);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (-1073741824), -1073741824);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (-2147483647), -2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (-2147483648), -2147483648);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (std::numeric_limits<int32_t>::min()), -2147483648);
+        
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (std::numeric_limits<int32_t>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (2147483647), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (1073741824), 1073741824);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (0), 0);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (-1073741824), -1073741824);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (-2147483647), -2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (-2147483648), -2147483648);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (std::numeric_limits<int32_t>::min()), -2147483648);
     }
 }
