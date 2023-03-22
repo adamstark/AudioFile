@@ -1470,7 +1470,7 @@ int16_t AudioSampleConverter<T>::sampleToSixteenBitInt (T sample)
 template <class T>
 uint8_t AudioSampleConverter<T>::sampleToUnsignedByte (T sample)
 {
-    if (std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
         sample = (sample + 1.) / 2.;
@@ -1507,7 +1507,7 @@ int8_t AudioSampleConverter<T>::sampleToSignedByte (T sample)
 template <class T>
 T AudioSampleConverter<T>::unsignedByteToSample (uint8_t sample)
 {
-    if (std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
         return static_cast<T> (sample - 128) / static_cast<T> (127.);
     }
