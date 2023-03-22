@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <AudioFile.h>
+#include <cmath>
 
 // --------------------------------------------
 // Test audio files: 44.1kHz Stereo
