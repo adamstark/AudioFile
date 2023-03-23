@@ -1374,7 +1374,7 @@ T AudioSampleConverter<T>::thirtyTwoBitIntToSample (int32_t sample)
         if constexpr (std::is_signed_v<T>)
             return static_cast<T> (clamp (sample, SampleLimit::SignedInt32_Min, SampleLimit::SignedInt32_Max));
         else
-            return static_cast<T> (clamp (sample + SignedInt32_Max + 1, SampleLimit::UnsignedInt32_Min, SampleLimit::UnsignedInt32_Max));
+            return static_cast<T> (clamp (static_cast<T> (sample + SignedInt32_Max + 1), SampleLimit::UnsignedInt32_Min, SampleLimit::UnsignedInt32_Max));
     }
 }
 
