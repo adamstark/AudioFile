@@ -1384,8 +1384,22 @@ int32_t AudioSampleConverter<T>::sampleToThirtyTwoBitInt (T sample)
 {
     if constexpr (std::is_floating_point<T>::value)
     {
-        sample = clamp (sample, -1., 1.);
-        return static_cast<int32_t> (sample * std::numeric_limits<int32_t>::max());
+        // multiplying a float by a the max int32_t is problematic because
+        // of roundng errors which can cause wrong errors to come out, so
+        // we use a different
+        if constexpr (std::is_same_v<T, float>)
+        {
+            if (sample >= 1.f)
+                return std::numeric_limits<int32_t>::max();
+            else if (sample <= -1.f)
+                return std::numeric_limits<int32_t>::lowest() + 1; // starting at 1 preservest symmetry
+            else
+                return static_cast<int32_t> (sample * std::numeric_limits<int32_t>::max());
+        }
+        else
+        {
+            return static_cast<int32_t> (clamp (sample, -1., 1.) * std::numeric_limits<int32_t>::max());
+        }
     }
     else
     {
