@@ -601,6 +601,17 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     uint16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
     bitDepth = (int) twoBytesToInt (fileData, f + 22);
     
+    if (bitDepth > sizeof (T) * 8)
+    {
+        std::string message = "ERROR: you are trying to read a ";
+        message += std::to_string (bitDepth);
+        message += "-bit file using a ";
+        message += std::to_string (sizeof (T) * 8);
+        message += "-bit sample type";
+        reportError (message);
+        return false;
+    }
+    
     uint16_t numBytesPerSample = static_cast<uint16_t> (bitDepth) / 8;
     
     // check that the audio format is PCM or Float or extensible
@@ -682,7 +693,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                 int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex);
                 T sample;
                 
-                if (audioFormat == WavAudioFormat::IEEEFloat) 
+                if (audioFormat == WavAudioFormat::IEEEFloat && std::is_floating_point_v<T>) 
                 {
                     float f;
                     memcpy (&f, &sampleAsInt, sizeof(int32_t));
@@ -748,6 +759,17 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     int32_t numSamplesPerChannel = fourBytesToInt (fileData, p + 10, Endianness::BigEndian);
     bitDepth = (int) twoBytesToInt (fileData, p + 14, Endianness::BigEndian);
     sampleRate = getAiffSampleRate (fileData, p + 16);
+    
+    if (bitDepth > sizeof (T) * 8)
+    {
+        std::string message = "ERROR: you are trying to read a ";
+        message += std::to_string (bitDepth);
+        message += "-bit file using a ";
+        message += std::to_string (sizeof (T) * 8);
+        message += "-bit sample type";
+        reportError (message);
+        return false;
+    }
     
     // check the sample rate was properly decoded
     if (sampleRate == 0)
@@ -1555,7 +1577,9 @@ T AudioSampleConverter<T>::signedByteToSample (int8_t sample)
 template <class T>
 T AudioSampleConverter<T>::clamp (T value, T minValue, T maxValue)
 {
-    return value < minValue ? minValue : (value > maxValue ? maxValue : value);
+    value = std::min (value, maxValue);
+    value = std::max (value, minValue);
+    return value;
 }
 
 #if defined (_MSC_VER)
