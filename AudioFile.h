@@ -1555,9 +1555,7 @@ T AudioSampleConverter<T>::signedByteToSample (int8_t sample)
 template <class T>
 T AudioSampleConverter<T>::clamp (T value, T minValue, T maxValue)
 {
-    value = std::min (value, maxValue);
-    value = std::max (value, minValue);
-    return value;
+    return value < minValue ? minValue : (value > maxValue ? maxValue : value);
 }
 
 #if defined (_MSC_VER)
