@@ -1394,7 +1394,7 @@ T AudioSampleConverter<T>::thirtyTwoBitIntToSample (int32_t sample)
     else if (std::numeric_limits<T>::is_integer)
     {
         if constexpr (std::is_signed_v<T>)
-            return static_cast<T> (clamp (sample, -2147483648, 2147483647));
+            return static_cast<T> (sample);
         else
             return static_cast<T> (clamp (static_cast<T> (sample + 2147483648), 0, 4294967295));
     }
@@ -1407,8 +1407,8 @@ int32_t AudioSampleConverter<T>::sampleToThirtyTwoBitInt (T sample)
     if constexpr (std::is_floating_point<T>::value)
     {
         // multiplying a float by a the max int32_t is problematic because
-        // of roundng errors which can cause wrong errors to come out, so
-        // we use a different
+        // of roundng errors which can cause wrong values to come out, so
+        // we use a different implementation here compared to other types
         if constexpr (std::is_same_v<T, float>)
         {
             if (sample >= 1.f)
