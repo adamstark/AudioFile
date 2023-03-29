@@ -357,13 +357,13 @@ double AudioFile<T>::getLengthInSeconds() const
 template <class T>
 void AudioFile<T>::printSummary() const
 {
-    std::cout << "|======================================|" << std::endl;
-    std::cout << "Num Channels: " << getNumChannels() << std::endl;
-    std::cout << "Num Samples Per Channel: " << getNumSamplesPerChannel() << std::endl;
-    std::cout << "Sample Rate: " << sampleRate << std::endl;
-    std::cout << "Bit Depth: " << bitDepth << std::endl;
-    std::cout << "Length in Seconds: " << getLengthInSeconds() << std::endl;
-    std::cout << "|======================================|" << std::endl;
+    std::cerr << "|======================================|" << std::endl;
+    std::cerr << "Num Channels: " << getNumChannels() << std::endl;
+    std::cerr << "Num Samples Per Channel: " << getNumSamplesPerChannel() << std::endl;
+    std::cerr << "Sample Rate: " << sampleRate << std::endl;
+    std::cerr << "Bit Depth: " << bitDepth << std::endl;
+    std::cerr << "Length in Seconds: " << getLengthInSeconds() << std::endl;
+    std::cerr << "|======================================|" << std::endl;
 }
 
 //=============================================================
@@ -1307,7 +1307,7 @@ template <class T>
 void AudioFile<T>::reportError (std::string errorMessage)
 {
     if (logErrorsToConsole)
-        std::cout << errorMessage << std::endl;
+        std::cerr << errorMessage << std::endl;
 }
 
 #if defined (_MSC_VER)
