@@ -1394,9 +1394,16 @@ T AudioSampleConverter<T>::thirtyTwoBitIntToSample (int32_t sample)
     else if (std::numeric_limits<T>::is_integer)
     {
         if constexpr (std::is_signed_v<T>)
-            return static_cast<T> (sample);
+        {
+            if (sample < 0)
+                return static_cast<uint32_t> (sample) | static_cast<int64_t>(0xFFFFFFFF) << 32;
+            else
+                return static_cast<T> (sample);
+        }
         else
+        {
             return static_cast<T> (clamp (static_cast<T> (sample + 2147483648), 0, 4294967295));
+        }
     }
 }
 
@@ -1414,7 +1421,7 @@ int32_t AudioSampleConverter<T>::sampleToThirtyTwoBitInt (T sample)
             if (sample >= 1.f)
                 return std::numeric_limits<int32_t>::max();
             else if (sample <= -1.f)
-                return std::numeric_limits<int32_t>::lowest() + 1; // starting at 1 preservest symmetry
+                return std::numeric_limits<int32_t>::lowest() + 1; // starting at 1 preserves symmetry
             else
                 return static_cast<int32_t> (sample * std::numeric_limits<int32_t>::max());
         }
