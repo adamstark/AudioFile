@@ -131,9 +131,9 @@ Please see the `examples` folder for some examples on library usage.
 A Note On Types
 -----------------
 
-AudioFile is a template class and so it can be instantiated using floating point precision:
+AudioFile is a template class and so it can be instantiated using different types to represent the audio samples.
 
-For example
+For example, we can use floating point precision...
 
 	AudioFile<float> audioFile;
 
@@ -147,13 +147,15 @@ For example
 	
 This simply reflects the data type you would like to use to store the underlying audio samples. 
 
-When you use an integer type to store the samples (e.g. `int` or `int8_t` or `int16_t` or `uint32_t`), the library will read in the integer sample values directly from the audio file. A couple of notes on integer types:
+When you use an integer type to store the samples (e.g. `int` or `int8_t` or `int16_t` or `uint32_t`), the library will read in the integer sample values directly from the audio file. 
+
+A couple of notes on integer types:
 
 * The range of samples is designed to be symmetric. This means that for (e.g.) an signed 8-bit integer (`int8_t`) we will use the range `[-127, 127]` for storing samples representing the `[-1., 1.]` range. The value `-128` is possible here given the `int8_t` type, but this is interpreted as a value slightly lower than `-1` (specifically `-1.007874015748`).
 
 * In the case of unsigned types, we obviously can't store samples as negative values. Therefore, we used the equivalent range of the unsigned type in use. E.g. if with a 8-bit signed integer (`int8_t`) the range would be `[-127, 127]`, for an 8-bit unsigned integer we would use the range `[1, 255]`. Note that we don't use `-128` for `int8_t` or `0` in `uint8_t`.
 
-* If you try to read an audio file with a larger bit-depth than the type you are using to store samples, the attempt to read the file will fail. Put more simply, you can't read a 16-bit audio file into an 8-bit integer.
+* If you try to read an audio file with a larger bit-depth than the type you are using to store samples, the attempt to read the file will fail. Put more simply, you can't read a 16-bit audio sample into an 8-bit integer.
 
 * If you are writing audio samples in integer formats, you should use the correct sample range for both a) the type you are using to store samples; and b) the bit depth of the audio you want to write.
 
