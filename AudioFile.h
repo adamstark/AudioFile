@@ -201,19 +201,11 @@ private:
     int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int getIndexOfString (std::vector<uint8_t>& source, std::string s);
     int getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
-    
+
     //=============================================================
-    T sixteenBitIntToSample (int16_t sample);
-    int16_t sampleToSixteenBitInt (T sample);
-    
-    //=============================================================
-    uint8_t sampleToSingleByte (T sample);
-    T singleByteToSample (uint8_t sample);
-    
     uint32_t getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
     bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
     void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
-    T clamp (T v1, T minValue, T maxValue);
     
     //=============================================================
     void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
@@ -233,6 +225,49 @@ private:
     bool logErrorsToConsole {true};
 };
 
+//=============================================================
+template <typename T>
+struct AudioSampleConverter
+{
+    //=============================================================
+    /** Convert a signed 8-bit integer to an audio sample */
+    static T signedByteToSample (int8_t sample);
+    
+    /** Convert an audio sample to an signed 8-bit representation */
+    static int8_t sampleToSignedByte (T sample);
+    
+    //=============================================================
+    /** Convert an unsigned 8-bit integer to an audio sample */
+    static T unsignedByteToSample (uint8_t sample);
+    
+    /** Convert an audio sample to an unsigned 8-bit representation */
+    static uint8_t sampleToUnsignedByte (T sample);
+    
+    //=============================================================
+    /** Convert a 16-bit integer to an audio sample */
+    static T sixteenBitIntToSample (int16_t sample);
+    
+    /** Convert a an audio sample to a 16-bit integer */
+    static int16_t sampleToSixteenBitInt (T sample);
+    
+    //=============================================================
+    /** Convert a 24-bit value (int a 32-bit int) to an audio sample */
+    static T twentyFourBitIntToSample (int32_t sample);
+    
+    /** Convert a an audio sample to a 24-bit value (in a 32-bit integer) */
+    static int32_t sampleToTwentyFourBitInt (T sample);
+    
+    //=============================================================
+    /** Convert a 32-bit signed integer to an audio sample */
+    static T thirtyTwoBitIntToSample (int32_t sample);
+    
+    /** Convert a an audio sample to a 32-bit signed integer */
+    static int32_t sampleToThirtyTwoBitInt (T sample);
+    
+    //=============================================================
+    /** Helper clamp function to enforce ranges */
+    static T clamp (T v1, T minValue, T maxValue);
+};
 
 //=============================================================
 // Pre-defined 10-byte representations of common sample rates
@@ -284,8 +319,6 @@ enum AIFFAudioFormat
 template <class T>
 AudioFile<T>::AudioFile()
 {
-    static_assert(std::is_floating_point<T>::value, "ERROR: This version of AudioFile only supports floating point sample formats");
-
     bitDepth = 16;
     sampleRate = 44100;
     samples.resize (1);
@@ -374,7 +407,7 @@ bool AudioFile<T>::setAudioBuffer (AudioBuffer& newBuffer)
     
     if (numChannels <= 0)
     {
-        assert (false && "The buffer your are trying to use has no channels");
+        assert (false && "The buffer you are trying to use has no channels");
         return false;
     }
     
@@ -497,7 +530,17 @@ bool AudioFile<T>::load (std::string filePath)
 		return false;
 	}
     
-    return loadFromMemory (fileData);
+    // Handle very small files that will break our attempt to read the
+    // first header info from them
+    if (fileData.size() < 12)
+    {
+        reportError ("ERROR: File is not a valid audio file\n" + filePath);
+        return false;
+    }
+    else
+    {
+        return loadFromMemory (fileData);
+    }
 }
 
 //=============================================================
@@ -558,6 +601,17 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     uint16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
     bitDepth = (int) twoBytesToInt (fileData, f + 22);
     
+    if (bitDepth > sizeof (T) * 8)
+    {
+        std::string message = "ERROR: you are trying to read a ";
+        message += std::to_string (bitDepth);
+        message += "-bit file using a ";
+        message += std::to_string (sizeof (T) * 8);
+        message += "-bit sample type";
+        reportError (message);
+        return false;
+    }
+    
     uint16_t numBytesPerSample = static_cast<uint16_t> (bitDepth) / 8;
     
     // check that the audio format is PCM or Float or extensible
@@ -614,13 +668,13 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
             
             if (bitDepth == 8)
             {
-                T sample = singleByteToSample (fileData[sampleIndex]);
+                T sample = AudioSampleConverter<T>::unsignedByteToSample (fileData[sampleIndex]);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 16)
             {
                 int16_t sampleAsInt = twoBytesToInt (fileData, sampleIndex);
-                T sample = sixteenBitIntToSample (sampleAsInt);
+                T sample = AudioSampleConverter<T>::sixteenBitIntToSample (sampleAsInt);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 24)
@@ -631,7 +685,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                 if (sampleAsInt & 0x800000) //  if the 24th bit is set, this is a negative number in 24-bit world
                     sampleAsInt = sampleAsInt | ~0xFFFFFF; // so make sure sign is extended to the 32 bit float
 
-                T sample = (T)sampleAsInt / (T)8388608.;
+                T sample = AudioSampleConverter<T>::twentyFourBitIntToSample (sampleAsInt);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 32)
@@ -639,10 +693,16 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
                 int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex);
                 T sample;
                 
-                if (audioFormat == WavAudioFormat::IEEEFloat)
-                    sample = (T)reinterpret_cast<float&> (sampleAsInt);
+                if (audioFormat == WavAudioFormat::IEEEFloat && std::is_floating_point_v<T>) 
+                {
+                    float f;
+                    memcpy (&f, &sampleAsInt, sizeof(int32_t));
+                    sample = (T)f;
+                }
                 else // assume PCM
-                    sample = (T) sampleAsInt / static_cast<float> (std::numeric_limits<std::int32_t>::max());
+                {
+                    sample = AudioSampleConverter<T>::thirtyTwoBitIntToSample (sampleAsInt);
+                }
                 
                 samples[channel].push_back (sample);
             }
@@ -699,6 +759,17 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
     int32_t numSamplesPerChannel = fourBytesToInt (fileData, p + 10, Endianness::BigEndian);
     bitDepth = (int) twoBytesToInt (fileData, p + 14, Endianness::BigEndian);
     sampleRate = getAiffSampleRate (fileData, p + 16);
+    
+    if (bitDepth > sizeof (T) * 8)
+    {
+        std::string message = "ERROR: you are trying to read a ";
+        message += std::to_string (bitDepth);
+        message += "-bit file using a ";
+        message += std::to_string (sizeof (T) * 8);
+        message += "-bit sample type";
+        reportError (message);
+        return false;
+    }
     
     // check the sample rate was properly decoded
     if (sampleRate == 0)
@@ -758,14 +829,13 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
             
             if (bitDepth == 8)
             {
-                int8_t sampleAsSigned8Bit = (int8_t)fileData[sampleIndex];
-                T sample = (T)sampleAsSigned8Bit / (T)128.;
+                T sample = AudioSampleConverter<T>::signedByteToSample (static_cast<int8_t> (fileData[sampleIndex]));
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 16)
             {
                 int16_t sampleAsInt = twoBytesToInt (fileData, sampleIndex, Endianness::BigEndian);
-                T sample = sixteenBitIntToSample (sampleAsInt);
+                T sample = AudioSampleConverter<T>::sixteenBitIntToSample (sampleAsInt);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 24)
@@ -775,8 +845,8 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
                 
                 if (sampleAsInt & 0x800000) //  if the 24th bit is set, this is a negative number in 24-bit world
                     sampleAsInt = sampleAsInt | ~0xFFFFFF; // so make sure sign is extended to the 32 bit float
-                
-                T sample = (T)sampleAsInt / (T)8388608.;
+
+                T sample = AudioSampleConverter<T>::twentyFourBitIntToSample (sampleAsInt);
                 samples[channel].push_back (sample);
             }
             else if (bitDepth == 32)
@@ -786,9 +856,9 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
                 
                 if (audioFormat == AIFFAudioFormat::Compressed)
                     sample = (T)reinterpret_cast<float&> (sampleAsInt);
-                else // assume uncompressed
-                    sample = (T) sampleAsInt / static_cast<float> (std::numeric_limits<std::int32_t>::max());
-                    
+                else // assume PCM
+                    sample = AudioSampleConverter<T>::thirtyTwoBitIntToSample (sampleAsInt);
+                
                 samples[channel].push_back (sample);
             }
             else
@@ -869,7 +939,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
     std::vector<uint8_t> fileData;
     
     int32_t dataChunkSize = getNumSamplesPerChannel() * (getNumChannels() * bitDepth / 8);
-    int16_t audioFormat = bitDepth == 32 ? WavAudioFormat::IEEEFloat : WavAudioFormat::PCM;
+    int16_t audioFormat = bitDepth == 32 && std::is_floating_point_v<T> ? WavAudioFormat::IEEEFloat : WavAudioFormat::PCM;
     int32_t formatChunkSize = audioFormat == WavAudioFormat::PCM ? 16 : 18;
     int32_t iXMLChunkSize = static_cast<int32_t> (iXMLChunk.size());
     
@@ -919,17 +989,17 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                uint8_t byte = sampleToSingleByte (samples[channel][i]);
+                uint8_t byte = AudioSampleConverter<T>::sampleToUnsignedByte (samples[channel][i]);
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
             {
-                int16_t sampleAsInt = sampleToSixteenBitInt (samples[channel][i]);
+                int16_t sampleAsInt = AudioSampleConverter<T>::sampleToSixteenBitInt (samples[channel][i]);
                 addInt16ToFileData (fileData, sampleAsInt);
             }
             else if (bitDepth == 24)
             {
-                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)8388608.);
+                int32_t sampleAsIntAgain = AudioSampleConverter<T>::sampleToTwentyFourBitInt (samples[channel][i]);
                 
                 uint8_t bytes[3];
                 bytes[2] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
@@ -947,7 +1017,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
                 if (audioFormat == WavAudioFormat::IEEEFloat)
                     sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (samples[channel][i]);
                 else // assume PCM
-                    sampleAsInt = (int32_t) (samples[channel][i] * std::numeric_limits<int32_t>::max());
+                    sampleAsInt = AudioSampleConverter<T>::sampleToThirtyTwoBitInt (samples[channel][i]);
                 
                 addInt32ToFileData (fileData, sampleAsInt, Endianness::LittleEndian);
             }
@@ -1029,17 +1099,17 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
         {
             if (bitDepth == 8)
             {
-                uint8_t byte = sampleToSingleByte (samples[channel][i]);
+                uint8_t byte = static_cast<uint8_t> (AudioSampleConverter<T>::sampleToSignedByte (samples[channel][i]));
                 fileData.push_back (byte);
             }
             else if (bitDepth == 16)
             {
-                int16_t sampleAsInt = sampleToSixteenBitInt (samples[channel][i]);
+                int16_t sampleAsInt = AudioSampleConverter<T>::sampleToSixteenBitInt (samples[channel][i]);
                 addInt16ToFileData (fileData, sampleAsInt, Endianness::BigEndian);
             }
             else if (bitDepth == 24)
             {
-                int32_t sampleAsIntAgain = (int32_t) (samples[channel][i] * (T)8388608.);
+                int32_t sampleAsIntAgain = AudioSampleConverter<T>::sampleToTwentyFourBitInt (samples[channel][i]);
                 
                 uint8_t bytes[3];
                 bytes[0] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
@@ -1053,7 +1123,7 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
             else if (bitDepth == 32)
             {
                 // write samples as signed integers (no implementation yet for floating point, but looking at WAV implementation should help)
-                int32_t sampleAsInt = (int32_t) (samples[channel][i] * std::numeric_limits<int32_t>::max());
+                int32_t sampleAsInt = AudioSampleConverter<T>::sampleToThirtyTwoBitInt (samples[channel][i]);
                 addInt32ToFileData (fileData, sampleAsInt, Endianness::BigEndian);
             }
             else
@@ -1190,14 +1260,22 @@ AudioFileFormat AudioFile<T>::determineAudioFileFormat (std::vector<uint8_t>& fi
 template <class T>
 int32_t AudioFile<T>::fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness)
 {
-    int32_t result;
-    
-    if (endianness == Endianness::LittleEndian)
-        result = (source[startIndex + 3] << 24) | (source[startIndex + 2] << 16) | (source[startIndex + 1] << 8) | source[startIndex];
+    if (source.size() >= (startIndex + 4))
+    {
+        int32_t result;
+        
+        if (endianness == Endianness::LittleEndian)
+            result = (source[startIndex + 3] << 24) | (source[startIndex + 2] << 16) | (source[startIndex + 1] << 8) | source[startIndex];
+        else
+            result = (source[startIndex] << 24) | (source[startIndex + 1] << 16) | (source[startIndex + 2] << 8) | source[startIndex + 3];
+        
+        return result;
+    }
     else
-        result = (source[startIndex] << 24) | (source[startIndex + 1] << 16) | (source[startIndex + 2] << 8) | source[startIndex + 3];
-    
-    return result;
+    {
+        assert (false && "Attempted to read four bytes from vector at position where out of bounds access would occur");
+        return 0; // this is a dummy value as we don't have one to return
+    }
 }
 
 //=============================================================
@@ -1240,6 +1318,7 @@ template <class T>
 int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness)
 {
     constexpr int dataLen = 4;
+    
     if (chunkHeaderID.size() != dataLen)
     {
         assert (false && "Invalid chunk header ID string");
@@ -1255,6 +1334,11 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
         }
 
         i += dataLen;
+        
+        // If somehow we don't have 4 bytes left to read, then exit with -1
+        if ((i + 4) >= source.size())
+            return -1;
+        
         auto chunkSize = fourBytesToInt (source, i, endianness);
         i += (dataLen + chunkSize);
     }
@@ -1264,50 +1348,234 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
 
 //=============================================================
 template <class T>
-T AudioFile<T>::sixteenBitIntToSample (int16_t sample)
-{
-    return static_cast<T> (sample) / static_cast<T> (32768.);
-}
-
-//=============================================================
-template <class T>
-int16_t AudioFile<T>::sampleToSixteenBitInt (T sample)
-{
-    sample = clamp (sample, -1., 1.);
-    return static_cast<int16_t> (sample * 32767.);
-}
-
-//=============================================================
-template <class T>
-uint8_t AudioFile<T>::sampleToSingleByte (T sample)
-{
-    sample = clamp (sample, -1., 1.);
-    sample = (sample + 1.) / 2.;
-    return static_cast<uint8_t> (sample * 255.);
-}
-
-//=============================================================
-template <class T>
-T AudioFile<T>::singleByteToSample (uint8_t sample)
-{
-    return static_cast<T> (sample - 128) / static_cast<T> (128.);
-}
-
-//=============================================================
-template <class T>
-T AudioFile<T>::clamp (T value, T minValue, T maxValue)
-{
-    value = std::min (value, maxValue);
-    value = std::max (value, minValue);
-    return value;
-}
-
-//=============================================================
-template <class T>
 void AudioFile<T>::reportError (std::string errorMessage)
 {
     if (logErrorsToConsole)
         std::cout << errorMessage << std::endl;
+}
+
+//=============================================================
+template <typename SignedType>
+typename std::make_unsigned<SignedType>::type convertSignedToUnsigned (SignedType signedValue)
+{
+    static_assert (std::is_signed<SignedType>::value, "The input value must be signed");
+    
+    typename std::make_unsigned<SignedType>::type unsignedValue = static_cast<typename std::make_unsigned<SignedType>::type> (1) + std::numeric_limits<SignedType>::max();
+    
+    unsignedValue += signedValue;
+    return unsignedValue;
+}
+
+//=============================================================
+enum SampleLimit
+{
+    SignedInt16_Min = -32768,
+    SignedInt16_Max = 32767,
+    UnsignedInt16_Min = 0,
+    UnsignedInt16_Max = 65535,
+    SignedInt24_Min = -8388608,
+    SignedInt24_Max = 8388607,
+    UnsignedInt24_Min = 0,
+    UnsignedInt24_Max = 16777215
+};
+
+//=============================================================
+template <class T>
+T AudioSampleConverter<T>::thirtyTwoBitIntToSample (int32_t sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        return static_cast<T> (sample) / static_cast<T> (std::numeric_limits<int32_t>::max());
+    }
+    else if (std::numeric_limits<T>::is_integer)
+    {
+        if constexpr (std::is_signed_v<T>)
+			return static_cast<T> (sample);
+        else
+            return static_cast<T> (clamp (static_cast<T> (sample + 2147483648), 0, 4294967295));
+    }
+}
+
+//=============================================================
+template <class T>
+int32_t AudioSampleConverter<T>::sampleToThirtyTwoBitInt (T sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        // multiplying a float by a the max int32_t is problematic because
+        // of roundng errors which can cause wrong values to come out, so
+        // we use a different implementation here compared to other types
+        if constexpr (std::is_same_v<T, float>)
+        {
+            if (sample >= 1.f)
+                return std::numeric_limits<int32_t>::max();
+            else if (sample <= -1.f)
+                return std::numeric_limits<int32_t>::lowest() + 1; // starting at 1 preserves symmetry
+            else
+                return static_cast<int32_t> (sample * std::numeric_limits<int32_t>::max());
+        }
+        else
+        {
+            return static_cast<int32_t> (clamp (sample, -1., 1.) * std::numeric_limits<int32_t>::max());
+        }
+    }
+    else
+    {
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<int32_t> (clamp (sample, -2147483648LL, 2147483647LL));
+        else
+            return static_cast<int32_t> (clamp (sample, 0, 4294967295) - 2147483648);
+    }
+}
+
+//=============================================================
+template <class T>
+T AudioSampleConverter<T>::twentyFourBitIntToSample (int32_t sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        return static_cast<T> (sample) / static_cast<T> (8388607.);
+    }
+    else if (std::numeric_limits<T>::is_integer)
+    {
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (clamp (sample, SignedInt24_Min, SignedInt24_Max));
+        else
+            return static_cast<T> (clamp (sample + 8388608, UnsignedInt24_Min, UnsignedInt24_Max));
+    }
+}
+
+//=============================================================
+template <class T>
+int32_t AudioSampleConverter<T>::sampleToTwentyFourBitInt (T sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        sample = clamp (sample, -1., 1.);
+        return static_cast<int32_t> (sample * 8388607.);
+    }
+    else
+    {
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<int32_t> (clamp (sample, SignedInt24_Min, SignedInt24_Max));
+        else
+            return static_cast<int32_t> (clamp (sample, UnsignedInt24_Min, UnsignedInt24_Max) + SignedInt24_Min);
+    }
+}
+
+//=============================================================
+template <class T>
+T AudioSampleConverter<T>::sixteenBitIntToSample (int16_t sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        return static_cast<T> (sample) / static_cast<T> (32767.);
+    }
+    else if constexpr (std::numeric_limits<T>::is_integer)
+    {
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (sample);
+        else
+            return static_cast<T> (convertSignedToUnsigned<int16_t> (sample));
+    }
+}
+
+//=============================================================
+template <class T>
+int16_t AudioSampleConverter<T>::sampleToSixteenBitInt (T sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        sample = clamp (sample, -1., 1.);
+        return static_cast<int16_t> (sample * 32767.);
+    }
+    else
+    {
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<int16_t> (clamp (sample, SignedInt16_Min, SignedInt16_Max));
+        else
+            return static_cast<int16_t> (clamp (sample, UnsignedInt16_Min, UnsignedInt16_Max) + SignedInt16_Min);
+    }
+}
+
+//=============================================================
+template <class T>
+uint8_t AudioSampleConverter<T>::sampleToUnsignedByte (T sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        sample = clamp (sample, -1., 1.);
+        sample = (sample + 1.) / 2.;
+        return static_cast<uint8_t> (1 + (sample * 254));
+    }
+    else
+    {
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<uint8_t> (clamp (sample, -128, 127) + 128);
+        else
+            return static_cast<uint8_t> (clamp (sample, 0, 255));
+    }
+}
+
+//=============================================================
+template <class T>
+int8_t AudioSampleConverter<T>::sampleToSignedByte (T sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        sample = clamp (sample, -1., 1.);
+        return static_cast<int8_t> (sample * (T)0x7F);
+    }
+    else
+    {
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<int8_t> (clamp (sample, -128, 127));
+        else
+            return static_cast<int8_t> (clamp (sample, 0, 255) - 128);
+    }
+}
+
+//=============================================================
+template <class T>
+T AudioSampleConverter<T>::unsignedByteToSample (uint8_t sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        return static_cast<T> (sample - 128) / static_cast<T> (127.);
+    }
+    else if (std::numeric_limits<T>::is_integer)
+    {
+        if constexpr (std::is_unsigned_v<T>)
+            return static_cast<T> (sample);
+        else
+            return static_cast<T> (sample - 128);
+    }
+}
+
+//=============================================================
+template <class T>
+T AudioSampleConverter<T>::signedByteToSample (int8_t sample)
+{
+    if constexpr (std::is_floating_point<T>::value)
+    {
+        return static_cast<T> (sample) / static_cast<T> (127.);
+    }
+    else if constexpr (std::numeric_limits<T>::is_integer)
+    {
+        if constexpr (std::is_signed_v<T>)
+            return static_cast<T> (sample);
+        else
+            return static_cast<T> (convertSignedToUnsigned<int8_t> (sample));
+    }
+}
+
+//=============================================================
+template <class T>
+T AudioSampleConverter<T>::clamp (T value, T minValue, T maxValue)
+{
+    value = std::min (value, maxValue);
+    value = std::max (value, minValue);
+    return value;
 }
 
 #if defined (_MSC_VER)

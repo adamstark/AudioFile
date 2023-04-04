@@ -11,7 +11,8 @@ TEST_SUITE ("General Tests")
     const std::string projectBuildDirectory = PROJECT_BINARY_DIR;
 
     //=============================================================
-    void checkFilesAreExactlyTheSame (AudioFile<float>& a, AudioFile<float>& b)
+    template <typename S>
+    void checkFilesAreExactlyTheSame (AudioFile<S>& a, AudioFile<S>& b)
     {
         CHECK (a.getSampleRate() == b.getSampleRate());
         CHECK (a.getBitDepth() == b.getBitDepth());
@@ -38,7 +39,7 @@ TEST_SUITE ("General Tests")
 
         AudioFile<float> b (a);
         
-        checkFilesAreExactlyTheSame (a, b);
+        checkFilesAreExactlyTheSame<float> (a, b);
     }
 
     //=============================================================
@@ -50,7 +51,7 @@ TEST_SUITE ("General Tests")
         AudioFile<float> b;
         b = a;
         
-        checkFilesAreExactlyTheSame (a, b);
+        checkFilesAreExactlyTheSame<float> (a, b);
     }
 
     //=============================================================
@@ -64,7 +65,7 @@ TEST_SUITE ("General Tests")
         b = a;
         c = std::move (a);
         
-        checkFilesAreExactlyTheSame (b, c);
+        checkFilesAreExactlyTheSame<float> (b, c);
     }
 
     //=============================================================
@@ -78,7 +79,7 @@ TEST_SUITE ("General Tests")
         
         AudioFile<float> c (std::move (a));
         
-        checkFilesAreExactlyTheSame (b, c);
+        checkFilesAreExactlyTheSame<float> (b, c);
     }
 
     //=============================================================
@@ -91,6 +92,19 @@ TEST_SUITE ("General Tests")
 
         AudioFile<float> b (filePath);
             
-        checkFilesAreExactlyTheSame (a, b);
+        checkFilesAreExactlyTheSame<float> (a, b);
+    }
+
+    //=============================================================
+    TEST_CASE ("GeneralTests::IntegerFormat")
+    {
+        std::string filePath = projectBuildDirectory + "/test-audio/aiff_stereo_16bit_44100.aif";
+        
+        AudioFile<int16_t> a;
+        a.load (filePath);
+
+        AudioFile<int16_t> b (filePath);
+            
+        checkFilesAreExactlyTheSame<int16_t> (a, b);
     }
 }

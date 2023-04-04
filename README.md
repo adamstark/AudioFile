@@ -1,7 +1,7 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.1.0-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.1.1-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
@@ -103,7 +103,7 @@ Usage
 	audioFile.setNumSamplesPerChannel (numSamples);
 	
 	// Set the number of channels
-	audioFile.setNumChannels (int numChannels);
+	audioFile.setNumChannels (numChannels);
 	
 ### Set bit depth and sample rate
 	
@@ -133,15 +133,44 @@ A Note On Types
 
 AudioFile is a template class and so it can be instantiated using floating point precision:
 
+For example
+
 	AudioFile<float> audioFile;
 
-...or double precision:
+...or double precision...
 
 	AudioFile<double> audioFile;
 	
-This simply reflects the data type you would like to use to store the underlying audio samples. You can still read or write 8, 16 or 24-bit audio files, regardless of the type that you use (unless your system uses a precision for floats less than your desired bit depth).
+...or an integer type:
 
-I have heard of people using the library with other types, but I have not designed for those cases. Let me know if you are interested in this supporting a specific type more formally.
+	AudioFile<int> audioFile;	
+	
+This simply reflects the data type you would like to use to store the underlying audio samples. 
+
+When you use an integer type to store the samples (e.g. `int` or `int8_t` or `int16_t` or `uint32_t`), the library will read in the integer sample values directly from the audio file. A couple of notes on integer types:
+
+* The range of samples is designed to be symmetric. This means that for (e.g.) an signed 8-bit integer (`int8_t`) we will use the range `[-127, 127]` for storing samples representing the `[-1., 1.]` range. The value `-128` is possible here given the `int8_t` type, but this is interpreted as a value slightly lower than `-1` (specifically `-1.007874015748`).
+
+* In the case of unsigned types, we obviously can't store samples as negative values. Therefore, we used the equivalent range of the unsigned type in use. E.g. if with a 8-bit signed integer (`int8_t`) the range would be `[-127, 127]`, for an 8-bit unsigned integer we would use the range `[1, 255]`. Note that we don't use `-128` for `int8_t` or `0` in `uint8_t`.
+
+* If you try to read an audio file with a larger bit-depth than the type you are using to store samples, the attempt to read the file will fail. Put more simply, you can't read a 16-bit audio file into an 8-bit integer.
+
+* If you are writing audio samples in integer formats, you should use the correct sample range for both a) the type you are using to store samples; and b) the bit depth of the audio you want to write.
+
+The following table details the sample range for each bit-depth:
+
+| Type  | 8-bit Audio | 16-bit Audio | 24-bit Audio | 32-bit Audio |
+| ------------- | ------------- | ------------- | ------------- | ------------- |
+| `float` | `[-1.0, 1.0]` | `[-1.0, 1.0]` | `[-1.0, 1.0]` | `[-1.0, 1.0]` |
+| `double` | `[-1.0, 1.0]` | `[-1.0, 1.0]` | `[-1.0, 1.0]` | `[-1.0, 1.0]` |
+| `int8_t` | `[-127, 127]` | :x: (type too small) | :x: (type too small) | :x: (type too small) |
+| `uint8_t` | `[1, 255]` | :x: (type too small) | :x: (type too small) | :x: (type too small) |
+| `int16_t` | `[-127, 127]` | `[-32767, 32767]` | :x: (type too small) | :x: (type too small) |
+| `uint16_t` | `[1, 255]` | `[1, 65535]` | :x: (type too small) | :x: (type too small) |
+| `int32_t` | `[-127, 127]` | `[-32767, 32767]` | [`-8388607, 8388607]`  | `[-2147483647, 2147483647]` |
+| `uint32_t` | `[1, 255]` | `[1, 65535]` | `[1, 16777215]` | `[1, 4294967295]` |
+| `int64_t` | `[-127, 127]` | `[-32767, 32767]` | [`-8388607, 8388607]`  | `[-2147483647, 2147483647]` |
+| `uint64_t` | `[1, 255]` | `[1, 65535]` | `[1, 16777215]` | `[1, 4294967295]` |
 
 Error Messages
 -----------------
@@ -155,6 +184,12 @@ If you prefer not to see these messages, you can disable this error logging beha
 
 Versions
 -------
+
+##### 1.1.1 - 4th April 2023
+
+- Support for integer formats
+- Improved unit testing
+- Many bug fixes
 
 ##### 1.1.0 - 15th January 2022
 
@@ -205,13 +240,20 @@ Versions
 Contributions
 -------
 
-* Multichannel (i.e. >2 channels) audio file support ([Sidelobe](https://github.com/Sidelobe))
-* Read/write of iXML data chunks ([mynameisjohn](https://github.com/mynameisjohn))
-* Remove warnings ([Abhinav1997](https://github.com/Abhinav1997))
-* Better support on Ubuntu ([BenjaminHinchliff](https://github.com/BenjaminHinchliff))
-* Faster loading of audio files ([helloimmatt](https://github.com/helloimmatt/))
-* Improvements to Github Actions workflow ([emiro85](https://github.com/emiro85))
-* Pull request review ([MatthieuHernandez](https://github.com/MatthieuHernandez))
+Many thanks to the following people for their contributions to this library:
+
+* [Abhinav1997](https://github.com/Abhinav1997)
+* [alxarsenault](https://github.com/alxarsenault)
+* [BenjaminHinchliff](https://github.com/BenjaminHinchliff)
+* [emiro85](https://github.com/emiro85)
+* [heartofrain](https://github.com/heartofrain)
+* [helloimmatt](https://github.com/helloimmatt/)
+* [MatthieuHernandez](https://github.com/MatthieuHernandez)
+* [mrpossoms](https://github.com/mrpossoms)
+* [mynameisjohn](https://github.com/mynameisjohn)
+* [Sidelobe](https://github.com/Sidelobe)
+* [sschaetz](https://github.com/sschaetz)
+* [Yhcrown](https://github.com/Yhcrown)
 
 Want to Contribute?
 -------
@@ -221,6 +263,7 @@ If you would like to submit a pull request for this library, please do! But kind
 * Make the changes as concise as is possible for the change you are proposing
 * Avoid unnecessarily changing a large number of lines - e.g. commits changing the number of spaces in indentations on all lines (and so on)
 * Keep to the code style of this library which is the [JUCE Coding Standards](https://juce.com/discover/stories/coding-standards)
+* Make the changes relative to the develop branch of the library (as this may have advanced beyond the master branch)
 
 License
 -------

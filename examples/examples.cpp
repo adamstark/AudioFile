@@ -59,7 +59,7 @@ namespace examples
         {
             for (int channel = 0; channel < a.getNumChannels(); channel++)
             {
-                a.samples[channel][i] = sin ((static_cast<float> (i) / sampleRate) * frequencyInHz * 2.f * M_PI);
+                a.samples[channel][i] = sin ((static_cast<float> (i) / sampleRate) * frequencyInHz * 2.f * (float)M_PI);
             }
         }
         
@@ -140,7 +140,7 @@ namespace examples
         //---------------------------------------------------------------
         // 4. Write audio file to disk
         
-        std::string outputFilePath = "quieter-audio-filer.wav"; // change this to somewhere useful for you
+        std::string outputFilePath = "quieter-audio-file.wav"; // change this to somewhere useful for you
         a.save (outputFilePath, AudioFileFormat::Aiff);
     }
 }
