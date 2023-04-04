@@ -1376,11 +1376,7 @@ enum SampleLimit
     SignedInt24_Min = -8388608,
     SignedInt24_Max = 8388607,
     UnsignedInt24_Min = 0,
-    UnsignedInt24_Max = 16777215,
-    SignedInt32_Min = -2147483648,
-    SignedInt32_Max = 2147483647,
-    UnsignedInt32_Min = 0,
-    UnsignedInt32_Max = 4294967295,
+    UnsignedInt24_Max = 16777215
 };
 
 //=============================================================
@@ -1443,9 +1439,9 @@ T AudioSampleConverter<T>::twentyFourBitIntToSample (int32_t sample)
     else if (std::numeric_limits<T>::is_integer)
     {
         if constexpr (std::is_signed_v<T>)
-            return static_cast<T> (clamp (sample, SampleLimit::SignedInt24_Min, SampleLimit::SignedInt24_Max));
+            return static_cast<T> (clamp (sample, SignedInt24_Min, SignedInt24_Max));
         else
-            return static_cast<T> (clamp (sample + 8388608, SampleLimit::UnsignedInt24_Min, SampleLimit::UnsignedInt24_Max));
+            return static_cast<T> (clamp (sample + 8388608, UnsignedInt24_Min, UnsignedInt24_Max));
     }
 }
 
@@ -1461,7 +1457,7 @@ int32_t AudioSampleConverter<T>::sampleToTwentyFourBitInt (T sample)
     else
     {
         if constexpr (std::is_signed_v<T>)
-            return static_cast<int32_t> (clamp (sample, SampleLimit::SignedInt24_Min, SampleLimit::SignedInt24_Max));
+            return static_cast<int32_t> (clamp (sample, SignedInt24_Min, SignedInt24_Max));
         else
             return static_cast<int32_t> (clamp (sample, UnsignedInt24_Min, UnsignedInt24_Max) + SignedInt24_Min);
     }
@@ -1496,7 +1492,7 @@ int16_t AudioSampleConverter<T>::sampleToSixteenBitInt (T sample)
     else
     {
         if constexpr (std::is_signed_v<T>)
-            return static_cast<int16_t> (clamp (sample, SampleLimit::SignedInt16_Min, SampleLimit::SignedInt16_Max));
+            return static_cast<int16_t> (clamp (sample, SignedInt16_Min, SignedInt16_Max));
         else
             return static_cast<int16_t> (clamp (sample, UnsignedInt16_Min, UnsignedInt16_Max) + SignedInt16_Min);
     }
