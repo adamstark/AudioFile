@@ -1,7 +1,7 @@
 # AudioFile
 
 <!-- Version and License Badges -->
-![Version](https://img.shields.io/badge/version-1.1.0-green.svg?style=flat-square) 
+![Version](https://img.shields.io/badge/version-1.1.1-green.svg?style=flat-square) 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square) 
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square) 
 
@@ -185,6 +185,12 @@ If you prefer not to see these messages, you can disable this error logging beha
 Versions
 -------
 
+##### 1.1.1 - 4th April 2023
+
+- Support for integer formats
+- Improved unit testing
+- Many bug fixes
+
 ##### 1.1.0 - 15th January 2022
 
 - Moved project to MIT licence
@@ -234,13 +240,20 @@ Versions
 Contributions
 -------
 
-* Multichannel (i.e. >2 channels) audio file support ([Sidelobe](https://github.com/Sidelobe))
-* Read/write of iXML data chunks ([mynameisjohn](https://github.com/mynameisjohn))
-* Remove warnings ([Abhinav1997](https://github.com/Abhinav1997))
-* Better support on Ubuntu ([BenjaminHinchliff](https://github.com/BenjaminHinchliff))
-* Faster loading of audio files ([helloimmatt](https://github.com/helloimmatt/))
-* Improvements to Github Actions workflow ([emiro85](https://github.com/emiro85))
-* Pull request review ([MatthieuHernandez](https://github.com/MatthieuHernandez))
+Many thanks to the following people for their contributions to this library:
+
+* [Abhinav1997](https://github.com/Abhinav1997)
+* [alxarsenault](https://github.com/alxarsenault)
+* [BenjaminHinchliff](https://github.com/BenjaminHinchliff)
+* [emiro85](https://github.com/emiro85)
+* [heartofrain](https://github.com/heartofrain)
+* [helloimmatt](https://github.com/helloimmatt/)
+* [MatthieuHernandez](https://github.com/MatthieuHernandez)
+* [mrpossoms](https://github.com/mrpossoms)
+* [mynameisjohn](https://github.com/mynameisjohn)
+* [Sidelobe](https://github.com/Sidelobe)
+* [sschaetz](https://github.com/sschaetz)
+* [Yhcrown](https://github.com/Yhcrown)
 
 Want to Contribute?
 -------
@@ -250,6 +263,7 @@ If you would like to submit a pull request for this library, please do! But kind
 * Make the changes as concise as is possible for the change you are proposing
 * Avoid unnecessarily changing a large number of lines - e.g. commits changing the number of spaces in indentations on all lines (and so on)
 * Keep to the code style of this library which is the [JUCE Coding Standards](https://juce.com/discover/stories/coding-standards)
+* Make the changes relative to the develop branch of the library (as this may have advanced beyond the master branch)
 
 License
 -------

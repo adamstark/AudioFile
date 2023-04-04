@@ -1,7 +1,7 @@
 #===============================================================================
 cmake_minimum_required (VERSION 3.12)
 
-project ("AudioFile" VERSION 1.1.0
+project ("AudioFile" VERSION 1.1.1
                      DESCRIPTION "A simple C++ library for reading and writing audio files."
                      HOMEPAGE_URL "https://github.com/adamstark/AudioFile")
 
