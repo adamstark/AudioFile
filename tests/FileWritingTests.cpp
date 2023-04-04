@@ -44,7 +44,12 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
 
     for (int i = 0; i < audioFileWriter.getNumSamplesPerChannel(); i++)
     {
-        T sample = (T)(sinf (2. * M_PI * ((double) i / sampleRateAsFloat) * 440.) * maxValue);
+        T sample;
+        
+        if constexpr (std::numeric_limits<T>::is_integer && std::is_unsigned_v<T>)
+            sample = (T)(((sinf (2. * M_PI * ((double) i / sampleRateAsFloat) * 440.) + 1.) / 2.) * maxValue);
+        else
+            sample = (T)(sinf (2. * M_PI * ((double) i / sampleRateAsFloat) * 440.) * maxValue);
         
         for (int k = 0; k < audioFileWriter.getNumChannels(); k++)
             audioFileWriter.samples[k][i] = sample * 0.5f;
