@@ -247,6 +247,7 @@ Many thanks to the following people for their contributions to this library:
 * [Abhinav1997](https://github.com/Abhinav1997)
 * [alxarsenault](https://github.com/alxarsenault)
 * [BenjaminHinchliff](https://github.com/BenjaminHinchliff)
+* [BesselJ](https://github.com/BesselJ)
 * [emiro85](https://github.com/emiro85)
 * [heartofrain](https://github.com/heartofrain)
 * [helloimmatt](https://github.com/helloimmatt/)
