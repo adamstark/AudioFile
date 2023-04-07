@@ -83,7 +83,7 @@ class AudioFile
 public:
     
     //=============================================================
-    typedef std::vector<std::vector<T>> AudioBuffer;
+    typedef std::vector<std::vector<T> > AudioBuffer;
     
     //=============================================================
     /** Constructor */
