@@ -1318,9 +1318,9 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
         if ((i + 4) >= source.size())
             return -1;
         
-        uint32_t chunkSize = fourBytesToInt (source, i, endianness);
+        int32_t chunkSize = fourBytesToInt (source, i, endianness);
         // Assume chunk size is invalid if it's greater than the number of bytes remaining in source
-        if (chunkSize > (source.size() - i - dataLen))
+        if (chunkSize > (source.size() - i - dataLen) || (chunkSize < 0))
         {
             assert (false && "Invalid chunk size");
             return -1;
