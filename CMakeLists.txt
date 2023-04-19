@@ -59,13 +59,17 @@ install (FILES ${PROJECT_SOURCE_DIR}/AudioFile.h
 )
 
 install (EXPORT ${PROJECT_NAME}Targets
-    FILE ${PROJECT_NAME}Targets.cmake
-    NAMESPACE ${PROJECT_NAME}::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  FILE ${PROJECT_NAME}Targets.cmake
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+file (WRITE ${PROJECT_BINARY_DIR}/Config.cmake.in
+  "@PACKAGE_INIT@\n\ninclude(\"\${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake\")\n\ncheck_required_components(@PROJECT_NAME@)\n"
 )
 
 configure_package_config_file (
-  ${PROJECT_SOURCE_DIR}/Config.cmake.in
+  ${PROJECT_BINARY_DIR}/Config.cmake.in
   ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
   INSTALL_DESTINATION
   ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
