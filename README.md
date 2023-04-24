@@ -251,6 +251,7 @@ Many thanks to the following people for their contributions to this library:
 * [emiro85](https://github.com/emiro85)
 * [heartofrain](https://github.com/heartofrain)
 * [helloimmatt](https://github.com/helloimmatt/)
+* [leocstone](https://github.com/leocstone)
 * [MatthieuHernandez](https://github.com/MatthieuHernandez)
 * [mrpossoms](https://github.com/mrpossoms)
 * [mynameisjohn](https://github.com/mynameisjohn)
