@@ -1245,6 +1245,9 @@ void AudioFile<T>::clearAudioBuffer()
 template <class T>
 AudioFileFormat AudioFile<T>::determineAudioFileFormat (const std::vector<uint8_t>& fileData)
 {
+    if (fileData.size() < 4)
+        return AudioFileFormat::Error;
+    
     std::string header (fileData.begin(), fileData.begin() + 4);
     
     if (header == "RIFF")
