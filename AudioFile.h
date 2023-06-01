@@ -852,11 +852,17 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
             {
                 int32_t sampleAsInt = fourBytesToInt (fileData, sampleIndex, Endianness::BigEndian);
                 T sample;
-                
+
                 if (audioFormat == AIFFAudioFormat::Compressed)
-                    sample = (T)reinterpret_cast<float&> (sampleAsInt);
+                {
+                    float f;
+                    memcpy(&f, &sampleAsInt, sizeof(int32_t));
+                    sample = (T) f;
+                }
                 else // assume PCM
-                    sample = AudioSampleConverter<T>::thirtyTwoBitIntToSample (sampleAsInt);
+                {
+                    sample = AudioSampleConverter<T>::thirtyTwoBitIntToSample(sampleAsInt);
+                }
                 
                 samples[channel].push_back (sample);
             }
