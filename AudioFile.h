@@ -907,12 +907,12 @@ bool AudioFile<T>::tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std:
 
 //=============================================================
 template <class T>
-void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate)
+void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate_)
 {
-    if (aiffSampleRateTable.count (sampleRate) > 0)
+    if (aiffSampleRateTable.count (sampleRate_) > 0)
     {
         for (int i = 0; i < 10; i++)
-            fileData.push_back (aiffSampleRateTable[sampleRate][i]);
+            fileData.push_back (aiffSampleRateTable[sampleRate_][i]);
     }
 }
 
@@ -1205,8 +1205,8 @@ void AudioFile<T>::addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i
         bytes[3] = i & 0xFF;
     }
     
-    for (int i = 0; i < 4; i++)
-        fileData.push_back (bytes[i]);
+    for (int j = 0; j < 4; j++)
+        fileData.push_back (bytes[j]);
 }
 
 //=============================================================
