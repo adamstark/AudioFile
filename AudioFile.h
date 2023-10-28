@@ -43,10 +43,10 @@
 #include <string>
 #include <cstring>
 #include <fstream>
-#include <unordered_map>
 #include <iterator>
 #include <algorithm>
 #include <limits>
+#include <cmath>
 
 // disable some warnings on Windows
 #if defined (_MSC_VER)
@@ -75,6 +75,9 @@ enum class AudioFileFormat
     Wave,
     Aiff
 };
+
+template<typename U>
+class AudioFileUnitTests;
 
 //=============================================================
 template <class T>
@@ -203,8 +206,7 @@ private:
     int getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
 
     //=============================================================
-    uint32_t getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
-    bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
+    uint32_t getAiffSampleRate (const std::vector<uint8_t>& fileData, int sampleRateStartIndex);
     void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
     
     //=============================================================
@@ -223,6 +225,9 @@ private:
     uint32_t sampleRate;
     int bitDepth;
     bool logErrorsToConsole {true};
+
+    template<typename U>
+    friend class AudioFileUnitTests;
 };
 
 //=============================================================
@@ -267,30 +272,6 @@ struct AudioSampleConverter
     //=============================================================
     /** Helper clamp function to enforce ranges */
     static T clamp (T v1, T minValue, T maxValue);
-};
-
-//=============================================================
-// Pre-defined 10-byte representations of common sample rates
-static std::unordered_map <uint32_t, std::vector<uint8_t>> aiffSampleRateTable = {
-    {8000, {64, 11, 250, 0, 0, 0, 0, 0, 0, 0}},
-    {11025, {64, 12, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {16000, {64, 12, 250, 0, 0, 0, 0, 0, 0, 0}},
-    {22050, {64, 13, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {32000, {64, 13, 250, 0, 0, 0, 0, 0, 0, 0}},
-    {37800, {64, 14, 147, 168, 0, 0, 0, 0, 0, 0}},
-    {44056, {64, 14, 172, 24, 0, 0, 0, 0, 0, 0}},
-    {44100, {64, 14, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {47250, {64, 14, 184, 146, 0, 0, 0, 0, 0, 0}},
-    {48000, {64, 14, 187, 128, 0, 0, 0, 0, 0, 0}},
-    {50000, {64, 14, 195, 80, 0, 0, 0, 0, 0, 0}},
-    {50400, {64, 14, 196, 224, 0, 0, 0, 0, 0, 0}},
-    {88200, {64, 15, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {96000, {64, 15, 187, 128, 0, 0, 0, 0, 0, 0}},
-    {176400, {64, 16, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {192000, {64, 16, 187, 128, 0, 0, 0, 0, 0, 0}},
-    {352800, {64, 17, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {2822400, {64, 20, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {5644800, {64, 21, 172, 68, 0, 0, 0, 0, 0, 0}}
 };
 
 //=============================================================
@@ -881,39 +862,72 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
 
 //=============================================================
 template <class T>
-uint32_t AudioFile<T>::getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex)
+uint32_t AudioFile<T>::getAiffSampleRate (const std::vector<uint8_t>& fileData, int sampleRateStartIndex)
 {
-    for (auto it : aiffSampleRateTable)
-    {
-        if (tenByteMatch (fileData, sampleRateStartIndex, it.second, 0))
-            return it.first;
-    }
+    constexpr uint64_t ulTwoPow31 = 0x80000000UL;
+    constexpr double twoPow31 = 0x80000000UL;
+    constexpr double twoPowMinus63 = 1.0842021724855044e-19;
+    constexpr double twoPowMinus31 = 4.656612873077393e-10;
     
-    return 0;
-}
+    const uint8_t* p = fileData.data() + sampleRateStartIndex;
 
-//=============================================================
-template <class T>
-bool AudioFile<T>::tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2)
-{
-    for (int i = 0; i < 10; i++)
+    const int16_t exp = ((p[0] << 8) | p[1]) & 0x7FFF;
+    p += 2;
+
+    uint64_t mant1 = *p++;
+    mant1 = (mant1 << 8) | *p++;
+    mant1 = (mant1 << 8) | *p++;
+    mant1 = (mant1 << 8) | *p++;
+
+    uint64_t mant0 = *p++;
+    mant0 = (mant0 << 8) | *p++;
+    mant0 = (mant0 << 8) | *p++;
+    mant0 = (mant0 << 8) | *p++;
+
+    if (mant1 == 0 && mant0 == 0 && exp == 0)
     {
-        if (v1[startIndex1 + i] != v2[startIndex2 + i])
-            return false;
+        return 0;
     }
-    
-    return true;
+
+    const double m0 = mant0 & ulTwoPow31 ? double(twoPow31 + (mant0 & ~ulTwoPow31)) : double(mant0);
+    const double m1 = mant1 & ulTwoPow31 ? double(twoPow31 + (mant1 & ~ulTwoPow31)) : double(mant1);
+    return uint32_t((m0 * twoPowMinus63 + m1 * twoPowMinus31) * std::exp2(double(exp) - 16383.0));
 }
 
 //=============================================================
 template <class T>
 void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate)
 {
-    if (aiffSampleRateTable.count (sampleRate) > 0)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiffSampleRateTable[sampleRate][i]);
-    }
+    assert(sampleRate != 0 && "sample rate cannot be zero");
+
+    constexpr uint64_t ulTwoPow31 = 0x80000000UL;
+    constexpr double twoPow31 = 0x80000000UL;
+    constexpr double twoPow32 = 0x100000000UL;
+
+    double sr = sampleRate;
+
+    int16_t exp = int16_t(std::log2(sr) + 16383.0);
+    sr *= std::exp2(31.0 + 16383.0 - double(exp));
+
+    uint64_t mant1 = sr < twoPow31 ? uint64_t(sr) : ulTwoPow31 | uint64_t(sr - twoPow31);
+    const double m1 = (mant1 & ulTwoPow31) ? double(twoPow31 + (mant1 & (~ulTwoPow31))) : double(mant1);
+    sr = (sr - m1) * twoPow32;
+    uint64_t mant0 = sr < twoPow31 ? uint64_t(sr) : ulTwoPow31 | uint64_t(sr - twoPow31);
+
+    const size_t dataSize = fileData.size();
+    fileData.resize(dataSize + 10);
+    uint8_t* p = fileData.data() + dataSize;
+
+    *p++ = exp >> 8;
+    *p++ = 0xFF & exp;
+    *p++ = (int8_t)(0xFF & (mant1 >> 24));
+    *p++ = (int8_t)(0xFF & (mant1 >> 16));
+    *p++ = (int8_t)(0xFF & (mant1 >> 8));
+    *p++ = (int8_t)(0xFF & mant1);
+    *p++ = (int8_t)(0xFF & (mant0 >> 24));
+    *p++ = (int8_t)(0xFF & (mant0 >> 16));
+    *p++ = (int8_t)(0xFF & (mant0 >> 8));
+    *p++ = (int8_t)(0xFF & mant0);
 }
 
 //=============================================================
