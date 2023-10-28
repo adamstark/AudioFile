@@ -6,7 +6,7 @@ add_definitions(-DPROJECT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
 file (COPY test-audio DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file (MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/audio-write-tests)
 
-add_executable (Tests main.cpp GeneralTests.cpp WavLoadingTests.cpp AiffLoadingTests.cpp FileWritingTests.cpp SampleConversionTests.cpp)
+add_executable (Tests main.cpp GeneralTests.cpp WavLoadingTests.cpp AiffLoadingTests.cpp FileWritingTests.cpp SampleConversionTests.cpp AiffSampleRateTests.cpp)
 target_compile_features (Tests PRIVATE cxx_std_17)
 add_test (NAME Tests COMMAND Tests)
 
