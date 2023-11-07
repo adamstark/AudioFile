@@ -185,7 +185,6 @@ private:
     };
     
     //=============================================================
-    AudioFileFormat determineAudioFileFormat (const std::vector<uint8_t>& fileData);
     bool decodeWaveFile (const std::vector<uint8_t>& fileData);
     bool decodeAiffFile (const std::vector<uint8_t>& fileData);
     
@@ -197,22 +196,25 @@ private:
     void clearAudioBuffer();
     
     //=============================================================
-    int32_t fourBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
-    int16_t twoBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
-    int getIndexOfChunk (const std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
+    static inline AudioFileFormat determineAudioFileFormat (const std::vector<uint8_t>& fileData);
+
+    static inline int32_t fourBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
+    static inline int16_t twoBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
+    static inline int getIndexOfString (const std::vector<uint8_t>& source, std::string s);
+    static inline int getIndexOfChunk (const std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
 
     //=============================================================
-    uint32_t getAiffSampleRate (const std::vector<uint8_t>& fileData, int sampleRateStartIndex);
-    bool tenByteMatch (const std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
-    void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
+    static inline uint32_t getAiffSampleRate (const std::vector<uint8_t>& fileData, int sampleRateStartIndex);
+    static inline bool tenByteMatch (const std::vector<uint8_t>& v1, int startIndex1, const std::vector<uint8_t>& v2, int startIndex2);
+    static inline void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
     
     //=============================================================
-    void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
-    void addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i, Endianness endianness = Endianness::LittleEndian);
-    void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i, Endianness endianness = Endianness::LittleEndian);
+    static inline void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
+    static inline void addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i, Endianness endianness = Endianness::LittleEndian);
+    static inline void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i, Endianness endianness = Endianness::LittleEndian);
     
     //=============================================================
-    bool writeDataToFile (const std::vector<uint8_t>& fileData, const std::string& filePath);
+    static inline bool writeDataToFile (const std::vector<uint8_t>& fileData, std::string filePath);
     
     //=============================================================
     void reportError (const std::string& errorMessage);
@@ -893,7 +895,7 @@ uint32_t AudioFile<T>::getAiffSampleRate (const std::vector<uint8_t>& fileData, 
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::tenByteMatch (const std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2)
+bool AudioFile<T>::tenByteMatch (const std::vector<uint8_t>& v1, int startIndex1, const std::vector<uint8_t>& v2, int startIndex2)
 {
     for (int i = 0; i < 10; i++)
     {
@@ -1155,7 +1157,7 @@ bool AudioFile<T>::saveToAiffFile (const std::string& filePath)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::writeDataToFile (const std::vector<uint8_t>& fileData, const std::string& filePath)
+bool AudioFile<T>::writeDataToFile (const std::vector<uint8_t>& fileData, std::string filePath)
 {
     std::ofstream outputFile (filePath, std::ios::binary);
 
