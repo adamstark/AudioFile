@@ -1158,21 +1158,15 @@ template <class T>
 bool AudioFile<T>::writeDataToFile (const std::vector<uint8_t>& fileData, const std::string& filePath)
 {
     std::ofstream outputFile (filePath, std::ios::binary);
-    
-    if (outputFile.is_open())
+
+    if (!outputFile.is_open())
     {
-        for (size_t i = 0; i < fileData.size(); i++)
-        {
-            char value = (char) fileData[i];
-            outputFile.write (&value, sizeof (char));
-        }
-        
-        outputFile.close();
-        
-        return true;
+        return false;
     }
-    
-    return false;
+
+    outputFile.write ((const char*)fileData.data(), fileData.size());
+    outputFile.close();
+    return true;
 }
 
 //=============================================================
