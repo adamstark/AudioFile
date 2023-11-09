@@ -95,7 +95,7 @@ TEST_SUITE ("SampleConversionTests::8-bit Conversions - sampleToSignedByte()")
     //=============================================================
     TEST_CASE ("8-bit Signed Conversions::sampleToSignedByte (float and double)")
     {
-        REQUIRE_EQ (AudioSampleConverter<float>::sampleToSignedByte (std::numeric_limits<float>::max()), 127);
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToSignedByte ((std::numeric_limits<float>::max)()), 127);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToSignedByte (1.f), 127);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToSignedByte (0.5f), 63);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToSignedByte (0.f), 0);
@@ -103,7 +103,7 @@ TEST_SUITE ("SampleConversionTests::8-bit Conversions - sampleToSignedByte()")
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToSignedByte (-1.f), -127);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToSignedByte (std::numeric_limits<float>::lowest()), -127);
         
-        REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte (std::numeric_limits<float>::max()), 127);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte ((std::numeric_limits<float>::max)()), 127);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte (1.), 127);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte (0.5), 63);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte (0.), 0);
@@ -122,32 +122,32 @@ TEST_SUITE ("SampleConversionTests::8-bit Conversions - sampleToSignedByte()")
         REQUIRE_EQ (AudioSampleConverter<uint8_t>::sampleToSignedByte (1), -127);
         REQUIRE_EQ (AudioSampleConverter<uint8_t>::sampleToSignedByte (0), -128);
         
-        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte (std::numeric_limits<uint16_t>::max()), 127);
+        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte ((std::numeric_limits<uint16_t>::max)()), 127);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte (255), 127);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte (191), 63);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte (128), 0);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte (65), -63);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte (1), -127);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte (0), -128);
-        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte (std::numeric_limits<uint16_t>::min()), -128);
+        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSignedByte ((std::numeric_limits<uint16_t>::min)()), -128);
         
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte (std::numeric_limits<uint32_t>::max()), 127);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte ((std::numeric_limits<uint32_t>::max)()), 127);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte (255), 127);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte (191), 63);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte (128), 0);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte (65), -63);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte (1), -127);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte (0), -128);
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte (std::numeric_limits<uint32_t>::min()), -128);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSignedByte ((std::numeric_limits<uint32_t>::min)()), -128);
         
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte (std::numeric_limits<uint64_t>::max()), 127);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte ((std::numeric_limits<uint64_t>::max)()), 127);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte (255), 127);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte (191), 63);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte (128), 0);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte (65), -63);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte (1), -127);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte (0), -128);
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte (std::numeric_limits<uint64_t>::min()), -128);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSignedByte ((std::numeric_limits<uint64_t>::min)()), -128);
     }
     
     //=============================================================
@@ -160,32 +160,32 @@ TEST_SUITE ("SampleConversionTests::8-bit Conversions - sampleToSignedByte()")
         REQUIRE_EQ (AudioSampleConverter<int8_t>::sampleToSignedByte (-127), -127);
         REQUIRE_EQ (AudioSampleConverter<int8_t>::sampleToSignedByte (-128), -128);
         
-        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte (std::numeric_limits<int16_t>::max()), 127);
+        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte ((std::numeric_limits<int16_t>::max)()), 127);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte (127), 127);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte (63), 63);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte (0), 0);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte (-63), -63);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte (-127), -127);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte (-128), -128);
-        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte (std::numeric_limits<int16_t>::min()), -128);
+        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSignedByte ((std::numeric_limits<int16_t>::min)()), -128);
         
-        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte (std::numeric_limits<int32_t>::max()), 127);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte ((std::numeric_limits<int32_t>::max)()), 127);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte (127), 127);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte (63), 63);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte (0), 0);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte (-63), -63);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte (-127), -127);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte (-128), -128);
-        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte (std::numeric_limits<int32_t>::min()), -128);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSignedByte ((std::numeric_limits<int32_t>::min)()), -128);
         
-        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte (std::numeric_limits<int64_t>::max()), 127);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte ((std::numeric_limits<int64_t>::max)()), 127);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte (127), 127);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte (63), 63);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte (0), 0);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte (-63), -63);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte (-127), -127);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte (-128), -128);
-        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte (std::numeric_limits<int64_t>::min()), -128);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSignedByte ((std::numeric_limits<int64_t>::min)()), -128);
     }
 }
  
@@ -281,7 +281,7 @@ TEST_SUITE ("SampleConversionTests::8-bit Conversions - sampleToUnsignedByte()")
     //=============================================================
     TEST_CASE ("8-bit Signed Conversions::sampleToUnsignedByte (float and double)")
     {
-        REQUIRE_EQ (AudioSampleConverter<float>::sampleToUnsignedByte (std::numeric_limits<float>::max()), 255);
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToUnsignedByte ((std::numeric_limits<float>::max)()), 255);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToUnsignedByte (1.f), 255);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToUnsignedByte (0.5f), 191);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToUnsignedByte (0.f), 128);
@@ -289,7 +289,7 @@ TEST_SUITE ("SampleConversionTests::8-bit Conversions - sampleToUnsignedByte()")
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToUnsignedByte (-1.f), 1);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToUnsignedByte (std::numeric_limits<float>::lowest()), 1);
         
-        REQUIRE_EQ (AudioSampleConverter<double>::sampleToUnsignedByte (std::numeric_limits<double>::max()), 255);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToUnsignedByte ((std::numeric_limits<double>::max)()), 255);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToUnsignedByte (1.), 255);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToUnsignedByte (0.5), 191);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToUnsignedByte (0.), 128);
@@ -308,32 +308,32 @@ TEST_SUITE ("SampleConversionTests::8-bit Conversions - sampleToUnsignedByte()")
         REQUIRE_EQ (AudioSampleConverter<uint8_t>::sampleToUnsignedByte (1), 1);
         REQUIRE_EQ (AudioSampleConverter<uint8_t>::sampleToUnsignedByte (0), 0);
         
-        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte (std::numeric_limits<uint16_t>::max()), 255);
+        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte ((std::numeric_limits<uint16_t>::max)()), 255);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte (255), 255);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte (191), 191);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte (128), 128);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte (65), 65);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte (1), 1);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte (0), 0);
-        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte (std::numeric_limits<uint16_t>::min()), 0);
+        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToUnsignedByte ((std::numeric_limits<uint16_t>::min)()), 0);
         
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte (std::numeric_limits<uint32_t>::max()), 255);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte ((std::numeric_limits<uint32_t>::max)()), 255);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte (255), 255);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte (191), 191);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte (128), 128);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte (65), 65);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte (1), 1);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte (0), 0);
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte (std::numeric_limits<uint32_t>::min()), 0);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToUnsignedByte ((std::numeric_limits<uint32_t>::min)()), 0);
         
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte (std::numeric_limits<uint64_t>::max()), 255);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte ((std::numeric_limits<uint64_t>::max)()), 255);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte (255), 255);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte (191), 191);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte (128), 128);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte (65), 65);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte (1), 1);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte (0), 0);
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte (std::numeric_limits<uint64_t>::min()), 0);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToUnsignedByte ((std::numeric_limits<uint64_t>::min)()), 0);
     }
     
     //=============================================================
@@ -346,32 +346,32 @@ TEST_SUITE ("SampleConversionTests::8-bit Conversions - sampleToUnsignedByte()")
         REQUIRE_EQ (AudioSampleConverter<int8_t>::sampleToUnsignedByte (-127), 1);
         REQUIRE_EQ (AudioSampleConverter<int8_t>::sampleToUnsignedByte (-128), 0);
         
-        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte (std::numeric_limits<int16_t>::max()), 255);
+        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte ((std::numeric_limits<int16_t>::max)()), 255);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte (127), 255);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte (63), 191);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte (0), 128);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte (-63), 65);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte (-127), 1);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte (-128), 0);
-        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte (std::numeric_limits<int16_t>::min()), 0);
+        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToUnsignedByte ((std::numeric_limits<int16_t>::min)()), 0);
         
-        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte (std::numeric_limits<int32_t>::max()), 255);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte ((std::numeric_limits<int32_t>::max)()), 255);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte (127), 255);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte (63), 191);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte (0), 128);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte (-63), 65);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte (-127), 1);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte (-128), 0);
-        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte (std::numeric_limits<int32_t>::min()), 0);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToUnsignedByte ((std::numeric_limits<int32_t>::min)()), 0);
         
-        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte (std::numeric_limits<int64_t>::max()), 255);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte ((std::numeric_limits<int64_t>::max)()), 255);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte (127), 255);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte (63), 191);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte (0), 128);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte (-63), 65);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte (-127), 1);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte (-128), 0);
-        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte (std::numeric_limits<int64_t>::min()), 0);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToUnsignedByte ((std::numeric_limits<int64_t>::min)()), 0);
     }
 }
 
@@ -470,38 +470,38 @@ TEST_SUITE ("SampleConversionTests::16-bit Conversions")
     //=============================================================
     TEST_CASE ("16-bit Conversions::sampleToSixteenBitInt (unsigned int)")
     {
-        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt (std::numeric_limits<uint16_t>::max()), 32767);
+        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt ((std::numeric_limits<uint16_t>::max)()), 32767);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt (65535), 32767);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt (49151), 16383);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt (32768), 0);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt (16385), -16383);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt (1), -32767);
         REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt (0), -32768);
-        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt (std::numeric_limits<uint16_t>::min()), -32768);
+        REQUIRE_EQ (AudioSampleConverter<uint16_t>::sampleToSixteenBitInt ((std::numeric_limits<uint16_t>::min)()), -32768);
         
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt (std::numeric_limits<uint32_t>::max()), 32767);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt ((std::numeric_limits<uint32_t>::max)()), 32767);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt (65535), 32767);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt (49151), 16383);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt (32768), 0);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt (16385), -16383);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt (1), -32767);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt (0), -32768);
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt (std::numeric_limits<uint32_t>::min()), -32768);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToSixteenBitInt ((std::numeric_limits<uint32_t>::min)()), -32768);
         
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt (std::numeric_limits<uint64_t>::max()), 32767);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt ((std::numeric_limits<uint64_t>::max)()), 32767);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt (65535), 32767);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt (49151), 16383);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt (32768), 0);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt (16385), -16383);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt (1), -32767);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt (0), -32768);
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt (std::numeric_limits<uint64_t>::min()), -32768);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToSixteenBitInt ((std::numeric_limits<uint64_t>::min)()), -32768);
     }
     
     //=============================================================
     TEST_CASE ("16-bit Conversions::sampleToSixteenBitInt (signed int)")
     {
-        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSixteenBitInt (std::numeric_limits<int16_t>::max()), 32767);
+        REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSixteenBitInt ((std::numeric_limits<int16_t>::max)()), 32767);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSixteenBitInt (32767), 32767);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSixteenBitInt (16383), 16383);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSixteenBitInt (0), 0);
@@ -510,7 +510,7 @@ TEST_SUITE ("SampleConversionTests::16-bit Conversions")
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSixteenBitInt (-32768), -32768);
         REQUIRE_EQ (AudioSampleConverter<int16_t>::sampleToSixteenBitInt (std::numeric_limits<int16_t>::lowest()), -32768);
         
-        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSixteenBitInt (std::numeric_limits<int32_t>::max()), 32767);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSixteenBitInt ((std::numeric_limits<int32_t>::max)()), 32767);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSixteenBitInt (32767), 32767);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSixteenBitInt (16383), 16383);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSixteenBitInt (0), 0);
@@ -519,7 +519,7 @@ TEST_SUITE ("SampleConversionTests::16-bit Conversions")
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSixteenBitInt (-32768), -32768);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToSixteenBitInt (std::numeric_limits<int32_t>::lowest()), -32768);
         
-        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSixteenBitInt (std::numeric_limits<int64_t>::max()), 32767);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSixteenBitInt ((std::numeric_limits<int64_t>::max)()), 32767);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSixteenBitInt (32767), 32767);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSixteenBitInt (16383), 16383);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToSixteenBitInt (0), 0);
@@ -606,45 +606,45 @@ TEST_SUITE ("SampleConversionTests::24-bit Conversions")
     //=============================================================
     TEST_CASE ("24-bit Conversions::sampleToTwentyFourBitInt (unsigned integers)")
     {
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt (std::numeric_limits<uint32_t>::max()), 8388607);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt ((std::numeric_limits<uint32_t>::max)()), 8388607);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt (16777215), 8388607);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt (12582911), 4194303);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt (8388608), 0);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt (4194305), -4194303);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt (1), -8388607);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt (0), -8388608);
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt (std::numeric_limits<uint32_t>::min()), -8388608);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToTwentyFourBitInt ((std::numeric_limits<uint32_t>::min)()), -8388608);
         
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt (std::numeric_limits<uint64_t>::max()), 8388607);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt ((std::numeric_limits<uint64_t>::max)()), 8388607);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt (16777215), 8388607);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt (12582911), 4194303);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt (8388608), 0);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt (4194305), -4194303);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt (1), -8388607);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt (0), -8388608);
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt (std::numeric_limits<uint64_t>::min()), -8388608);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToTwentyFourBitInt ((std::numeric_limits<uint64_t>::min)()), -8388608);
     }
     
     //=============================================================
     TEST_CASE ("24-bit Conversions::sampleToTwentyFourBitInt (signed integers)")
     {
-        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt (std::numeric_limits<int32_t>::max()), 8388607);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt ((std::numeric_limits<int32_t>::max)()), 8388607);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt (8388607), 8388607);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt (4194303), 4194303);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt (0), 0);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt (-4194303), -4194303);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt (-8388607), -8388607);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt (-8388608), -8388608);
-        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt (std::numeric_limits<int32_t>::min()), -8388608);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToTwentyFourBitInt ((std::numeric_limits<int32_t>::min)()), -8388608);
         
-        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (std::numeric_limits<int64_t>::max()), 8388607);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt ((std::numeric_limits<int64_t>::max)()), 8388607);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (8388607), 8388607);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (4194303), 4194303);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (0), 0);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (-4194303), -4194303);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (-8388607), -8388607);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (-8388608), -8388608);
-        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt (std::numeric_limits<int64_t>::min()), -8388608);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToTwentyFourBitInt ((std::numeric_limits<int64_t>::min)()), -8388608);
     }
 }
 
@@ -708,7 +708,7 @@ TEST_SUITE ("SampleConversionTests::32-bit Conversions")
     //=============================================================
     TEST_CASE ("32-bit Conversions::sampleToThirtyTwoBitInt (float and double)")
     {
-        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (std::numeric_limits<float>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt ((std::numeric_limits<float>::max)()), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (1.f), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (0.5f), 1073741824);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (0.f), 0);
@@ -716,7 +716,7 @@ TEST_SUITE ("SampleConversionTests::32-bit Conversions")
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (-1.f), -2147483647);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (std::numeric_limits<float>::lowest()), -2147483647);
         
-        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (std::numeric_limits<double>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt ((std::numeric_limits<double>::max)()), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (1.f), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (0.5f), 1073741823);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (0.f), 0);
@@ -728,44 +728,44 @@ TEST_SUITE ("SampleConversionTests::32-bit Conversions")
     //=============================================================
     TEST_CASE ("32-bit Conversions::sampleToThirtyTwoBitInt (unsigned integers)")
     {
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (std::numeric_limits<uint32_t>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt ((std::numeric_limits<uint32_t>::max)()), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (4294967295), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (3221225472), 1073741824);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (2147483648), 0);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (1073741824), -1073741824);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (1), -2147483647);
         REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (0), -2147483648);
-        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt (std::numeric_limits<uint32_t>::min()), -2147483648);
+        REQUIRE_EQ (AudioSampleConverter<uint32_t>::sampleToThirtyTwoBitInt ((std::numeric_limits<uint32_t>::min)()), -2147483648);
         
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (std::numeric_limits<uint64_t>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt ((std::numeric_limits<uint64_t>::max)()), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (4294967295), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (3221225472), 1073741824);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (2147483648), 0);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (1073741824), -1073741824);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (1), -2147483647);
         REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (0), -2147483648);
-        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt (std::numeric_limits<uint64_t>::min()), -2147483648);
+        REQUIRE_EQ (AudioSampleConverter<uint64_t>::sampleToThirtyTwoBitInt ((std::numeric_limits<uint64_t>::min)()), -2147483648);
     }
     
     //=============================================================
     TEST_CASE ("32-bit Conversions::sampleToThirtyTwoBitInt (signed integers)")
     {
-        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (std::numeric_limits<int32_t>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt ((std::numeric_limits<int32_t>::max)()), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (2147483647), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (1073741824), 1073741824);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (0), 0);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (-1073741824), -1073741824);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (-2147483647), -2147483647);
         REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (-2147483648), -2147483648);
-        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt (std::numeric_limits<int32_t>::min()), -2147483648);
+        REQUIRE_EQ (AudioSampleConverter<int32_t>::sampleToThirtyTwoBitInt ((std::numeric_limits<int32_t>::min)()), -2147483648);
         
-        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (std::numeric_limits<int64_t>::max()), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt ((std::numeric_limits<int64_t>::max)()), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (2147483647), 2147483647);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (1073741824), 1073741824);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (0), 0);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (-1073741824), -1073741824);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (-2147483647), -2147483647);
         REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (-2147483648LL), -2147483648LL);
-        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt (std::numeric_limits<int64_t>::min()), -2147483648);
+        REQUIRE_EQ (AudioSampleConverter<int64_t>::sampleToThirtyTwoBitInt ((std::numeric_limits<int64_t>::min)()), -2147483648);
     }
 }
