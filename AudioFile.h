@@ -31,12 +31,6 @@
 #ifndef _AS_AudioFile_h
 #define _AS_AudioFile_h
 
-#if defined (_MSC_VER)
-#undef max
-#undef min
-#define NOMINMAX
-#endif
-
 #include <iostream>
 #include <vector>
 #include <cassert>
@@ -1343,7 +1337,7 @@ typename std::make_unsigned<SignedType>::type convertSignedToUnsigned (SignedTyp
 {
     static_assert (std::is_signed<SignedType>::value, "The input value must be signed");
     
-    typename std::make_unsigned<SignedType>::type unsignedValue = static_cast<typename std::make_unsigned<SignedType>::type> (1) + std::numeric_limits<SignedType>::max();
+    typename std::make_unsigned<SignedType>::type unsignedValue = static_cast<typename std::make_unsigned<SignedType>::type> (1) + (std::numeric_limits<SignedType>::max)();
     
     unsignedValue += signedValue;
     return unsignedValue;
@@ -1368,7 +1362,7 @@ T AudioSampleConverter<T>::thirtyTwoBitIntToSample (int32_t sample)
 {
     if constexpr (std::is_floating_point<T>::value)
     {
-        return static_cast<T> (sample) / static_cast<T> (std::numeric_limits<int32_t>::max());
+        return static_cast<T> (sample) / static_cast<T> ((std::numeric_limits<int32_t>::max)());
     }
     else if (std::numeric_limits<T>::is_integer)
     {
@@ -1391,15 +1385,15 @@ int32_t AudioSampleConverter<T>::sampleToThirtyTwoBitInt (T sample)
         if constexpr (std::is_same_v<T, float>)
         {
             if (sample >= 1.f)
-                return std::numeric_limits<int32_t>::max();
+                return (std::numeric_limits<int32_t>::max)();
             else if (sample <= -1.f)
                 return std::numeric_limits<int32_t>::lowest() + 1; // starting at 1 preserves symmetry
             else
-                return static_cast<int32_t> (sample * std::numeric_limits<int32_t>::max());
+                return static_cast<int32_t> (sample * (std::numeric_limits<int32_t>::max)());
         }
         else
         {
-            return static_cast<int32_t> (clamp (sample, -1., 1.) * std::numeric_limits<int32_t>::max());
+            return static_cast<int32_t> (clamp (sample, -1., 1.) * (std::numeric_limits<int32_t>::max)());
         }
     }
     else
@@ -1556,8 +1550,8 @@ T AudioSampleConverter<T>::signedByteToSample (int8_t sample)
 template <class T>
 T AudioSampleConverter<T>::clamp (T value, T minValue, T maxValue)
 {
-    value = std::min (value, maxValue);
-    value = std::max (value, minValue);
+    value = (std::min) (value, maxValue);
+    value = (std::max) (value, minValue);
     return value;
 }
 

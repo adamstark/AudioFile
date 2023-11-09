@@ -20,7 +20,7 @@ TEST_SUITE ("General Tests")
         CHECK (a.getNumSamplesPerChannel() == b.getNumSamplesPerChannel());
         CHECK (a.getLengthInSeconds() == b.getLengthInSeconds());
         
-        size_t numSamplesToTest = std::min (static_cast<size_t> (20000), a.samples[0].size());
+        size_t numSamplesToTest = (std::min) (static_cast<size_t> (20000), a.samples[0].size());
         
         for (size_t channel = 0; channel < a.samples.size(); channel++)
         {

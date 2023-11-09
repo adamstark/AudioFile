@@ -3751,7 +3751,7 @@ String::size_type String::capacity() const {
 }
 
 String String::substr(size_type pos, size_type cnt) && {
-    cnt = std::min(cnt, size() - 1 - pos);
+    cnt = (std::min)(cnt, size() - 1 - pos);
     char* cptr = c_str();
     memmove(cptr, cptr + pos, cnt);
     setSize(cnt);
@@ -3759,7 +3759,7 @@ String String::substr(size_type pos, size_type cnt) && {
 }
 
 String String::substr(size_type pos, size_type cnt) const & {
-    cnt = std::min(cnt, size() - 1 - pos);
+    cnt = (std::min)(cnt, size() - 1 - pos);
     return String{ c_str() + pos, cnt };
 }
 
@@ -3774,7 +3774,7 @@ String::size_type String::find(char ch, size_type pos) const {
 
 String::size_type String::rfind(char ch, size_type pos) const {
     const char* begin = c_str();
-    const char* it = begin + std::min(pos, size() - 1);
+    const char* it = begin + (std::min)(pos, size() - 1);
     for (; it >= begin && *it != ch; it--);
     if (it >= begin) { return static_cast<size_type>(it - begin); }
     else { return npos; }
@@ -3983,7 +3983,7 @@ Approx& Approx::scale(double newScale) {
 bool operator==(double lhs, const Approx& rhs) {
     // Thanks to Richard Harris for his help refining this formula
     return std::fabs(lhs - rhs.m_value) <
-           rhs.m_epsilon * (rhs.m_scale + std::max<double>(std::fabs(lhs), std::fabs(rhs.m_value)));
+           rhs.m_epsilon * (rhs.m_scale + (std::max<double>)(std::fabs(lhs), std::fabs(rhs.m_value)));
 }
 bool operator==(const Approx& lhs, double rhs) { return operator==(rhs, lhs); }
 bool operator!=(double lhs, const Approx& rhs) { return !operator==(lhs, rhs); }
@@ -6246,9 +6246,9 @@ namespace {
             separator_to_stream();
             s << std::dec;
 
-            auto totwidth = int(std::ceil(log10((std::max(p.numTestCasesPassingFilters, static_cast<unsigned>(p.numAsserts))) + 1)));
-            auto passwidth = int(std::ceil(log10((std::max(p.numTestCasesPassingFilters - p.numTestCasesFailed, static_cast<unsigned>(p.numAsserts - p.numAssertsFailed))) + 1)));
-            auto failwidth = int(std::ceil(log10((std::max(p.numTestCasesFailed, static_cast<unsigned>(p.numAssertsFailed))) + 1)));
+            auto totwidth = int(std::ceil(log10(((std::max)(p.numTestCasesPassingFilters, static_cast<unsigned>(p.numAsserts))) + 1)));
+            auto passwidth = int(std::ceil(log10(((std::max)(p.numTestCasesPassingFilters - p.numTestCasesFailed, static_cast<unsigned>(p.numAsserts - p.numAssertsFailed))) + 1)));
+            auto failwidth = int(std::ceil(log10(((std::max)(p.numTestCasesFailed, static_cast<unsigned>(p.numAssertsFailed))) + 1)));
             const bool anythingFailed = p.numTestCasesFailed > 0 || p.numAssertsFailed > 0;
             s << Color::Cyan << "[doctest] " << Color::None << "test cases: " << std::setw(totwidth)
               << p.numTestCasesPassingFilters << " | "
