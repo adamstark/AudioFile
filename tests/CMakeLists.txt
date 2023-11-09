@@ -1,15 +1,17 @@
-include_directories (doctest)
-include_directories (${AudioFile_SOURCE_DIR})
-
-add_definitions(-DPROJECT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
-
 file (COPY test-audio DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file (MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/audio-write-tests)
 
-add_executable (Tests main.cpp GeneralTests.cpp WavLoadingTests.cpp AiffLoadingTests.cpp FileWritingTests.cpp SampleConversionTests.cpp)
-target_compile_features (Tests PRIVATE cxx_std_17)
-add_test (NAME Tests COMMAND Tests)
+set (AUDIOFILE_TESTS Tests)
 
-# add_executable (LoadingTests main.cpp WavLoadingTests.cpp AiffLoadingTests.cpp)
-# target_compile_features (LoadingTests PRIVATE cxx_std_17)
-# add_test (NAME LoadingTests COMMAND LoadingTests)
+file (GLOB AUDIOFILE_TESTS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+source_group (TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${AUDIOFILE_TESTS_SOURCES})
+
+add_executable (${AUDIOFILE_TESTS} ${AUDIOFILE_TESTS_SOURCES})
+target_include_directories (${AUDIOFILE_TESTS} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries (${AUDIOFILE_TESTS} PUBLIC AudioFile)
+target_compile_features (${AUDIOFILE_TESTS} PRIVATE cxx_std_17)
+target_compile_definitions (${AUDIOFILE_TESTS} PUBLIC
+  -D_USE_MATH_DEFINES # needed for M_PI macro
+  -DPROJECT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
+
+add_test (NAME ${AUDIOFILE_TESTS} COMMAND ${AUDIOFILE_TESTS})

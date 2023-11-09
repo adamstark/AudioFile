@@ -13,19 +13,15 @@ option (BUILD_TESTS "Build tests" ON)
 option (BUILD_EXAMPLES "Build examples" ON)
 
 #===============================================================================
-add_library (${PROJECT_NAME} INTERFACE)
+set (AUDIOFILE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/AudioFile.h)
+source_group (TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${AUDIOFILE_SOURCES})
+
+add_library (${PROJECT_NAME} INTERFACE ${AUDIOFILE_SOURCES})
 
 #===============================================================================
-if(MSVC)
-  # needed for M_PI macro
-  add_definitions(-D_USE_MATH_DEFINES)
-endif()
-
-#===============================================================================
-target_include_directories (
-  ${PROJECT_NAME}
-  INTERFACE $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_include_directories (${PROJECT_NAME} INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 #===============================================================================
 target_compile_features (${PROJECT_NAME} INTERFACE cxx_std_17)
