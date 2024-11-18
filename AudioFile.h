@@ -205,7 +205,6 @@ private:
 
     //=============================================================
     static inline uint32_t getAiffSampleRate (const std::vector<uint8_t>& fileData, int sampleRateStartIndex);
-    static inline bool tenByteMatch (const std::vector<uint8_t>& v1, int startIndex1, const std::vector<uint8_t>& v2, int startIndex2);
     static inline void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
     
     //=============================================================
@@ -271,27 +270,14 @@ struct AudioSampleConverter
 };
 
 //=============================================================
-// Pre-defined 10-byte representations of common sample rates
-static std::unordered_map <uint32_t, std::vector<uint8_t>> aiffSampleRateTable = {
-    {8000, {64, 11, 250, 0, 0, 0, 0, 0, 0, 0}},
-    {11025, {64, 12, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {16000, {64, 12, 250, 0, 0, 0, 0, 0, 0, 0}},
-    {22050, {64, 13, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {32000, {64, 13, 250, 0, 0, 0, 0, 0, 0, 0}},
-    {37800, {64, 14, 147, 168, 0, 0, 0, 0, 0, 0}},
-    {44056, {64, 14, 172, 24, 0, 0, 0, 0, 0, 0}},
-    {44100, {64, 14, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {47250, {64, 14, 184, 146, 0, 0, 0, 0, 0, 0}},
-    {48000, {64, 14, 187, 128, 0, 0, 0, 0, 0, 0}},
-    {50000, {64, 14, 195, 80, 0, 0, 0, 0, 0, 0}},
-    {50400, {64, 14, 196, 224, 0, 0, 0, 0, 0, 0}},
-    {88200, {64, 15, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {96000, {64, 15, 187, 128, 0, 0, 0, 0, 0, 0}},
-    {176400, {64, 16, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {192000, {64, 16, 187, 128, 0, 0, 0, 0, 0, 0}},
-    {352800, {64, 17, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {2822400, {64, 20, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {5644800, {64, 21, 172, 68, 0, 0, 0, 0, 0, 0}}
+struct AiffUtilities
+{
+    //=============================================================
+    /** Decode an 80-bit (10 byte) sample rate to a double */
+    static inline double decodeAiffSampleRate (const uint8_t* bytes);
+    
+    /** Encode a double as an 80-bit (10-byte) sample rate */
+    static inline void encodeAiffSampleRate (double sampleRate, uint8_t* bytes);
 };
 
 //=============================================================
@@ -884,37 +870,17 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
 template <class T>
 uint32_t AudioFile<T>::getAiffSampleRate (const std::vector<uint8_t>& fileData, int sampleRateStartIndex)
 {
-    for (auto it : aiffSampleRateTable)
-    {
-        if (tenByteMatch (fileData, sampleRateStartIndex, it.second, 0))
-            return it.first;
-    }
-    
-    return 0;
-}
-
-//=============================================================
-template <class T>
-bool AudioFile<T>::tenByteMatch (const std::vector<uint8_t>& v1, int startIndex1, const std::vector<uint8_t>& v2, int startIndex2)
-{
-    for (int i = 0; i < 10; i++)
-    {
-        if (v1[startIndex1 + i] != v2[startIndex2 + i])
-            return false;
-    }
-    
-    return true;
+    double sampleRate = AiffUtilities::decodeAiffSampleRate (&fileData[sampleRateStartIndex]);
+    return static_cast<uint32_t> (sampleRate);
 }
 
 //=============================================================
 template <class T>
 void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate)
 {
-    if (aiffSampleRateTable.count (sampleRate) > 0)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiffSampleRateTable[sampleRate][i]);
-    }
+    std::array<uint8_t, 10> sampleRateData;
+    AiffUtilities::encodeAiffSampleRate (static_cast<double> (sampleRate), sampleRateData.data());
+    fileData.insert (fileData.end(), sampleRateData.begin(), sampleRateData.end());
 }
 
 //=============================================================
@@ -1559,6 +1525,82 @@ T AudioSampleConverter<T>::clamp (T value, T minValue, T maxValue)
     value = std::min (value, maxValue);
     value = std::max (value, minValue);
     return value;
+}
+
+//=============================================================
+inline double AiffUtilities::decodeAiffSampleRate (const uint8_t* bytes)
+{
+    // Note: Sample rate is 80 bits made up of
+    // * 1 sign bit
+    // * 15 exponent bits
+    // * 64 mantissa bits
+    
+    // ----------------------------------------------
+    // Sign
+    
+    // Extract the sign (most significant bit of byte 0)
+    int sign = (bytes[0] & 0x80) ? -1 : 1;
+    
+    // ----------------------------------------------
+    // Exponent
+    
+    // byte 0: ignore the sign and shift the most significant bits to the left by one byte
+    uint16_t msbShifted = (static_cast<uint16_t> (bytes[0] & 0x7F) << 8);
+    
+    // calculate exponent by combining byte 0 and byte 1 and subtract bias
+    uint16_t exponent = (msbShifted | static_cast<uint16_t> (bytes[1])) - 16383;
+    
+    // ----------------------------------------------
+    // Mantissa
+    
+    // Extract the mantissa (remaining 64 bits) by looping over the remaining
+    // bytes and combining them while shifting the result to the left by
+    // 8 bits each time
+    uint64_t mantissa = 0;
+    
+    for (int i = 2; i < 10; ++i)
+        mantissa = (mantissa << 8) | bytes[i];
+    
+    // Normalize the mantissa (implicit leading 1 for normalized values)
+    double normalisedMantissa = static_cast<double> (mantissa) / (1ULL << 63);
+    
+    // ----------------------------------------------
+    // Combine sign, exponent, and mantissa into a double
+    
+    return sign * std::ldexp (normalisedMantissa, exponent);
+}
+
+//=============================================================
+inline void AiffUtilities::encodeAiffSampleRate (double sampleRate, uint8_t* bytes)
+{
+    // Determine the sign
+    int sign = (sampleRate < 0) ? -1 : 1;
+    
+    if (sign == -1)
+        sampleRate = -sampleRate;
+    
+    // Set most significant bit of byte 0 for the sign
+    bytes[0] = (sign == -1) ? 0x80 : 0x00;
+    
+    // Calculate the exponent using logarithm (log base 2)
+    int exponent = (log (sampleRate) / log (2.0));
+    
+    // Add bias to exponent for AIFF
+    uint16_t biasedExponent = static_cast<uint16_t> (exponent + 16383);
+    
+    // Normalize the sample rate
+    double normalizedSampleRate = sampleRate / pow (2.0, exponent);
+    
+    // Calculate the mantissa
+    uint64_t mantissa = static_cast<uint64_t> (normalizedSampleRate * (1ULL << 63));
+    
+    // Pack the exponent into first two bytes of 10-byte AIFF format
+    bytes[0] |= (biasedExponent >> 8) & 0x7F;   // Upper 7 bits of exponent
+    bytes[1] = biasedExponent & 0xFF;           // Lower 8 bits of exponent
+    
+    // Put the mantissa into byte array
+    for (int i = 0; i < 8; ++i)
+        bytes[2 + i] = (mantissa >> (8 * (7 - i))) & 0xFF;
 }
 
 #if defined (_MSC_VER)
