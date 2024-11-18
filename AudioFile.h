@@ -48,6 +48,7 @@
 #include <algorithm>
 #include <limits>
 #include <cstdint>
+#include <cmath>
 
 // disable some warnings on Windows
 #if defined (_MSC_VER)
