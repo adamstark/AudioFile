@@ -107,4 +107,13 @@ TEST_SUITE ("General Tests")
             
         checkFilesAreExactlyTheSame<int16_t> (a, b);
     }
+    
+    //=============================================================
+    TEST_CASE ("GeneralTests::Empty Data")
+    {        
+        AudioFile<float> a;
+        a.shouldLogErrorsToConsole (false);
+        bool result = a.loadFromMemory (std::vector<uint8_t>());
+        CHECK_EQ (result, false);
+    }
 }

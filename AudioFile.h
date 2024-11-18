@@ -47,6 +47,9 @@
 #include <iterator>
 #include <algorithm>
 #include <limits>
+#include <cstdint>
+#include <cmath>
+#include <array>
 
 // disable some warnings on Windows
 #if defined (_MSC_VER)
@@ -90,22 +93,22 @@ public:
     AudioFile();
     
     /** Constructor, using a given file path to load a file */
-    AudioFile (std::string filePath);
+    AudioFile (const std::string& filePath);
         
     //=============================================================
     /** Loads an audio file from a given file path.
      * @Returns true if the file was successfully loaded
      */
-    bool load (std::string filePath);
+    bool load (const std::string& filePath);
     
     /** Saves an audio file to a given file path.
      * @Returns true if the file was successfully saved
      */
-    bool save (std::string filePath, AudioFileFormat format = AudioFileFormat::Wave);
+    bool save (const std::string& filePath, AudioFileFormat format = AudioFileFormat::Wave);
         
     //=============================================================
     /** Loads an audio file from data in memory */
-    bool loadFromMemory (std::vector<uint8_t>& fileData);
+    bool loadFromMemory (const std::vector<uint8_t>& fileData);
     
     //=============================================================
     /** @Returns the sample rate */
@@ -137,26 +140,26 @@ public:
     /** Set the audio buffer for this AudioFile by copying samples from another buffer.
      * @Returns true if the buffer was copied successfully.
      */
-    bool setAudioBuffer (AudioBuffer& newBuffer);
+    bool setAudioBuffer (const AudioBuffer& newBuffer);
     
     /** Sets the audio buffer to a given number of channels and number of samples per channel. This will try to preserve
      * the existing audio, adding zeros to any new channels or new samples in a given channel.
      */
-    void setAudioBufferSize (int numChannels, int numSamples);
+    void setAudioBufferSize (const int numChannels, const int numSamples);
     
     /** Sets the number of samples per channel in the audio buffer. This will try to preserve
      * the existing audio, adding zeros to new samples in a given channel if the number of samples is increased.
      */
-    void setNumSamplesPerChannel (int numSamples);
+    void setNumSamplesPerChannel (const int numSamples);
     
     /** Sets the number of channels. New channels will have the correct number of samples and be initialised to zero */
-    void setNumChannels (int numChannels);
+    void setNumChannels (const int numChannels);
     
     /** Sets the bit depth for the audio file. If you use the save() function, this bit depth rate will be used */
-    void setBitDepth (int numBitsPerSample);
+    void setBitDepth (const int numBitsPerSample);
     
     /** Sets the sample rate for the audio file. If you use the save() function, this sample rate will be used */
-    void setSampleRate (uint32_t newSampleRate);
+    void setSampleRate (const uint32_t newSampleRate);
     
     //=============================================================
     /** Sets whether the library should log error messages to the console. By default this is true */
@@ -185,38 +188,38 @@ private:
     };
     
     //=============================================================
-    AudioFileFormat determineAudioFileFormat (std::vector<uint8_t>& fileData);
-    bool decodeWaveFile (std::vector<uint8_t>& fileData);
-    bool decodeAiffFile (std::vector<uint8_t>& fileData);
+    bool decodeWaveFile (const std::vector<uint8_t>& fileData);
+    bool decodeAiffFile (const std::vector<uint8_t>& fileData);
     
     //=============================================================
-    bool saveToWaveFile (std::string filePath);
-    bool saveToAiffFile (std::string filePath);
+    bool saveToWaveFile (const std::string& filePath);
+    bool saveToAiffFile (const std::string& filePath);
     
     //=============================================================
     void clearAudioBuffer();
     
     //=============================================================
-    int32_t fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
-    int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
-    int getIndexOfString (std::vector<uint8_t>& source, std::string s);
-    int getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
+    static inline AudioFileFormat determineAudioFileFormat (const std::vector<uint8_t>& fileData);
+
+    static inline int32_t fourBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
+    static inline int16_t twoBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
+    static inline int getIndexOfString (const std::vector<uint8_t>& source, std::string s);
+    static inline int getIndexOfChunk (const std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
 
     //=============================================================
-    uint32_t getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex);
-    bool tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2);
-    void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
+    static inline uint32_t getAiffSampleRate (const std::vector<uint8_t>& fileData, int sampleRateStartIndex);
+    static inline void addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate);
     
     //=============================================================
-    void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
-    void addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i, Endianness endianness = Endianness::LittleEndian);
-    void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i, Endianness endianness = Endianness::LittleEndian);
+    static inline void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
+    static inline void addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i, Endianness endianness = Endianness::LittleEndian);
+    static inline void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i, Endianness endianness = Endianness::LittleEndian);
     
     //=============================================================
-    bool writeDataToFile (std::vector<uint8_t>& fileData, std::string filePath);
+    static inline bool writeDataToFile (const std::vector<uint8_t>& fileData, std::string filePath);
     
     //=============================================================
-    void reportError (std::string errorMessage);
+    void reportError (const std::string& errorMessage);
     
     //=============================================================
     AudioFileFormat audioFileFormat;
@@ -270,27 +273,14 @@ struct AudioSampleConverter
 };
 
 //=============================================================
-// Pre-defined 10-byte representations of common sample rates
-static std::unordered_map <uint32_t, std::vector<uint8_t>> aiffSampleRateTable = {
-    {8000, {64, 11, 250, 0, 0, 0, 0, 0, 0, 0}},
-    {11025, {64, 12, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {16000, {64, 12, 250, 0, 0, 0, 0, 0, 0, 0}},
-    {22050, {64, 13, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {32000, {64, 13, 250, 0, 0, 0, 0, 0, 0, 0}},
-    {37800, {64, 14, 147, 168, 0, 0, 0, 0, 0, 0}},
-    {44056, {64, 14, 172, 24, 0, 0, 0, 0, 0, 0}},
-    {44100, {64, 14, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {47250, {64, 14, 184, 146, 0, 0, 0, 0, 0, 0}},
-    {48000, {64, 14, 187, 128, 0, 0, 0, 0, 0, 0}},
-    {50000, {64, 14, 195, 80, 0, 0, 0, 0, 0, 0}},
-    {50400, {64, 14, 196, 224, 0, 0, 0, 0, 0, 0}},
-    {88200, {64, 15, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {96000, {64, 15, 187, 128, 0, 0, 0, 0, 0, 0}},
-    {176400, {64, 16, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {192000, {64, 16, 187, 128, 0, 0, 0, 0, 0, 0}},
-    {352800, {64, 17, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {2822400, {64, 20, 172, 68, 0, 0, 0, 0, 0, 0}},
-    {5644800, {64, 21, 172, 68, 0, 0, 0, 0, 0, 0}}
+struct AiffUtilities
+{
+    //=============================================================
+    /** Decode an 80-bit (10 byte) sample rate to a double */
+    static inline double decodeAiffSampleRate (const uint8_t* bytes);
+    
+    /** Encode a double as an 80-bit (10-byte) sample rate */
+    static inline void encodeAiffSampleRate (double sampleRate, uint8_t* bytes);
 };
 
 //=============================================================
@@ -328,7 +318,7 @@ AudioFile<T>::AudioFile()
 
 //=============================================================
 template <class T>
-AudioFile<T>::AudioFile (std::string filePath)
+AudioFile<T>::AudioFile (const std::string& filePath)
  :  AudioFile<T>()
 {
     load (filePath);
@@ -390,18 +380,18 @@ double AudioFile<T>::getLengthInSeconds() const
 template <class T>
 void AudioFile<T>::printSummary() const
 {
-    std::cout << "|======================================|" << std::endl;
-    std::cout << "Num Channels: " << getNumChannels() << std::endl;
-    std::cout << "Num Samples Per Channel: " << getNumSamplesPerChannel() << std::endl;
-    std::cout << "Sample Rate: " << sampleRate << std::endl;
-    std::cout << "Bit Depth: " << bitDepth << std::endl;
-    std::cout << "Length in Seconds: " << getLengthInSeconds() << std::endl;
-    std::cout << "|======================================|" << std::endl;
+    std::cerr << "|======================================|" << std::endl;
+    std::cerr << "Num Channels: " << getNumChannels() << std::endl;
+    std::cerr << "Num Samples Per Channel: " << getNumSamplesPerChannel() << std::endl;
+    std::cerr << "Sample Rate: " << sampleRate << std::endl;
+    std::cerr << "Bit Depth: " << bitDepth << std::endl;
+    std::cerr << "Length in Seconds: " << getLengthInSeconds() << std::endl;
+    std::cerr << "|======================================|" << std::endl;
 }
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::setAudioBuffer (AudioBuffer& newBuffer)
+bool AudioFile<T>::setAudioBuffer (const AudioBuffer& newBuffer)
 {
     int numChannels = (int)newBuffer.size();
     
@@ -499,7 +489,7 @@ void AudioFile<T>::shouldLogErrorsToConsole (bool logErrors)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::load (std::string filePath)
+bool AudioFile<T>::load (const std::string& filePath)
 {
     std::ifstream file (filePath, std::ios::binary);
     
@@ -545,7 +535,7 @@ bool AudioFile<T>::load (std::string filePath)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::loadFromMemory (std::vector<uint8_t>& fileData)
+bool AudioFile<T>::loadFromMemory (const std::vector<uint8_t>& fileData)
 {
     // get audio file format
     audioFileFormat = determineAudioFileFormat (fileData);
@@ -567,7 +557,7 @@ bool AudioFile<T>::loadFromMemory (std::vector<uint8_t>& fileData)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
+bool AudioFile<T>::decodeWaveFile (const std::vector<uint8_t>& fileData)
 {
     // -----------------------------------------------------------
     // HEADER CHUNK
@@ -726,7 +716,7 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
+bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
 {
     // -----------------------------------------------------------
     // HEADER CHUNK
@@ -881,44 +871,24 @@ bool AudioFile<T>::decodeAiffFile (std::vector<uint8_t>& fileData)
 
 //=============================================================
 template <class T>
-uint32_t AudioFile<T>::getAiffSampleRate (std::vector<uint8_t>& fileData, int sampleRateStartIndex)
+uint32_t AudioFile<T>::getAiffSampleRate (const std::vector<uint8_t>& fileData, int sampleRateStartIndex)
 {
-    for (auto it : aiffSampleRateTable)
-    {
-        if (tenByteMatch (fileData, sampleRateStartIndex, it.second, 0))
-            return it.first;
-    }
-    
-    return 0;
+    double sampleRate = AiffUtilities::decodeAiffSampleRate (&fileData[sampleRateStartIndex]);
+    return static_cast<uint32_t> (sampleRate);
 }
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::tenByteMatch (std::vector<uint8_t>& v1, int startIndex1, std::vector<uint8_t>& v2, int startIndex2)
+void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRateToAdd)
 {
-    for (int i = 0; i < 10; i++)
-    {
-        if (v1[startIndex1 + i] != v2[startIndex2 + i])
-            return false;
-    }
-    
-    return true;
+    std::array<uint8_t, 10> sampleRateData;
+    AiffUtilities::encodeAiffSampleRate (static_cast<double> (sampleRateToAdd), sampleRateData.data());
+    fileData.insert (fileData.end(), sampleRateData.begin(), sampleRateData.end());
 }
 
 //=============================================================
 template <class T>
-void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate_)
-{
-    if (aiffSampleRateTable.count (sampleRate_) > 0)
-    {
-        for (int i = 0; i < 10; i++)
-            fileData.push_back (aiffSampleRateTable[sampleRate_][i]);
-    }
-}
-
-//=============================================================
-template <class T>
-bool AudioFile<T>::save (std::string filePath, AudioFileFormat format)
+bool AudioFile<T>::save (const std::string& filePath, AudioFileFormat format)
 {
     if (format == AudioFileFormat::Wave)
     {
@@ -934,7 +904,7 @@ bool AudioFile<T>::save (std::string filePath, AudioFileFormat format)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::saveToWaveFile (std::string filePath)
+bool AudioFile<T>::saveToWaveFile (const std::string& filePath)
 {
     std::vector<uint8_t> fileData;
     
@@ -1051,7 +1021,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::saveToAiffFile (std::string filePath)
+bool AudioFile<T>::saveToAiffFile (const std::string& filePath)
 {
     std::vector<uint8_t> fileData;
     
@@ -1156,24 +1126,18 @@ bool AudioFile<T>::saveToAiffFile (std::string filePath)
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::writeDataToFile (std::vector<uint8_t>& fileData, std::string filePath)
+bool AudioFile<T>::writeDataToFile (const std::vector<uint8_t>& fileData, std::string filePath)
 {
     std::ofstream outputFile (filePath, std::ios::binary);
-    
-    if (outputFile.is_open())
+
+    if (!outputFile.is_open())
     {
-        for (size_t i = 0; i < fileData.size(); i++)
-        {
-            char value = (char) fileData[i];
-            outputFile.write (&value, sizeof (char));
-        }
-        
-        outputFile.close();
-        
-        return true;
+        return false;
     }
-    
-    return false;
+
+    outputFile.write ((const char*)fileData.data(), fileData.size());
+    outputFile.close();
+    return true;
 }
 
 //=============================================================
@@ -1244,8 +1208,11 @@ void AudioFile<T>::clearAudioBuffer()
 
 //=============================================================
 template <class T>
-AudioFileFormat AudioFile<T>::determineAudioFileFormat (std::vector<uint8_t>& fileData)
+AudioFileFormat AudioFile<T>::determineAudioFileFormat (const std::vector<uint8_t>& fileData)
 {
+    if (fileData.size() < 4)
+        return AudioFileFormat::Error;
+    
     std::string header (fileData.begin(), fileData.begin() + 4);
     
     if (header == "RIFF")
@@ -1258,7 +1225,7 @@ AudioFileFormat AudioFile<T>::determineAudioFileFormat (std::vector<uint8_t>& fi
 
 //=============================================================
 template <class T>
-int32_t AudioFile<T>::fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness)
+int32_t AudioFile<T>::fourBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness)
 {
     if (source.size() >= (startIndex + 4))
     {
@@ -1280,7 +1247,7 @@ int32_t AudioFile<T>::fourBytesToInt (std::vector<uint8_t>& source, int startInd
 
 //=============================================================
 template <class T>
-int16_t AudioFile<T>::twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness)
+int16_t AudioFile<T>::twoBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness)
 {
     int16_t result;
     
@@ -1294,28 +1261,7 @@ int16_t AudioFile<T>::twoBytesToInt (std::vector<uint8_t>& source, int startInde
 
 //=============================================================
 template <class T>
-int AudioFile<T>::getIndexOfString (std::vector<uint8_t>& source, std::string stringToSearchFor)
-{
-    int index = -1;
-    int stringLength = (int)stringToSearchFor.length();
-    
-    for (size_t i = 0; i < source.size() - stringLength;i++)
-    {
-        std::string section (source.begin() + i, source.begin() + i + stringLength);
-        
-        if (section == stringToSearchFor)
-        {
-            index = static_cast<int> (i);
-            break;
-        }
-    }
-    
-    return index;
-}
-
-//=============================================================
-template <class T>
-int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness)
+int AudioFile<T>::getIndexOfChunk (const std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness)
 {
     constexpr int dataLen = 4;
     
@@ -1339,7 +1285,13 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
         if ((i + 4) >= source.size())
             return -1;
         
-        auto chunkSize = fourBytesToInt (source, i, endianness);
+        int32_t chunkSize = fourBytesToInt (source, i, endianness);
+        // Assume chunk size is invalid if it's greater than the number of bytes remaining in source
+        if (chunkSize > (source.size() - i - dataLen) || (chunkSize < 0))
+        {
+            assert (false && "Invalid chunk size");
+            return -1;
+        }
         i += (dataLen + chunkSize);
     }
 
@@ -1348,10 +1300,10 @@ int AudioFile<T>::getIndexOfChunk (std::vector<uint8_t>& source, const std::stri
 
 //=============================================================
 template <class T>
-void AudioFile<T>::reportError (std::string errorMessage)
+void AudioFile<T>::reportError (const std::string& errorMessage)
 {
     if (logErrorsToConsole)
-        std::cout << errorMessage << std::endl;
+        std::cerr << errorMessage << std::endl;
 }
 
 //=============================================================
@@ -1576,6 +1528,82 @@ T AudioSampleConverter<T>::clamp (T value, T minValue, T maxValue)
     value = std::min (value, maxValue);
     value = std::max (value, minValue);
     return value;
+}
+
+//=============================================================
+inline double AiffUtilities::decodeAiffSampleRate (const uint8_t* bytes)
+{
+    // Note: Sample rate is 80 bits made up of
+    // * 1 sign bit
+    // * 15 exponent bits
+    // * 64 mantissa bits
+    
+    // ----------------------------------------------
+    // Sign
+    
+    // Extract the sign (most significant bit of byte 0)
+    int sign = (bytes[0] & 0x80) ? -1 : 1;
+    
+    // ----------------------------------------------
+    // Exponent
+    
+    // byte 0: ignore the sign and shift the most significant bits to the left by one byte
+    uint16_t msbShifted = (static_cast<uint16_t> (bytes[0] & 0x7F) << 8);
+    
+    // calculate exponent by combining byte 0 and byte 1 and subtract bias
+    uint16_t exponent = (msbShifted | static_cast<uint16_t> (bytes[1])) - 16383;
+    
+    // ----------------------------------------------
+    // Mantissa
+    
+    // Extract the mantissa (remaining 64 bits) by looping over the remaining
+    // bytes and combining them while shifting the result to the left by
+    // 8 bits each time
+    uint64_t mantissa = 0;
+    
+    for (int i = 2; i < 10; ++i)
+        mantissa = (mantissa << 8) | bytes[i];
+    
+    // Normalize the mantissa (implicit leading 1 for normalized values)
+    double normalisedMantissa = static_cast<double> (mantissa) / (1ULL << 63);
+    
+    // ----------------------------------------------
+    // Combine sign, exponent, and mantissa into a double
+    
+    return sign * std::ldexp (normalisedMantissa, exponent);
+}
+
+//=============================================================
+inline void AiffUtilities::encodeAiffSampleRate (double sampleRate, uint8_t* bytes)
+{
+    // Determine the sign
+    int sign = (sampleRate < 0) ? -1 : 1;
+    
+    if (sign == -1)
+        sampleRate = -sampleRate;
+    
+    // Set most significant bit of byte 0 for the sign
+    bytes[0] = (sign == -1) ? 0x80 : 0x00;
+    
+    // Calculate the exponent using logarithm (log base 2)
+    int exponent = (log (sampleRate) / log (2.0));
+    
+    // Add bias to exponent for AIFF
+    uint16_t biasedExponent = static_cast<uint16_t> (exponent + 16383);
+    
+    // Normalize the sample rate
+    double normalizedSampleRate = sampleRate / pow (2.0, exponent);
+    
+    // Calculate the mantissa
+    uint64_t mantissa = static_cast<uint64_t> (normalizedSampleRate * (1ULL << 63));
+    
+    // Pack the exponent into first two bytes of 10-byte AIFF format
+    bytes[0] |= (biasedExponent >> 8) & 0x7F;   // Upper 7 bits of exponent
+    bytes[1] = biasedExponent & 0xFF;           // Lower 8 bits of exponent
+    
+    // Put the mantissa into byte array
+    for (int i = 0; i < 8; ++i)
+        bytes[2 + i] = (mantissa >> (8 * (7 - i))) & 0xFF;
 }
 
 #if defined (_MSC_VER)
