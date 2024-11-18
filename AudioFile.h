@@ -49,6 +49,7 @@
 #include <limits>
 #include <cstdint>
 #include <cmath>
+#include <array>
 
 // disable some warnings on Windows
 #if defined (_MSC_VER)
