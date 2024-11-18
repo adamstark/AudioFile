@@ -879,10 +879,10 @@ uint32_t AudioFile<T>::getAiffSampleRate (const std::vector<uint8_t>& fileData, 
 
 //=============================================================
 template <class T>
-void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRate)
+void AudioFile<T>::addSampleRateToAiffData (std::vector<uint8_t>& fileData, uint32_t sampleRateToAdd)
 {
     std::array<uint8_t, 10> sampleRateData;
-    AiffUtilities::encodeAiffSampleRate (static_cast<double> (sampleRate), sampleRateData.data());
+    AiffUtilities::encodeAiffSampleRate (static_cast<double> (sampleRateToAdd), sampleRateData.data());
     fileData.insert (fileData.end(), sampleRateData.begin(), sampleRateData.end());
 }
 
@@ -1169,8 +1169,8 @@ void AudioFile<T>::addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i
         bytes[3] = i & 0xFF;
     }
     
-    for (int i = 0; i < 4; i++)
-        fileData.push_back (bytes[i]);
+    for (int j = 0; j < 4; j++)
+        fileData.push_back (bytes[j]);
 }
 
 //=============================================================
