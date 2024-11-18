@@ -2,7 +2,7 @@
 
 <!-- Version and License Badges -->
 
-![Version](https://img.shields.io/badge/version-1.1.1-green.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.1.2-green.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square)
 
@@ -26,7 +26,6 @@ AudioFile is written and maintained by Adam Stark.
     #include "AudioFile.h"
 
     AudioFile<double> audioFile;
-
 
 ### Load an audio file:
 
@@ -179,6 +178,13 @@ If you prefer not to see these messages, you can disable this error logging beha
 
 ## Versions
 
+##### 1.1.2 - 18th November 2024
+
+- Improved AIFF sample rate calculations
+- Improved CMake support
+- Code improvements
+- Bug and warning fixes
+
 ##### 1.1.1 - 4th April 2023
 
 - Support for integer formats
@@ -237,13 +243,17 @@ Many thanks to the following people for their contributions to this library:
 
 - [Abhinav1997](https://github.com/Abhinav1997)
 - [alxarsenault](https://github.com/alxarsenault)
+- [ascii255](https://github.com/ascii255)
 - [BenjaminHinchliff](https://github.com/BenjaminHinchliff)
 - [BesselJ](https://github.com/BesselJ)
+- [cgraf78](https://github.com/cgraf78)
 - [emiro85](https://github.com/emiro85)
+- [encoded](https://github.com/encoded)
 - [heartofrain](https://github.com/heartofrain)
 - [helloimmatt](https://github.com/helloimmatt/)
 - [leocstone](https://github.com/leocstone)
 - [MatthieuHernandez](https://github.com/MatthieuHernandez)
+- [Metalsofa](https://github.com/Metalsofa)
 - [mrpossoms](https://github.com/mrpossoms)
 - [mynameisjohn](https://github.com/mynameisjohn)
 - [Sidelobe](https://github.com/Sidelobe)
