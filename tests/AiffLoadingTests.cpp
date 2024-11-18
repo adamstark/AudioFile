@@ -1,4 +1,4 @@
-#include "doctest.h"
+#include "doctest/doctest.h"
 #include <iostream>
 #include <vector>
 #include <AudioFile.h>
@@ -348,5 +348,68 @@ TEST_SUITE ("AiffLoadingTests - Integer Types - 24-bit File")
         test24Bit44100WithInteger<uint8_t> (true);
         test24Bit44100WithInteger<int16_t> (true);
         test24Bit44100WithInteger<uint16_t> (true);
+    }
+}
+
+//=============================================================
+TEST_SUITE ("AiffLoadingTests - Sample Rates")
+{
+    //=============================================================
+    TEST_CASE ("AiffLoadingTests - Sample Rates - Common Sample Rates")
+    {
+        // Pre-defined 10-byte representations of common sample rates
+        std::unordered_map <uint32_t, std::vector<uint8_t>> aiffSampleRateTable = {
+            {8000, {64, 11, 250, 0, 0, 0, 0, 0, 0, 0}},
+            {11025, {64, 12, 172, 68, 0, 0, 0, 0, 0, 0}},
+            {16000, {64, 12, 250, 0, 0, 0, 0, 0, 0, 0}},
+            {22050, {64, 13, 172, 68, 0, 0, 0, 0, 0, 0}},
+            {32000, {64, 13, 250, 0, 0, 0, 0, 0, 0, 0}},
+            {37800, {64, 14, 147, 168, 0, 0, 0, 0, 0, 0}},
+            {44056, {64, 14, 172, 24, 0, 0, 0, 0, 0, 0}},
+            {44100, {64, 14, 172, 68, 0, 0, 0, 0, 0, 0}},
+            {47250, {64, 14, 184, 146, 0, 0, 0, 0, 0, 0}},
+            {48000, {64, 14, 187, 128, 0, 0, 0, 0, 0, 0}},
+            {50000, {64, 14, 195, 80, 0, 0, 0, 0, 0, 0}},
+            {50400, {64, 14, 196, 224, 0, 0, 0, 0, 0, 0}},
+            {88200, {64, 15, 172, 68, 0, 0, 0, 0, 0, 0}},
+            {96000, {64, 15, 187, 128, 0, 0, 0, 0, 0, 0}},
+            {176400, {64, 16, 172, 68, 0, 0, 0, 0, 0, 0}},
+            {192000, {64, 16, 187, 128, 0, 0, 0, 0, 0, 0}},
+            {352800, {64, 17, 172, 68, 0, 0, 0, 0, 0, 0}},
+            {2822400, {64, 20, 172, 68, 0, 0, 0, 0, 0, 0}},
+            {5644800, {64, 21, 172, 68, 0, 0, 0, 0, 0, 0}}
+        };
+            
+        std::vector<uint8_t> sampleRateBytes (10);
+        
+        for (const auto& pair : aiffSampleRateTable)
+        {
+            uint32_t sampleRate = pair.first;
+            double inputSampleRate = sampleRate;
+            
+            // encode into bytes
+            AiffUtilities::encodeAiffSampleRate (static_cast<double> (sampleRate), sampleRateBytes.data());
+            
+            for (int i = 0; i < 10; i++)
+                CHECK_EQ (sampleRateBytes[i], aiffSampleRateTable[sampleRate][i]);
+            
+            double outputSampleRate = AiffUtilities::decodeAiffSampleRate (aiffSampleRateTable[sampleRate].data());
+            
+            CHECK_EQ (inputSampleRate, outputSampleRate);
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("AiffLoadingTests - Sample Rates - Round Trip Encode/Decode Tests")
+    {
+        std::vector<uint8_t> sampleRateBytes (10);
+        
+        for (int i = -100000; i < 100000; i += 237) // + odd number to reduce cycles but check odd and even values
+        {
+            double input = static_cast<double> (i);
+            AiffUtilities::encodeAiffSampleRate (input, sampleRateBytes.data());
+            double output = AiffUtilities::decodeAiffSampleRate (sampleRateBytes.data());
+            CHECK_EQ (input, output);
+        }
     }
 }
