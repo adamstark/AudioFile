@@ -900,7 +900,7 @@ bool AudioFile<T>::save (const std::string& filePath, AudioFileFormat format)
 
 //=============================================================
 template <class T>
-inline bool AudioFile<T>::saveToMemory(std::vector<uint8_t> &fileData, AudioFileFormat format)
+bool AudioFile<T>::saveToMemory(std::vector<uint8_t> &fileData, AudioFileFormat format)
 {
     if (format == AudioFileFormat::Wave)
     {
