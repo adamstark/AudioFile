@@ -119,6 +119,17 @@ AudioFile is written and maintained by Adam Stark.
     // Aiff file
     audioFile.save ("path/to/desired/audioFile.aif", AudioFileFormat::Aiff);
 
+### Save the audio file to memory
+
+Write the audio file data directly to a vector of bytes (without writing to a file on disk):
+
+    std::vector<uint8_t> fileData;
+    saveToMemory (fileData, AudioFileFormat::Wave);
+
+    or
+
+    saveToMemory (fileData, AudioFileFormat::Aiff);
+
 ## Examples
 
 Please see the `examples` folder for some examples on library usage.
@@ -256,6 +267,7 @@ Many thanks to the following people for their contributions to this library:
 - [Metalsofa](https://github.com/Metalsofa)
 - [mrpossoms](https://github.com/mrpossoms)
 - [mynameisjohn](https://github.com/mynameisjohn)
+- [nicmell](https://github.com/nicmell)
 - [Sidelobe](https://github.com/Sidelobe)
 - [sschaetz](https://github.com/sschaetz)
 - [Yhcrown](https://github.com/Yhcrown)
