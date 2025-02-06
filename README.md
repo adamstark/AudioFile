@@ -53,7 +53,7 @@ AudioFile is written and maintained by Adam Stark.
 
     for (int i = 0; i < numSamples; i++)
     {
-    	double currentSample = audioFile.samples[channel][i];
+        double currentSample = audioFile.samples[channel][i];
     }
 
 ### Replace the AudioFile audio buffer with another
