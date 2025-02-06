@@ -124,11 +124,11 @@ AudioFile is written and maintained by Adam Stark.
 Write the audio file data directly to a vector of bytes (without writing to a file on disk):
 
     std::vector<uint8_t> fileData;
-    saveToMemory (fileData, AudioFileFormat::Wave);
+    audioFile.saveToMemory (fileData, AudioFileFormat::Wave);
 
     or
 
-    saveToMemory (fileData, AudioFileFormat::Aiff);
+    audioFile.saveToMemory (fileData, AudioFileFormat::Aiff);
 
 ## Examples
 
