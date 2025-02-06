@@ -895,12 +895,12 @@ template <class T>
 bool AudioFile<T>::save (const std::string& filePath, AudioFileFormat format)
 {
         std::vector<uint8_t> fileData;
-        return saveToMemory(fileData, format) && writeDataToFile(fileData, filePath);
+        return saveToMemory (fileData, format) && writeDataToFile (fileData, filePath);
 }
 
 //=============================================================
 template <class T>
-bool AudioFile<T>::saveToMemory(std::vector<uint8_t> &fileData, AudioFileFormat format)
+bool AudioFile<T>::saveToMemory (std::vector<uint8_t> &fileData, AudioFileFormat format)
 {
     if (format == AudioFileFormat::Wave)
     {
@@ -1025,7 +1025,6 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
         return false;
     }
     
-    // try to write the file
     return true;
 }
 
@@ -1128,7 +1127,6 @@ bool AudioFile<T>::encodeAiffFile (std::vector<uint8_t>& fileData)
         return false;
     }
     
-    // try to write the file
     return true;
 }
 
