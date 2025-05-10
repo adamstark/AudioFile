@@ -995,7 +995,16 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
                 int32_t sampleAsInt;
                 
                 if (audioFormat == WavAudioFormat::IEEEFloat)
-                    sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (samples[channel][i]);
+                {
+                    if constexpr (std::is_same_v<T, float>)
+                        sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (samples[channel][i]);
+                    else if constexpr (std::is_same_v<T, double>)
+                    {
+                        auto sampleAsFloat = (float) samples[channel][i];
+                        float& referenceToSample = sampleAsFloat;
+                        sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (referenceToSample);
+                    }
+                }
                 else // assume PCM
                     sampleAsInt = AudioSampleConverter<T>::sampleToThirtyTwoBitInt (samples[channel][i]);
                 
