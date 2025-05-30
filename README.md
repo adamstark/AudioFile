@@ -2,7 +2,7 @@
 
 <!-- Version and License Badges -->
 
-![Version](https://img.shields.io/badge/version-1.1.2-green.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.1.3-green.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square)
 
@@ -53,7 +53,7 @@ AudioFile is written and maintained by Adam Stark.
 
     for (int i = 0; i < numSamples; i++)
     {
-    	double currentSample = audioFile.samples[channel][i];
+        double currentSample = audioFile.samples[channel][i];
     }
 
 ### Replace the AudioFile audio buffer with another
@@ -119,6 +119,17 @@ AudioFile is written and maintained by Adam Stark.
     // Aiff file
     audioFile.save ("path/to/desired/audioFile.aif", AudioFileFormat::Aiff);
 
+### Save the audio file to memory
+
+Write the audio file data directly to a vector of bytes (without writing to a file on disk):
+
+    std::vector<uint8_t> fileData;
+    audioFile.saveToMemory (fileData, AudioFileFormat::Wave);
+
+    or
+
+    audioFile.saveToMemory (fileData, AudioFileFormat::Aiff);
+
 ## Examples
 
 Please see the `examples` folder for some examples on library usage.
@@ -177,6 +188,11 @@ If you prefer not to see these messages, you can disable this error logging beha
     audioFile.shouldLogErrorsToConsole (false);
 
 ## Versions
+
+##### 1.1.3 - 31st May 2025
+
+- Added saveToMemory() function to save audio data to bytes
+- Bug fixes and extra testing
 
 ##### 1.1.2 - 18th November 2024
 
@@ -249,6 +265,7 @@ Many thanks to the following people for their contributions to this library:
 - [cgraf78](https://github.com/cgraf78)
 - [emiro85](https://github.com/emiro85)
 - [encoded](https://github.com/encoded)
+- [gitelope](https://github.com/gitelope)
 - [heartofrain](https://github.com/heartofrain)
 - [helloimmatt](https://github.com/helloimmatt/)
 - [leocstone](https://github.com/leocstone)
@@ -256,6 +273,7 @@ Many thanks to the following people for their contributions to this library:
 - [Metalsofa](https://github.com/Metalsofa)
 - [mrpossoms](https://github.com/mrpossoms)
 - [mynameisjohn](https://github.com/mynameisjohn)
+- [nicmell](https://github.com/nicmell)
 - [Sidelobe](https://github.com/Sidelobe)
 - [sschaetz](https://github.com/sschaetz)
 - [Yhcrown](https://github.com/Yhcrown)

@@ -85,10 +85,9 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
     REQUIRE (OK);
     
     //-----------------------------------------------------------------
-    // for some key bit depths and mono/stereo files, read in the audio file
-    // we just wrote and do a sample-by-sample comparison to confirm we are
-    // writing good files
-    if ((bitDepth == 8 || bitDepth == 16 || bitDepth == 24) &&  numChannels <= 2)
+    // read in the audio file we just wrote and do a sample-by-sample
+    // comparison to confirm we are writing good files
+    if (numChannels <= 2)
     {
         AudioFile<T> audioFileReader;
         audioFileReader.load (filePath);
@@ -136,8 +135,33 @@ TEST_SUITE ("Writing Tests")
                     for (auto& format : audioFormats)
                     {
                         auto fmt_str = format == AudioFileFormat::Wave ? "wav" : "aiff";
-                        std::cerr << sampleRate << "Hz " << bitDepth << "-bit " << channels << " " << fmt_str << " (floating point)" << std::endl;
+                        std::cerr << sampleRate << "Hz " << bitDepth << "-bit " << channels << " " << fmt_str << " (float)" << std::endl;
                         writeTestAudioFile<float> (channels, sampleRate, bitDepth, format);
+                    }
+                }
+            }
+        }
+    }
+    
+    //=============================================================
+    TEST_CASE ("WritingTest::WriteSineToneToManyFormats::DoublePrecision")
+    {
+        std::vector<int> sampleRates = {22050, 44100, 48000, 96000};
+        std::vector<int> bitDepths = {8, 16, 24, 32};
+        std::vector<int> numChannels = {1, 2, 8};
+        std::vector<AudioFileFormat> audioFormats = {AudioFileFormat::Wave, AudioFileFormat::Aiff};
+        
+        for (auto& sampleRate : sampleRates)
+        {
+            for (auto& bitDepth : bitDepths)
+            {
+                for (auto& channels : numChannels)
+                {
+                    for (auto& format : audioFormats)
+                    {
+                        auto fmt_str = format == AudioFileFormat::Wave ? "wav" : "aiff";
+                        std::cerr << sampleRate << "Hz " << bitDepth << "-bit " << channels << " " << fmt_str << " (double)" << std::endl;
+                        writeTestAudioFile<double> (channels, sampleRate, bitDepth, format);
                     }
                 }
             }
