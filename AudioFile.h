@@ -997,7 +997,9 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
                 if (audioFormat == WavAudioFormat::IEEEFloat)
                 {
                     if constexpr (std::is_same_v<T, float>)
+                    {
                         sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (samples[channel][i]);
+                    }
                     else if constexpr (std::is_same_v<T, double>)
                     {
                         auto sampleAsFloat = (float) samples[channel][i];
@@ -1006,7 +1008,9 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
                     }
                 }
                 else // assume PCM
+                {
                     sampleAsInt = AudioSampleConverter<T>::sampleToThirtyTwoBitInt (samples[channel][i]);
+                }
                 
                 addInt32ToFileData (fileData, sampleAsInt, Endianness::LittleEndian);
             }
