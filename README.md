@@ -2,7 +2,7 @@
 
 <!-- Version and License Badges -->
 
-![Version](https://img.shields.io/badge/version-1.1.2-green.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.1.3-green.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square)
 
@@ -188,6 +188,11 @@ If you prefer not to see these messages, you can disable this error logging beha
     audioFile.shouldLogErrorsToConsole (false);
 
 ## Versions
+
+##### 1.1.3 - 31st May 2025
+
+- Added saveToMemory() function to save audio data to bytes
+- Bug fixes and extra testing
 
 ##### 1.1.2 - 18th November 2024
 
