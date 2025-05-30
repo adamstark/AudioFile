@@ -260,6 +260,7 @@ Many thanks to the following people for their contributions to this library:
 - [cgraf78](https://github.com/cgraf78)
 - [emiro85](https://github.com/emiro85)
 - [encoded](https://github.com/encoded)
+- [gitelope](https://github.com/gitelope)
 - [heartofrain](https://github.com/heartofrain)
 - [helloimmatt](https://github.com/helloimmatt/)
 - [leocstone](https://github.com/leocstone)
