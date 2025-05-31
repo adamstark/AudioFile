@@ -263,6 +263,7 @@ Many thanks to the following people for their contributions to this library:
 - [BenjaminHinchliff](https://github.com/BenjaminHinchliff)
 - [BesselJ](https://github.com/BesselJ)
 - [cgraf78](https://github.com/cgraf78)
+- [danielzgtg](https://github.com/danielzgtg)
 - [emiro85](https://github.com/emiro85)
 - [encoded](https://github.com/encoded)
 - [gitelope](https://github.com/gitelope)
