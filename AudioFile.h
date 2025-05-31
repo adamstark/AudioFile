@@ -437,15 +437,9 @@ void AudioFile<T>::setAudioBufferSize (int numChannels, int numSamples)
 template <class T>
 void AudioFile<T>::setNumSamplesPerChannel (int numSamples)
 {
-    int originalSize = getNumSamplesPerChannel();
-    
     for (int i = 0; i < getNumChannels();i++)
     {
-        samples[i].resize (numSamples);
-        
-        // set any new samples to zero
-        if (numSamples > originalSize)
-            std::fill (samples[i].begin() + originalSize, samples[i].end(), (T)0.);
+        samples[i].resize (numSamples, static_cast<T>(0));
     }
 }
 
@@ -460,13 +454,9 @@ void AudioFile<T>::setNumChannels (int numChannels)
     
     // make sure any new channels are set to the right size
     // and filled with zeros
-    if (numChannels > originalNumChannels)
+    for (int i = originalNumChannels; i < numChannels; i++)
     {
-        for (int i = originalNumChannels; i < numChannels; i++)
-        {
-            samples[i].resize (originalNumSamplesPerChannel);
-            std::fill (samples[i].begin(), samples[i].end(), (T)0.);
-        }
+        samples[i].resize (originalNumSamplesPerChannel, static_cast<T>(0));
     }
 }
 
