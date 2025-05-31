@@ -438,9 +438,7 @@ template <class T>
 void AudioFile<T>::setNumSamplesPerChannel (int numSamples)
 {
     for (int i = 0; i < getNumChannels();i++)
-    {
-        samples[i].resize (numSamples, static_cast<T>(0));
-    }
+        samples[i].resize (numSamples, static_cast<T> (0));
 }
 
 //=============================================================
@@ -455,9 +453,7 @@ void AudioFile<T>::setNumChannels (int numChannels)
     // make sure any new channels are set to the right size
     // and filled with zeros
     for (int i = originalNumChannels; i < numChannels; i++)
-    {
-        samples[i].resize (originalNumSamplesPerChannel, static_cast<T>(0));
-    }
+        samples[i].resize (originalNumSamplesPerChannel, static_cast<T> (0));
 }
 
 //=============================================================
