@@ -698,7 +698,7 @@ bool AudioFile<T>::decodeWaveFile (const std::vector<uint8_t>& fileData)
     if (indexOfXMLChunk != -1)
     {
         int32_t chunkSize = fourBytesToInt (fileData, indexOfXMLChunk + 4);
-        iXMLChunk = std::string ((const char*) &fileData[indexOfXMLChunk + 8], chunkSize);
+        iXMLChunk = std::string (reinterpret_cast<const char*> (&fileData[indexOfXMLChunk + 8]), chunkSize);
     }
 
     return true;
@@ -835,7 +835,7 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
                 T sample;
                 
                 if (audioFormat == AIFFAudioFormat::Compressed)
-                    sample = (T)reinterpret_cast<float&> (sampleAsInt);
+                    sample = static_cast<T> (reinterpret_cast<float&> (sampleAsInt));
                 else // assume PCM
                     sample = AudioSampleConverter<T>::thirtyTwoBitIntToSample (sampleAsInt);
                 
@@ -853,7 +853,7 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
     if (indexOfXMLChunk != -1)
     {
         int32_t chunkSize = fourBytesToInt (fileData, indexOfXMLChunk + 4);
-        iXMLChunk = std::string ((const char*) &fileData[indexOfXMLChunk + 8], chunkSize);
+        iXMLChunk = std::string (reinterpret_cast<const char*> (&fileData[indexOfXMLChunk + 8]), chunkSize);
     }
     
     return true;
@@ -984,13 +984,13 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
                 {
                     if constexpr (std::is_same_v<T, float>)
                     {
-                        sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (samples[channel][i]);
+                        sampleAsInt = reinterpret_cast<int32_t&> (samples[channel][i]);
                     }
                     else if constexpr (std::is_same_v<T, double>)
                     {
                         auto sampleAsFloat = static_cast<float> (samples[channel][i]);
                         float& referenceToSample = sampleAsFloat;
-                        sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (referenceToSample);
+                        sampleAsInt = reinterpret_cast<int32_t&> (referenceToSample);
                     }
                 }
                 else // assume PCM
@@ -1140,7 +1140,7 @@ bool AudioFile<T>::writeDataToFile (const std::vector<uint8_t>& fileData, std::s
         return false;
     }
 
-    outputFile.write ((const char*)fileData.data(), fileData.size());
+    outputFile.write (reinterpret_cast<const char*> (fileData.data()), fileData.size());
     outputFile.close();
     return true;
 }
@@ -1481,7 +1481,7 @@ int8_t AudioSampleConverter<T>::sampleToSignedByte (T sample)
     if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
-        return static_cast<int8_t> (sample * (T)0x7F);
+        return static_cast<int8_t> (sample * static_cast<T> (0x7F));
     }
     else
     {
