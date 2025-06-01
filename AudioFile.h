@@ -968,9 +968,9 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
                 int32_t sampleAsIntAgain = AudioSampleConverter<T>::sampleToTwentyFourBitInt (samples[channel][i]);
                 
                 uint8_t bytes[3];
-                bytes[2] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
-                bytes[1] = (uint8_t) (sampleAsIntAgain >>  8) & 0xFF;
-                bytes[0] = (uint8_t) sampleAsIntAgain & 0xFF;
+                bytes[2] = static_cast<uint8_t> ((sampleAsIntAgain >> 16) & 0xFF);
+                bytes[1] = static_cast<uint8_t> ((sampleAsIntAgain >>  8) & 0xFF);
+                bytes[0] = static_cast<uint8_t> (sampleAsIntAgain & 0xFF);
                 
                 fileData.push_back (bytes[0]);
                 fileData.push_back (bytes[1]);
@@ -1088,9 +1088,9 @@ bool AudioFile<T>::encodeAiffFile (std::vector<uint8_t>& fileData)
                 int32_t sampleAsIntAgain = AudioSampleConverter<T>::sampleToTwentyFourBitInt (samples[channel][i]);
                 
                 uint8_t bytes[3];
-                bytes[0] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
-                bytes[1] = (uint8_t) (sampleAsIntAgain >>  8) & 0xFF;
-                bytes[2] = (uint8_t) sampleAsIntAgain & 0xFF;
+                bytes[0] = static_cast<uint8_t> ((sampleAsIntAgain >> 16) & 0xFF);
+                bytes[1] = static_cast<uint8_t> ((sampleAsIntAgain >>  8) & 0xFF);
+                bytes[2] = static_cast<uint8_t> (sampleAsIntAgain & 0xFF);
                 
                 fileData.push_back (bytes[0]);
                 fileData.push_back (bytes[1]);
