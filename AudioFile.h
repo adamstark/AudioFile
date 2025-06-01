@@ -978,7 +978,7 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
             }
             else if (bitDepth == 32)
             {
-                int32_t sampleAsInt;
+                int32_t sampleAsInt = 0;
                 
                 if (audioFormat == WavAudioFormat::IEEEFloat)
                 {
