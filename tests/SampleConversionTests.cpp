@@ -103,7 +103,7 @@ TEST_SUITE ("SampleConversionTests::8-bit Conversions - sampleToSignedByte()")
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToSignedByte (-1.f), -127);
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToSignedByte (std::numeric_limits<float>::lowest()), -127);
         
-        REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte (std::numeric_limits<float>::max()), 127);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte (std::numeric_limits<double>::max()), 127);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte (1.), 127);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte (0.5), 63);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToSignedByte (0.), 0);
@@ -717,10 +717,10 @@ TEST_SUITE ("SampleConversionTests::32-bit Conversions")
         REQUIRE_EQ (AudioSampleConverter<float>::sampleToThirtyTwoBitInt (std::numeric_limits<float>::lowest()), -2147483647);
         
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (std::numeric_limits<double>::max()), 2147483647);
-        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (1.f), 2147483647);
-        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (0.5f), 1073741823);
-        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (0.f), 0);
-        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (-0.5f), -1073741823);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (1.), 2147483647);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (0.5), 1073741823);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (0.), 0);
+        REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (-0.5), -1073741823);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (-1.), -2147483647);
         REQUIRE_EQ (AudioSampleConverter<double>::sampleToThirtyTwoBitInt (std::numeric_limits<double>::lowest()), -2147483647);
     }

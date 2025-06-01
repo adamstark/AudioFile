@@ -14,7 +14,7 @@ template <typename T>
 void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFileFormat format)
 {
     std::string sampleType;
-    float sampleRateAsFloat = (float) sampleRate;
+    float sampleRateAsFloat = static_cast<float> (sampleRate);
     
     AudioFile<T> audioFileWriter;
     
@@ -47,12 +47,12 @@ void writeTestAudioFile (int numChannels, int sampleRate, int bitDepth, AudioFil
         T sample;
         
         if constexpr (std::numeric_limits<T>::is_integer && std::is_unsigned_v<T>)
-            sample = (T)(((sinf (2. * M_PI * ((double) i / sampleRateAsFloat) * 440.) + 1.) / 2.) * maxValue);
+            sample = static_cast<T> (((sin (2. * M_PI * (static_cast<double> (i) / static_cast<double> (sampleRateAsFloat)) * 440.) + 1.) / 2.) * maxValue);
         else
-            sample = (T)(sinf (2. * M_PI * ((double) i / sampleRateAsFloat) * 440.) * maxValue);
+            sample = static_cast<T> (sin (2. * M_PI * (static_cast<double> (i) / static_cast<double> (sampleRateAsFloat)) * 440.) * static_cast<double> (maxValue));
         
         for (int k = 0; k < audioFileWriter.getNumChannels(); k++)
-            audioFileWriter.samples[k][i] = sample * 0.5f;
+            audioFileWriter.samples[k][i] = sample * static_cast<T> (0.5);
     }
     
     audioFileWriter.setSampleRate (sampleRate);
