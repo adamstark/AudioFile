@@ -1409,7 +1409,7 @@ int32_t AudioSampleConverter<T>::sampleToTwentyFourBitInt (T sample)
     if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
-        return static_cast<int32_t> (sample * 8388607.);
+        return static_cast<int32_t> (sample * static_cast<T> (8388607.));
     }
     else
     {
@@ -1444,7 +1444,7 @@ int16_t AudioSampleConverter<T>::sampleToSixteenBitInt (T sample)
     if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
-        return static_cast<int16_t> (sample * 32767.);
+        return static_cast<int16_t> (sample * static_cast<T> (32767.));
     }
     else
     {
@@ -1462,7 +1462,7 @@ uint8_t AudioSampleConverter<T>::sampleToUnsignedByte (T sample)
     if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
-        sample = (sample + 1.) / 2.;
+        sample = (sample + static_cast<T> (1.)) / static_cast<T> (2.);
         return static_cast<uint8_t> (1 + (sample * 254));
     }
     else
