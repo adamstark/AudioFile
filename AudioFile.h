@@ -673,9 +673,9 @@ bool AudioFile<T>::decodeWaveFile (const std::vector<uint8_t>& fileData)
                 
                 if (audioFormat == WavAudioFormat::IEEEFloat && std::is_floating_point_v<T>) 
                 {
-                    float f;
-                    memcpy (&f, &sampleAsInt, sizeof(int32_t));
-                    sample = static_cast<T> (f);
+                    float floatValue;
+                    memcpy (&floatValue, &sampleAsInt, sizeof(int32_t));
+                    sample = static_cast<T> (floatValue);
                 }
                 else // assume PCM
                 {
