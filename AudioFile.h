@@ -207,7 +207,6 @@ private:
 
     static inline int32_t fourBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     static inline int16_t twoBytesToInt (const std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
-    static inline int getIndexOfString (const std::vector<uint8_t>& source, std::string s);
     static inline int getIndexOfChunk (const std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
 
     //=============================================================
@@ -339,7 +338,7 @@ uint32_t AudioFile<T>::getSampleRate() const
 template <class T>
 int AudioFile<T>::getNumChannels() const
 {
-    return (int)samples.size();
+    return static_cast<int> (samples.size());
 }
 
 //=============================================================
@@ -368,7 +367,7 @@ template <class T>
 int AudioFile<T>::getNumSamplesPerChannel() const
 {
     if (samples.size() > 0)
-        return (int) samples[0].size();
+        return static_cast<int> (samples[0].size());
     else
         return 0;
 }
@@ -377,7 +376,7 @@ int AudioFile<T>::getNumSamplesPerChannel() const
 template <class T>
 double AudioFile<T>::getLengthInSeconds() const
 {
-    return (double)getNumSamplesPerChannel() / (double)sampleRate;
+    return static_cast<double> (getNumSamplesPerChannel()) / static_cast<double> (sampleRate);
 }
 
 //=============================================================
@@ -397,7 +396,7 @@ void AudioFile<T>::printSummary() const
 template <class T>
 bool AudioFile<T>::setAudioBuffer (const AudioBuffer& newBuffer)
 {
-    int numChannels = (int)newBuffer.size();
+    int numChannels = static_cast<int> (newBuffer.size());
     
     if (numChannels <= 0)
     {
@@ -437,16 +436,8 @@ void AudioFile<T>::setAudioBufferSize (int numChannels, int numSamples)
 template <class T>
 void AudioFile<T>::setNumSamplesPerChannel (int numSamples)
 {
-    int originalSize = getNumSamplesPerChannel();
-    
     for (int i = 0; i < getNumChannels();i++)
-    {
-        samples[i].resize (numSamples);
-        
-        // set any new samples to zero
-        if (numSamples > originalSize)
-            std::fill (samples[i].begin() + originalSize, samples[i].end(), (T)0.);
-    }
+        samples[i].resize (numSamples, static_cast<T> (0));
 }
 
 //=============================================================
@@ -460,14 +451,8 @@ void AudioFile<T>::setNumChannels (int numChannels)
     
     // make sure any new channels are set to the right size
     // and filled with zeros
-    if (numChannels > originalNumChannels)
-    {
-        for (int i = originalNumChannels; i < numChannels; i++)
-        {
-            samples[i].resize (originalNumSamplesPerChannel);
-            std::fill (samples[i].begin(), samples[i].end(), (T)0.);
-        }
-    }
+    for (int i = originalNumChannels; i < numChannels; i++)
+        samples[i].resize (originalNumSamplesPerChannel, static_cast<T> (0));
 }
 
 //=============================================================
@@ -590,10 +575,10 @@ bool AudioFile<T>::decodeWaveFile (const std::vector<uint8_t>& fileData)
     //int32_t formatChunkSize = fourBytesToInt (fileData, f + 4);
     uint16_t audioFormat = twoBytesToInt (fileData, f + 8);
     uint16_t numChannels = twoBytesToInt (fileData, f + 10);
-    sampleRate = (uint32_t) fourBytesToInt (fileData, f + 12);
+    sampleRate = static_cast<uint32_t> (fourBytesToInt (fileData, f + 12));
     uint32_t numBytesPerSecond = fourBytesToInt (fileData, f + 16);
     uint16_t numBytesPerBlock = twoBytesToInt (fileData, f + 20);
-    bitDepth = (int) twoBytesToInt (fileData, f + 22);
+    bitDepth = static_cast<int> (twoBytesToInt (fileData, f + 22));
     
     if (bitDepth > sizeof (T) * 8)
     {
@@ -652,7 +637,7 @@ bool AudioFile<T>::decodeWaveFile (const std::vector<uint8_t>& fileData)
     {
         for (int channel = 0; channel < numChannels; channel++)
         {
-            int sampleIndex = samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;
+            size_t sampleIndex = samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;
             
             if ((sampleIndex + (bitDepth / 8) - 1) >= fileData.size())
             {
@@ -689,9 +674,9 @@ bool AudioFile<T>::decodeWaveFile (const std::vector<uint8_t>& fileData)
                 
                 if (audioFormat == WavAudioFormat::IEEEFloat && std::is_floating_point_v<T>) 
                 {
-                    float f;
-                    memcpy (&f, &sampleAsInt, sizeof(int32_t));
-                    sample = (T)f;
+                    float floatValue;
+                    memcpy (&floatValue, &sampleAsInt, sizeof(int32_t));
+                    sample = static_cast<T> (floatValue);
                 }
                 else // assume PCM
                 {
@@ -712,7 +697,7 @@ bool AudioFile<T>::decodeWaveFile (const std::vector<uint8_t>& fileData)
     if (indexOfXMLChunk != -1)
     {
         int32_t chunkSize = fourBytesToInt (fileData, indexOfXMLChunk + 4);
-        iXMLChunk = std::string ((const char*) &fileData[indexOfXMLChunk + 8], chunkSize);
+        iXMLChunk = std::string (reinterpret_cast<const char*> (&fileData[indexOfXMLChunk + 8]), chunkSize);
     }
 
     return true;
@@ -751,7 +736,7 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
     //int32_t commChunkSize = fourBytesToInt (fileData, p + 4, Endianness::BigEndian);
     int16_t numChannels = twoBytesToInt (fileData, p + 8, Endianness::BigEndian);
     int32_t numSamplesPerChannel = fourBytesToInt (fileData, p + 10, Endianness::BigEndian);
-    bitDepth = (int) twoBytesToInt (fileData, p + 14, Endianness::BigEndian);
+    bitDepth = static_cast<int> (twoBytesToInt (fileData, p + 14, Endianness::BigEndian));
     sampleRate = getAiffSampleRate (fileData, p + 16);
     
     if (bitDepth > sizeof (T) * 8)
@@ -797,10 +782,10 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
     int numBytesPerSample = bitDepth / 8;
     int numBytesPerFrame = numBytesPerSample * numChannels;
     int totalNumAudioSampleBytes = numSamplesPerChannel * numBytesPerFrame;
-    int samplesStartIndex = s + 16 + (int)offset;
+    int samplesStartIndex = s + 16 + static_cast<int> (offset);
         
     // sanity check the data
-    if ((soundDataChunkSize - 8) != totalNumAudioSampleBytes || totalNumAudioSampleBytes > static_cast<long>(fileData.size() - samplesStartIndex))
+    if ((soundDataChunkSize - 8) != totalNumAudioSampleBytes || totalNumAudioSampleBytes > static_cast<long> (fileData.size() - samplesStartIndex))
     {
         reportError ("ERROR: the metadatafor this file doesn't seem right");
         return false;
@@ -813,7 +798,7 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
     {
         for (int channel = 0; channel < numChannels; channel++)
         {
-            int sampleIndex = samplesStartIndex + (numBytesPerFrame * i) + channel * numBytesPerSample;
+            size_t sampleIndex = samplesStartIndex + (numBytesPerFrame * i) + channel * numBytesPerSample;
             
             if ((sampleIndex + (bitDepth / 8) - 1) >= fileData.size())
             {
@@ -849,7 +834,7 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
                 T sample;
                 
                 if (audioFormat == AIFFAudioFormat::Compressed)
-                    sample = (T)reinterpret_cast<float&> (sampleAsInt);
+                    sample = static_cast<T> (reinterpret_cast<float&> (sampleAsInt));
                 else // assume PCM
                     sample = AudioSampleConverter<T>::thirtyTwoBitIntToSample (sampleAsInt);
                 
@@ -867,7 +852,7 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
     if (indexOfXMLChunk != -1)
     {
         int32_t chunkSize = fourBytesToInt (fileData, indexOfXMLChunk + 4);
-        iXMLChunk = std::string ((const char*) &fileData[indexOfXMLChunk + 8], chunkSize);
+        iXMLChunk = std::string (reinterpret_cast<const char*> (&fileData[indexOfXMLChunk + 8]), chunkSize);
     }
     
     return true;
@@ -944,16 +929,16 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
     addStringToFileData (fileData, "fmt ");
     addInt32ToFileData (fileData, formatChunkSize); // format chunk size (16 for PCM)
     addInt16ToFileData (fileData, audioFormat); // audio format
-    addInt16ToFileData (fileData, (int16_t)getNumChannels()); // num channels
-    addInt32ToFileData (fileData, (int32_t)sampleRate); // sample rate
+    addInt16ToFileData (fileData, static_cast<int16_t> (getNumChannels())); // num channels
+    addInt32ToFileData (fileData, static_cast<int32_t> (sampleRate)); // sample rate
     
-    int32_t numBytesPerSecond = (int32_t) ((getNumChannels() * sampleRate * bitDepth) / 8);
+    int32_t numBytesPerSecond = static_cast<int32_t> ((getNumChannels() * sampleRate * bitDepth) / 8);
     addInt32ToFileData (fileData, numBytesPerSecond);
     
     int16_t numBytesPerBlock = getNumChannels() * (bitDepth / 8);
     addInt16ToFileData (fileData, numBytesPerBlock);
     
-    addInt16ToFileData (fileData, (int16_t)bitDepth);
+    addInt16ToFileData (fileData, static_cast<int16_t> (bitDepth));
     
     if (audioFormat == WavAudioFormat::IEEEFloat)
         addInt16ToFileData (fileData, 0); // extension size
@@ -982,9 +967,9 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
                 int32_t sampleAsIntAgain = AudioSampleConverter<T>::sampleToTwentyFourBitInt (samples[channel][i]);
                 
                 uint8_t bytes[3];
-                bytes[2] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
-                bytes[1] = (uint8_t) (sampleAsIntAgain >>  8) & 0xFF;
-                bytes[0] = (uint8_t) sampleAsIntAgain & 0xFF;
+                bytes[2] = static_cast<uint8_t> ((sampleAsIntAgain >> 16) & 0xFF);
+                bytes[1] = static_cast<uint8_t> ((sampleAsIntAgain >>  8) & 0xFF);
+                bytes[0] = static_cast<uint8_t> (sampleAsIntAgain & 0xFF);
                 
                 fileData.push_back (bytes[0]);
                 fileData.push_back (bytes[1]);
@@ -992,19 +977,19 @@ bool AudioFile<T>::encodeWaveFile (std::vector<uint8_t>& fileData)
             }
             else if (bitDepth == 32)
             {
-                int32_t sampleAsInt;
+                int32_t sampleAsInt = 0;
                 
                 if (audioFormat == WavAudioFormat::IEEEFloat)
                 {
                     if constexpr (std::is_same_v<T, float>)
                     {
-                        sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (samples[channel][i]);
+                        sampleAsInt = reinterpret_cast<int32_t&> (samples[channel][i]);
                     }
                     else if constexpr (std::is_same_v<T, double>)
                     {
-                        auto sampleAsFloat = (float) samples[channel][i];
+                        auto sampleAsFloat = static_cast<float> (samples[channel][i]);
                         float& referenceToSample = sampleAsFloat;
-                        sampleAsInt = (int32_t) reinterpret_cast<int32_t&> (referenceToSample);
+                        sampleAsInt = reinterpret_cast<int32_t&> (referenceToSample);
                     }
                 }
                 else // assume PCM
@@ -1102,9 +1087,9 @@ bool AudioFile<T>::encodeAiffFile (std::vector<uint8_t>& fileData)
                 int32_t sampleAsIntAgain = AudioSampleConverter<T>::sampleToTwentyFourBitInt (samples[channel][i]);
                 
                 uint8_t bytes[3];
-                bytes[0] = (uint8_t) (sampleAsIntAgain >> 16) & 0xFF;
-                bytes[1] = (uint8_t) (sampleAsIntAgain >>  8) & 0xFF;
-                bytes[2] = (uint8_t) sampleAsIntAgain & 0xFF;
+                bytes[0] = static_cast<uint8_t> ((sampleAsIntAgain >> 16) & 0xFF);
+                bytes[1] = static_cast<uint8_t> ((sampleAsIntAgain >>  8) & 0xFF);
+                bytes[2] = static_cast<uint8_t> (sampleAsIntAgain & 0xFF);
                 
                 fileData.push_back (bytes[0]);
                 fileData.push_back (bytes[1]);
@@ -1154,7 +1139,7 @@ bool AudioFile<T>::writeDataToFile (const std::vector<uint8_t>& fileData, std::s
         return false;
     }
 
-    outputFile.write ((const char*)fileData.data(), fileData.size());
+    outputFile.write (reinterpret_cast<const char*> (fileData.data()), fileData.size());
     outputFile.close();
     return true;
 }
@@ -1164,7 +1149,7 @@ template <class T>
 void AudioFile<T>::addStringToFileData (std::vector<uint8_t>& fileData, std::string s)
 {
     for (size_t i = 0; i < s.length();i++)
-        fileData.push_back ((uint8_t) s[i]);
+        fileData.push_back (static_cast<uint8_t> (s[i]));
 }
 
 //=============================================================
@@ -1423,7 +1408,7 @@ int32_t AudioSampleConverter<T>::sampleToTwentyFourBitInt (T sample)
     if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
-        return static_cast<int32_t> (sample * 8388607.);
+        return static_cast<int32_t> (sample * static_cast<T> (8388607.));
     }
     else
     {
@@ -1458,7 +1443,7 @@ int16_t AudioSampleConverter<T>::sampleToSixteenBitInt (T sample)
     if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
-        return static_cast<int16_t> (sample * 32767.);
+        return static_cast<int16_t> (sample * static_cast<T> (32767.));
     }
     else
     {
@@ -1476,7 +1461,7 @@ uint8_t AudioSampleConverter<T>::sampleToUnsignedByte (T sample)
     if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
-        sample = (sample + 1.) / 2.;
+        sample = (sample + static_cast<T> (1.)) / static_cast<T> (2.);
         return static_cast<uint8_t> (1 + (sample * 254));
     }
     else
@@ -1495,7 +1480,7 @@ int8_t AudioSampleConverter<T>::sampleToSignedByte (T sample)
     if constexpr (std::is_floating_point<T>::value)
     {
         sample = clamp (sample, -1., 1.);
-        return static_cast<int8_t> (sample * (T)0x7F);
+        return static_cast<int8_t> (sample * static_cast<T> (0x7F));
     }
     else
     {

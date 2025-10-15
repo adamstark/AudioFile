@@ -2,7 +2,7 @@
 
 <!-- Version and License Badges -->
 
-![Version](https://img.shields.io/badge/version-1.1.3-green.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.1.4-green.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)
 ![Language](https://img.shields.io/badge/language-C++-yellow.svg?style=flat-square)
 
@@ -189,6 +189,10 @@ If you prefer not to see these messages, you can disable this error logging beha
 
 ## Versions
 
+##### 1.1.4 - 15th Oct 2025
+
+- Bug fixes and code improvements
+
 ##### 1.1.3 - 31st May 2025
 
 - Added saveToMemory() function to save audio data to bytes
@@ -263,6 +267,7 @@ Many thanks to the following people for their contributions to this library:
 - [BenjaminHinchliff](https://github.com/BenjaminHinchliff)
 - [BesselJ](https://github.com/BesselJ)
 - [cgraf78](https://github.com/cgraf78)
+- [danielzgtg](https://github.com/danielzgtg)
 - [emiro85](https://github.com/emiro85)
 - [encoded](https://github.com/encoded)
 - [gitelope](https://github.com/gitelope)
@@ -277,6 +282,7 @@ Many thanks to the following people for their contributions to this library:
 - [Sidelobe](https://github.com/Sidelobe)
 - [sschaetz](https://github.com/sschaetz)
 - [Yhcrown](https://github.com/Yhcrown)
+- [zhouchanglin-rr](https://github.com/zhouchanglin-rr)
 
 ## Want to Contribute?
 
