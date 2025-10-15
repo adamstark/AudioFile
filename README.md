@@ -278,6 +278,7 @@ Many thanks to the following people for their contributions to this library:
 - [Sidelobe](https://github.com/Sidelobe)
 - [sschaetz](https://github.com/sschaetz)
 - [Yhcrown](https://github.com/Yhcrown)
+- [zhouchanglin-rr](https://github.com/zhouchanglin-rr)
 
 ## Want to Contribute?
 
