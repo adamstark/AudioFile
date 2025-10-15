@@ -636,7 +636,7 @@ bool AudioFile<T>::decodeWaveFile (const std::vector<uint8_t>& fileData)
     {
         for (int channel = 0; channel < numChannels; channel++)
         {
-            int sampleIndex = samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;
+            size_t sampleIndex = samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;
             
             if ((sampleIndex + (bitDepth / 8) - 1) >= fileData.size())
             {
@@ -797,7 +797,7 @@ bool AudioFile<T>::decodeAiffFile (const std::vector<uint8_t>& fileData)
     {
         for (int channel = 0; channel < numChannels; channel++)
         {
-            int sampleIndex = samplesStartIndex + (numBytesPerFrame * i) + channel * numBytesPerSample;
+            size_t sampleIndex = samplesStartIndex + (numBytesPerFrame * i) + channel * numBytesPerSample;
             
             if ((sampleIndex + (bitDepth / 8) - 1) >= fileData.size())
             {
