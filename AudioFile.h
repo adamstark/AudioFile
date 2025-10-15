@@ -43,6 +43,7 @@
 #include <string>
 #include <cstring>
 #include <fstream>
+#include <unordered_map>
 #include <iterator>
 #include <algorithm>
 #include <limits>
