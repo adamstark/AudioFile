@@ -1590,7 +1590,7 @@ inline void AiffUtilities::encodeAiffSampleRate (double sampleRate, uint8_t* byt
     bytes[0] = (sign == -1) ? 0x80 : 0x00;
     
     // Calculate the exponent using logarithm (log base 2)
-    int exponent = (log (sampleRate) / log (2.0));
+    int exponent = static_cast<int> (std::log2 (sampleRate));
     
     // Add bias to exponent for AIFF
     uint16_t biasedExponent = static_cast<uint16_t> (exponent + 16383);
